@@ -1,0 +1,138 @@
+import prand from 'pure-rand';
+import { Debug } from "../Debug";
+import { Card } from "./Card";
+import { GameBase } from './GameBase';
+import { IPile } from "./IPile";
+import { Suit } from './Suit';
+import { Colour } from './Colour';
+import { Rank } from './Rank';
+
+export class Pile implements IPile {
+    public readonly game: GameBase;
+    public cardsChanged = () => { };
+    private cards_: Card[] = [];
+
+    public get length() { return this.cards_.length; }
+
+    constructor(game: GameBase) {
+        this.game = game;
+    }
+
+    *[Symbol.iterator]() {
+        for (const card of this.cards_) {
+            yield card;
+        }
+    }
+
+    public createCard(suit: Suit, colour: Colour, rank: Rank) {
+        let card = new Card(this.game, suit, colour, rank, this, this.length - 1);
+        this.cards_.push(card);
+        this.cardsChanged();
+        return card;
+    }
+
+    public at(i: number) {
+        Debug.assert(i >= 0 && i < this.cards_.length);
+        let card = this.cards_[i];
+        Debug.assert(card.pile == this);
+        return card;
+    }
+
+    public slice(start?: number, end?: number) {
+        return this.cards_.slice(start, end);
+    }
+
+    public indexOf(card: Card) {
+        return this.cards_.indexOf(card);
+    }
+
+    public sort() {
+        this.cards_.sort((a, b) => {
+            if (a.suit < b.suit) return -1;
+            if (a.suit > b.suit) return 1;
+            if (a.colour < b.colour) return -1;
+            if (a.colour > b.colour) return 1;
+            if (a.rank < b.rank) return -1;
+            if (a.rank > b.rank) return 1;
+            return 0;
+        });
+
+        for (let i = 0; i < this.cards_.length; ++i) {
+            this.cards_[i].onPileIndexChanged(i);
+        }
+
+        this.cardsChanged();
+    }
+
+    public shuffle(rng: prand.RandomGenerator) {
+        for (let i = 0; i < this.cards_.length; ++i) {
+            let swapIndex: number;
+            [swapIndex, rng] = prand.uniformIntDistribution(i, this.cards_.length - 1, rng);
+            let tmp = this.cards_[i];
+            this.cards_[i] = this.cards_[swapIndex];
+            this.cards_[swapIndex] = tmp;
+        }
+
+        for (let i = 0; i < this.cards_.length; ++i) {
+            this.cards_[i].onPileIndexChanged(i);
+        }
+
+        this.cardsChanged();
+    }
+
+    public push(card: Card) {
+        return this.insert(this.cards_.length, card);
+    }
+
+    public peek() {
+        if (this.cards_.length <= 0)
+            return null;
+        return this.at(this.cards_.length - 1);
+    }
+
+    public insert(index: number, card: Card) {
+        let oldPile = card.pile;
+        let oldIndex = card.pileIndex;
+
+        let redo = () => this.insert_(index, card);
+        let undo = () => oldPile.insert_(oldIndex, card);
+        this.game.addUndoableOperation(redo, undo);
+        return redo();
+    }
+
+    private insert_(index: number, card: Card) {
+        Debug.assert(index >= 0 && index <= this.cards_.length);
+
+        if (card.pile == this && index >= card.pileIndex)
+            index--;
+
+        card.pile.remove(card);
+
+        this.cards_.splice(index, 0, card);
+
+        card.onPileChanged(this, index);
+        for (let i = index + 1; i < this.cards_.length; ++i) {
+            this.cards_[i].onPileIndexChanged(i);
+        }
+        this.cardsChanged();
+
+        return card;
+    }
+
+    private remove(card: Card) {
+        Debug.assert(card.pile === this);
+
+        let index = card.pileIndex;
+
+        Debug.assert(this.at(index) == card);
+
+        this.cards_.splice(index, 1);
+
+        for (let i = index; i < this.cards_.length; ++i) {
+            this.cards_[i].onPileIndexChanged(i);
+        }
+        this.cardsChanged();
+
+        return card;
+    }
+}

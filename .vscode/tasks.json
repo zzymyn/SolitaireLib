@@ -1,0 +1,37 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "npm",
+            "script": "tswatch",
+            "problemMatcher": "$tsc-watch",
+            "isBackground": true,
+            "presentation": {
+                "reveal": "always",
+                "revealProblems": "onProblem",
+                "echo": true,
+                "focus": false,
+                "panel": "new",
+                "showReuseMessage": false,
+                "clear": false,
+            }
+        },
+        {
+            "type": "npm",
+            "script": "dev",
+            "isBackground": true,
+            "problemMatcher": [],
+            "label": "npm: dev",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new",
+                "showReuseMessage": false,
+                "clear": false,
+            }
+        }
+    ]
+}

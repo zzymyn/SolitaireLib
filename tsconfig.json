@@ -1,0 +1,29 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "~*": [
+                "./*"
+            ]
+        },
+        "strict": true,
+        "strictNullChecks": true,
+        "target": "ES5",
+        "lib": [
+            "ES6",
+            "DOM"
+        ],
+        "noFallthroughCasesInSwitch": true,
+        "downlevelIteration": true
+    },
+    "include": [
+        "**/**.ts",
+        "index.ts",
+    ],
+    "exclude": [
+        ".*/**",
+        "bin-dev/**",
+        "bin/**",
+        "node_modules/**"
+    ]
+}

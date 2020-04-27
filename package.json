@@ -1,0 +1,24 @@
+{
+  "name": "pyramid",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "parcel index.html -d bin-dev",
+    "build": "rimraf bin && parcel build index.html -d bin",
+    "tswatch": "tsc --watch --noEmit --project tsconfig.json"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "pure-rand": "^2.0.0"
+  },
+  "devDependencies": {
+    "less": "^3.11.1",
+    "parcel-bundler": "^1.12.4",
+    "rimraf": "^3.0.2",
+    "sass": "^1.26.3",
+    "typescript": "^3.8.3"
+  }
+}
