@@ -1,40 +1,38 @@
-import { DelayHint } from "~CardLib/Model/DelayHint";
-import { ICard } from "~CardLib/Model/ICard";
-import { IPile } from "~CardLib/Model/IPile";
-import { Rect } from "~CardLib/View/Rect";
+import { Debug } from "../Debug";
+import { DelayHint } from "../Model/DelayHint";
+import { ICard } from "../Model/ICard";
 import { IGameBase } from "../Model/IGameBase";
+import { IPile } from "../Model/IPile";
 import { CardView } from "../View/CardView";
 import { PileView } from "../View/PileView";
+import { Rect } from "../View/Rect";
 
 type DropPreview = { dropPreview: boolean };
+type ZIndexed = { zIndex: number };
 
 export abstract class GamePresenterBase {
     protected readonly gameBase_: IGameBase;
     protected readonly htmlRoot_: HTMLElement;
     private readonly operations_: (() => Generator<DelayHint, void>)[] = [];
-    private readonly cardViews: CardView[] = [];
-    private readonly cardToCardView_ = new Map<ICard, CardView>();
-    private readonly cardViewtoCard_ = new Map<CardView, ICard>();
-    private readonly pileViews: PileView[] = [];
-    private readonly pileToPileView_ = new Map<IPile, PileView>();
-    private readonly pileViewtoPile_ = new Map<PileView, IPile>();
+    private readonly pileViews_: PileView[] = [];
+    private readonly cardViews_: CardView[] = [];
     private dropPreview_: DropPreview | null = null;
 
     constructor(game: IGameBase, htmlRoot: HTMLElement) {
         this.gameBase_ = game;
         this.htmlRoot_ = htmlRoot;
 
-        window.addEventListener("resize", e => this.onWindowResize(e));
-        window.addEventListener("keydown", e => this.onWindowKeyDown(e));
+        window.addEventListener("resize", this.onWindowResize_);
+        window.addEventListener("keydown", this.onWindowKeyDown_);
 
         this.restart();
     }
 
     protected abstract onResize_(): void;
 
-    protected createPileView(pile: IPile) {
+    protected createPileView_(pile: IPile) {
         let pileView = new PileView(this.htmlRoot_);
-        this.pileViews.push(pileView);
+        this.pileViews_.push(pileView);
         this.pileToPileView_.set(pile, pileView);
         this.pileViewtoPile_.set(pileView, pile);
 
@@ -48,11 +46,29 @@ export abstract class GamePresenterBase {
 
     private onPileCardsChanged_(pileView: PileView, pile: IPile) {
         pileView.cardCount = pile.length;
+
+        let zIndex: number | undefined;
+
+        for (let i = pile.length; i-- > 0;) {
+            let card = pile.at(i);
+            let cardView = this.getCardView_(card);
+
+            if (zIndex) {
+                cardView.zIndex = --zIndex;
+            } else {
+                zIndex = cardView.zIndex;
+            }
+
+            var rect = pileView.rect;
+            rect.x += pileView.fanX * i;
+            rect.y += pileView.fanY * i;
+            cardView.rect = rect;
+        }
     }
 
-    protected createCardView(card: ICard) {
+    protected createCardView_(card: ICard) {
         let cardView = new CardView(this.htmlRoot_, card.suit, card.colour, card.rank);
-        this.cardViews.push(cardView);
+        this.cardViews_.push(cardView);
         this.cardToCardView_.set(card, cardView);
         this.cardViewtoCard_.set(cardView, card);
 
@@ -66,44 +82,54 @@ export abstract class GamePresenterBase {
         card.faceUpChanged = () => this.onCardFaceUpChanged(cardView, card);
 
         cardView.click = () => this.cardPrimary_(card);
-
         cardView.dblClick = () => this.cardSecondary_(card);
-
         cardView.dragStart = () => this.cardDragStart(cardView, card);
-
         cardView.dragMoved = (rect) => this.cardDragMoved(cardView, card, rect);
-
         cardView.dragEnd = (rect, cancelled) => this.cardDragEnd(cardView, card, rect, cancelled);
 
         return cardView;
     }
 
+    private readonly pileToPileView_ = new Map<IPile, PileView>();
+    private readonly pileViewtoPile_ = new Map<PileView, IPile>();
+
+    private getPile_(pileView: PileView) {
+        let pile = this.pileViewtoPile_.get(pileView);
+        if (!pile) Debug.error();
+        return pile;
+    }
+
+    private getPileView_(pile: IPile) {
+        let pileView = this.pileToPileView_.get(pile);
+        if (!pileView) Debug.error();
+        return pileView;
+    }
+
+    private readonly cardToCardView_ = new Map<ICard, CardView>();
+    private readonly cardViewtoCard_ = new Map<CardView, ICard>();
+
+    private getCard_(cardView: CardView) {
+        let card = this.cardViewtoCard_.get(cardView);
+        if (!card) Debug.error();
+        return card;
+    }
+
+    private getCardView_(card: ICard) {
+        let cardView = this.cardToCardView_.get(card);
+        if (!cardView) Debug.error();
+        return cardView;
+    }
+
     private onCardPileChanged(cardView: CardView, card: ICard) {
-        let pileView = this.pileToPileView_.get(card.pile);
-        if (pileView) {
-            var rect = pileView.rect;
-            rect.x += pileView.fanX * card.pileIndex;
-            rect.y += pileView.fanY * card.pileIndex;
-            cardView.rect = rect;
-            cardView.zIndex = this.getNextZIndex();
-        } else {
-            cardView.rect = new Rect();
-            cardView.zIndex = 0;
-        }
+        let pileView = this.getPileView_(card.pile);
+        var rect = pileView.rect;
+        rect.x += pileView.fanX * card.pileIndex;
+        rect.y += pileView.fanY * card.pileIndex;
+        cardView.rect = rect;
+        cardView.zIndex = this.getNextZIndex();
     }
 
     private onCardPileIndexChanged(cardView: CardView, card: ICard) {
-        let pileView = this.pileToPileView_.get(card.pile);
-        if (pileView) {
-            var rect = pileView.rect;
-            rect.x += pileView.fanX * card.pileIndex;
-            rect.y += pileView.fanY * card.pileIndex;
-            cardView.rect = rect;
-            cardView.zIndex = pileView.zIndex + 1 + card.pileIndex;
-        } else {
-            cardView.rect = new Rect();
-            cardView.zIndex = 0;
-        }
     }
 
     private onCardFaceUpChanged(cardView: CardView, card: ICard) {
@@ -119,12 +145,10 @@ export abstract class GamePresenterBase {
 
         let alsoDragViews: CardView[] = [];
         for (const card of alsoDrag) {
-            let cardView = this.cardToCardView_.get(card);
-            if (cardView) {
-                alsoDragViews.push(cardView);
-                if (canDrag) {
-                    cardView.zIndex = this.getNextZIndex();
-                }
+            let cardView = this.getCardView_(card);
+            alsoDragViews.push(cardView);
+            if (canDrag) {
+                cardView.zIndex = this.getNextZIndex();
             }
         }
 
@@ -136,17 +160,13 @@ export abstract class GamePresenterBase {
         if (pile) {
             let card = pile.peek();
             if (card) {
-                let cardView = this.cardToCardView_.get(card);
-                if (cardView) {
-                    this.setDropPreview_(cardView);
-                    return;
-                }
+                let cardView = this.getCardView_(card);
+                this.setDropPreview_(cardView);
+                return;
             } else {
-                let pileView = this.pileToPileView_.get(pile);
-                if (pileView) {
-                    this.setDropPreview_(pileView);
-                    return;
-                }
+                let pileView = this.getPileView_(pile);
+                this.setDropPreview_(pileView);
+                return;
             }
         }
 
@@ -167,11 +187,8 @@ export abstract class GamePresenterBase {
         let bestPile: IPile | null = null;
         let bestPileOverlap = 0;
 
-        for (const pileView of this.pileViews) {
-            let pile = this.pileViewtoPile_.get(pileView);
-            if (!pile)
-                continue;
-
+        for (const pileView of this.pileViews_) {
+            let pile = this.getPile_(pileView);
             let pileHitbox = pileView.hitbox;
             let overlap = rect.overlaps(pileHitbox);
             if (overlap <= 0)
@@ -199,15 +216,18 @@ export abstract class GamePresenterBase {
     }
 
     private nextZIndex_ = 1000;
+    private nextZIndexInc_ = 1;
     private getNextZIndex() {
-        return this.nextZIndex_++;
+        let r = this.nextZIndex_;
+        this.nextZIndex_ += this.nextZIndexInc_;
+        return r;
     }
 
-    private onWindowResize(e: UIEvent) {
+    private onWindowResize_ = (e: UIEvent) => {
         this.onResize_();
     }
 
-    private onWindowKeyDown(e: KeyboardEvent) {
+    private onWindowKeyDown_ = (e: KeyboardEvent) => {
         if (e) {
             if (e.key === "y" && e.ctrlKey) {
                 this.redo_();

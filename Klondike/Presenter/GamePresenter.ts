@@ -26,27 +26,27 @@ export class GamePresenter extends GamePresenterBase {
 
         // create piles:
         {
-            let pileView = this.createPileView(game.stock);
+            let pileView = this.createPileView_(game.stock);
             pileView.rect = new Rect(sizeX, sizeY, xPos(0), -40 + margin);
             pileView.showFrame = true;
             this.stockPile_ = pileView;
         }
         {
-            let pileView = this.createPileView(game.waste);
+            let pileView = this.createPileView_(game.waste);
             pileView.rect = new Rect(sizeX, sizeY, xPos(1), -40 + margin);
             pileView.showFrame = true;
             pileView.zIndex = 50;
             this.wastePile_ = pileView;
         }
         for (let i = 0; i < this.game_.foundations.length; ++i) {
-            let pileView = this.createPileView(game.foundations[i]);
+            let pileView = this.createPileView_(game.foundations[i]);
             pileView.rect = new Rect(sizeX, sizeY, xPos(tableSize - this.game_.foundations.length + i), -40 + margin);
             pileView.showFrame = true;
             pileView.zIndex = 800;
             this.foundationPiles_.push(pileView);
         }
         for (let i = 0; i < this.game_.tableaux.length; ++i) {
-            let pileView = this.createPileView(game.tableaux[i]);
+            let pileView = this.createPileView_(game.tableaux[i]);
             pileView.rect = new Rect(sizeX, sizeY, xPos(i), -40 + margin + margin + sizeY + margin);
             pileView.showFrame = true;
             pileView.zIndex = 800;
@@ -56,7 +56,7 @@ export class GamePresenter extends GamePresenterBase {
 
         // create cards:
         for (const card of game.cards) {
-            this.createCardView(card);
+            this.createCardView_(card);
         }
     }
 
