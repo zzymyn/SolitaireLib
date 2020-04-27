@@ -136,11 +136,11 @@ export class Game extends GameBase implements IGame {
     }
 
     protected previewDrop_(card: Card, pile: Pile): boolean {
-        return true;//this.isTableauxDrop_(card, pile) || this.isFoundationDrop(card, pile);
+        return this.isTableauxDrop_(card, pile) || this.isFoundationDrop(card, pile);
     }
 
     protected *dropCard_(card: Card, pile: Pile) {
-        if (true) {//this.isTableauxDrop_(card, pile)) {
+        if (this.isTableauxDrop_(card, pile)) {
             var cards = card.pile.slice(card.pileIndex);
             for (const card of cards) {
                 pile.push(card);
