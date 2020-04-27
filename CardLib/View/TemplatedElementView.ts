@@ -1,10 +1,13 @@
 import { Debug } from "../Debug";
-import { Rect } from "./Rect";
+import { ViewContext } from "./ViewContext";
 
 export abstract class TemplatedElementView {
+    protected readonly context: ViewContext;
     protected readonly element: HTMLElement;
 
-    constructor(parent: HTMLElement, templateId: string) {
+    constructor(context: ViewContext, parent: HTMLElement, templateId: string) {
+        this.context = context;
+
         const template = document.getElementById(templateId);
         if (!(template instanceof HTMLTemplateElement))
             Debug.error();

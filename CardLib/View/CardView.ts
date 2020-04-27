@@ -1,8 +1,9 @@
 import { Colour } from "../Model/Colour";
 import { Rank } from "../Model/Rank";
 import { Suit } from "../Model/Suit";
-import { TemplatedElementView } from "./TemplatedElementView";
 import { Rect } from "./Rect";
+import { TemplatedElementView } from "./TemplatedElementView";
+import { ViewContext } from "./ViewContext";
 
 const deadZoneSize = 5;
 
@@ -65,8 +66,8 @@ export class CardView extends TemplatedElementView {
         }
     }
 
-    constructor(parent: HTMLElement, suit: Suit, colour: Colour, rank: Rank) {
-        super(parent, "cardTemplate");
+    constructor(context: ViewContext, parent: HTMLElement, suit: Suit, colour: Colour, rank: Rank) {
+        super(context, parent, "cardTemplate");
         this.element.classList.add(`s${suit}c${colour}r${rank}`);
         this.element.addEventListener("dblclick", this.onDblClick);
         this.element.addEventListener("mousedown", this.onMouseDown_);
@@ -162,8 +163,7 @@ export class CardView extends TemplatedElementView {
             this.mouseStartX_ = e.pageX;
             this.mouseStartY_ = e.pageY;
 
-            const style = getComputedStyle(document.body);
-            const pxSize = 1.0 / parseFloat(style.fontSize);
+            const pxSize = this.context.pxPerRem;
 
             this.dragRect_.x += pxSize * dx;
             this.dragRect_.y += pxSize * dy;

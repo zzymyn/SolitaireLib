@@ -1,5 +1,6 @@
-import { TemplatedElementView } from "./TemplatedElementView";
 import { Rect } from "./Rect";
+import { TemplatedElementView } from "./TemplatedElementView";
+import { ViewContext } from "./ViewContext";
 
 export class PileView extends TemplatedElementView {
     public click = () => { };
@@ -63,8 +64,8 @@ export class PileView extends TemplatedElementView {
         }
     }
 
-    constructor(parent: HTMLElement) {
-        super(parent, "pileTemplate");
+    constructor(context: ViewContext, parent: HTMLElement) {
+        super(context, parent, "pileTemplate");
         this.element.addEventListener("click", this.onClick);
         this.element.addEventListener("dblclick", this.onDblClick);
     }
