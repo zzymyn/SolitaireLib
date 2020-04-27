@@ -1,3 +1,11 @@
+@mixin backface-visibility($visibility) {
+    backface-visibility: $visibility;
+    -webkit-backface-visibility: $visibility;
+    -moz-backface-visibility: $visibility;
+    -ms-backface-visibility: $visibility;
+    -o-backface-visibility: $visibility;
+}
+
 html {
     background: #477148;
     font-size: 1vmin;
@@ -97,7 +105,7 @@ $cardStyle: "bridge3-wider-modern-qr";
     background-position: center;
     background-repeat: no-repeat;
     background-size: 100% 100%;
-    backface-visibility: hidden;
+    @include backface-visibility(hidden);
     transform-style: preserve-3d;
     image-rendering: optimizeQuality;
 }
