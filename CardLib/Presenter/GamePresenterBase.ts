@@ -13,10 +13,6 @@ type ZIndexed = { zIndex: number };
 export abstract class GamePresenterBase {
     protected readonly gameBase_: IGameBase;
     protected readonly htmlRoot_: HTMLElement;
-    private readonly operations_: (() => Generator<DelayHint, void>)[] = [];
-    private readonly pileViews_: PileView[] = [];
-    private readonly cardViews_: CardView[] = [];
-    private dropPreview_: DropPreview | null = null;
 
     constructor(game: IGameBase, htmlRoot: HTMLElement) {
         this.gameBase_ = game;
@@ -30,6 +26,10 @@ export abstract class GamePresenterBase {
 
     protected abstract onResize_(): void;
 
+    private readonly pileViews_: PileView[] = [];
+    private readonly pileToPileView_ = new Map<IPile, PileView>();
+    private readonly pileViewtoPile_ = new Map<PileView, IPile>();
+
     protected createPileView_(pile: IPile) {
         let pileView = new PileView(this.htmlRoot_);
         this.pileViews_.push(pileView);
@@ -41,6 +41,18 @@ export abstract class GamePresenterBase {
         pileView.click = () => this.pilePrimary_(pile);
         pileView.dblClick = () => this.pileSecondary_(pile);
 
+        return pileView;
+    }
+
+    private getPile_(pileView: PileView) {
+        let pile = this.pileViewtoPile_.get(pileView);
+        if (!pile) Debug.error();
+        return pile;
+    }
+
+    private getPileView_(pile: IPile) {
+        let pileView = this.pileToPileView_.get(pile);
+        if (!pileView) Debug.error();
         return pileView;
     }
 
@@ -66,6 +78,10 @@ export abstract class GamePresenterBase {
         }
     }
 
+    private readonly cardViews_: CardView[] = [];
+    private readonly cardToCardView_ = new Map<ICard, CardView>();
+    private readonly cardViewtoCard_ = new Map<CardView, ICard>();
+
     protected createCardView_(card: ICard) {
         let cardView = new CardView(this.htmlRoot_, card.suit, card.colour, card.rank);
         this.cardViews_.push(cardView);
@@ -89,24 +105,6 @@ export abstract class GamePresenterBase {
 
         return cardView;
     }
-
-    private readonly pileToPileView_ = new Map<IPile, PileView>();
-    private readonly pileViewtoPile_ = new Map<PileView, IPile>();
-
-    private getPile_(pileView: PileView) {
-        let pile = this.pileViewtoPile_.get(pileView);
-        if (!pile) Debug.error();
-        return pile;
-    }
-
-    private getPileView_(pile: IPile) {
-        let pileView = this.pileToPileView_.get(pile);
-        if (!pileView) Debug.error();
-        return pileView;
-    }
-
-    private readonly cardToCardView_ = new Map<ICard, CardView>();
-    private readonly cardViewtoCard_ = new Map<CardView, ICard>();
 
     private getCard_(cardView: CardView) {
         let card = this.cardViewtoCard_.get(cardView);
@@ -177,7 +175,7 @@ export abstract class GamePresenterBase {
         if (!cancelled) {
             let bestPile = this.getBestDragPile(card, rect);
             if (bestPile) {
-                this.runOperation_(() => this.gameBase_.dropCard(card, bestPile!));
+                this.addOperation_(() => this.gameBase_.dropCard(card, bestPile!));
             }
         }
         this.setDropPreview_(null);
@@ -205,6 +203,7 @@ export abstract class GamePresenterBase {
         return bestPile;
     }
 
+    private dropPreview_: DropPreview | null = null;
     private setDropPreview_(view: DropPreview | null) {
         if (view != this.dropPreview_) {
             if (this.dropPreview_)
@@ -246,51 +245,53 @@ export abstract class GamePresenterBase {
     }
 
     private async undo_() {
-        this.runOperation_(() => this.gameBase_.undo());
+        this.addOperation_(() => this.gameBase_.undo());
     }
 
     private async redo_() {
-        this.runOperation_(() => this.gameBase_.redo());
+        this.addOperation_(() => this.gameBase_.redo());
     }
 
     private async restart() {
-        this.runOperation_(() => this.gameBase_.restart(Date.now()));
+        this.addOperation_(() => this.gameBase_.restart(Date.now()));
     }
 
     private async pilePrimary_(pile: IPile) {
-        this.runOperation_(() => this.gameBase_.pilePrimary(pile));
+        this.addOperation_(() => this.gameBase_.pilePrimary(pile));
     }
 
     private async pileSecondary_(pile: IPile) {
-        this.runOperation_(() => this.gameBase_.pileSecondary(pile));
+        this.addOperation_(() => this.gameBase_.pileSecondary(pile));
     }
 
     private async cardPrimary_(card: ICard) {
-        this.runOperation_(() => this.gameBase_.cardPrimary(card));
+        this.addOperation_(() => this.gameBase_.cardPrimary(card));
     }
 
     private async cardSecondary_(card: ICard) {
-        this.runOperation_(() => this.gameBase_.cardSecondary(card));
+        this.addOperation_(() => this.gameBase_.cardSecondary(card));
     }
 
-    private async runOperation_(operation: () => Generator<DelayHint, void>) {
+    private readonly operations_: (() => Generator<DelayHint, void>)[] = [];
+    private async addOperation_(operation: () => Generator<DelayHint, void>) {
         if (this.operations_.length == 0) {
-            // run now
+            // nothing else is already running, so start now:
             this.operations_.push(operation);
 
             while (this.operations_.length > 0) {
                 let op = this.operations_[0];
                 for (const delay of op()) {
-                    await this.waitForDelay(delay);
+                    await this.waitForDelay_(delay);
                 }
                 this.operations_.shift();
             }
         } else {
+            // something else is already running, so add to the pending:
             this.operations_.push(operation);
         }
     }
 
-    private async waitForDelay(delay: DelayHint) {
+    private async waitForDelay_(delay: DelayHint) {
         switch (delay) {
             case DelayHint.None:
                 return;

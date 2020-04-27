@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "parcel index.html -d bin-dev",
     "build": "rimraf bin && parcel build index.html --public-url \"./\" -d bin",
-    "tswatch": "tsc --watch --noEmit --project tsconfig.json"
+    "tswatch": "tsc --watch --noEmit --project tsconfig.json",
+    "tslint": "tslint --project ."
   },
   "keywords": [],
   "author": "",
@@ -19,6 +20,7 @@
     "parcel-bundler": "^1.12.4",
     "rimraf": "^3.0.2",
     "sass": "^1.26.3",
+    "tslint": "^6.1.2",
     "typescript": "^3.8.3"
   }
 }

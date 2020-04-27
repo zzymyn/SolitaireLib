@@ -1,0 +1,12 @@
+{
+    "extends": "tslint:recommended",
+
+    "linterOptions": {
+        "exclude": [
+            ".*/**",
+            "bin-dev/**",
+            "bin/**",
+            "node_modules/**"
+        ]
+    }
+}
