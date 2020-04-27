@@ -258,7 +258,7 @@ export class Game extends GameBase implements IGame {
                 }
             }
 
-            if (this.options.autoMoveToFoundation) {
+            if (this.options.autoMoveToFoundation > 0) {
                 let foundationMin = 999;
                 for (const pile of this.foundations) {
                     let card = pile.peek();
@@ -271,7 +271,7 @@ export class Game extends GameBase implements IGame {
 
                 for (const pile of this.autoMoveSources_) {
                     let card = pile.peek();
-                    if (card && card.faceUp && this.getCardValue_(card) == foundationMin + 1) {
+                    if (card && card.faceUp && this.getCardValue_(card) <= foundationMin + this.options.autoMoveToFoundation) {
                         for (const foundation of this.foundations) {
                             if (this.isFoundationDrop(card, foundation)) {
                                 yield DelayHint.OneByOne;
