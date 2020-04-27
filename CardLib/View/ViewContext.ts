@@ -7,13 +7,13 @@ export class ViewContext {
     private touchResponders_: ITouchResponder[] = [];
 
     public addTouchResponder(touchResponder: ITouchResponder) {
-        let index = this.touchResponders_.indexOf(touchResponder);
+        const index = this.touchResponders_.indexOf(touchResponder);
         Debug.assert(index < 0);
         this.touchResponders_.push(touchResponder);
     }
 
     public removeTouchResponder(touchResponder: ITouchResponder) {
-        let index = this.touchResponders_.indexOf(touchResponder);
+        const index = this.touchResponders_.indexOf(touchResponder);
         Debug.assert(index >= 0);
         this.touchResponders_.splice(index, 1);
     }
@@ -37,7 +37,7 @@ export class ViewContext {
     }
 
     private refresh() {
-        var style = getComputedStyle(document.body);
+        const style = getComputedStyle(document.body);
         this.pxPerRem = 1.0 / parseFloat(style.fontSize);
     }
 
@@ -62,30 +62,34 @@ export class ViewContext {
     }
 
     private onWindowTouchMove_ = (e: TouchEvent) => {
-        console.log(e);
         for (let i = 0; i < e.changedTouches.length; ++i) {
-            let touch = e.changedTouches[i];
-            for (const r of this.touchResponders_) {
-                r.onTouchMoved(touch.identifier, touch.pageX, touch.pageY);
+            const touch = e.changedTouches.item(i);
+            if (touch) {
+                for (const r of this.touchResponders_) {
+                    r.onTouchMoved(touch.identifier, touch.pageX, touch.pageY);
+                }
             }
         }
     }
 
     private onWindowTouchEnd_ = (e: TouchEvent) => {
-        console.log(e);
         for (let i = 0; i < e.changedTouches.length; ++i) {
-            let touch = e.changedTouches[i];
-            for (const r of this.touchResponders_) {
-                r.onTouchUp(touch.identifier, false);
+            const touch = e.changedTouches.item(i);
+            if (touch) {
+                for (const r of this.touchResponders_) {
+                    r.onTouchUp(touch.identifier, false);
+                }
             }
         }
     }
 
     private onWindowTouchCancel_ = (e: TouchEvent) => {
         for (let i = 0; i < e.changedTouches.length; ++i) {
-            let touch = e.changedTouches[i];
-            for (const r of this.touchResponders_) {
-                r.onTouchUp(touch.identifier, true);
+            const touch = e.changedTouches.item(i);
+            if (touch) {
+                for (const r of this.touchResponders_) {
+                    r.onTouchUp(touch.identifier, true);
+                }
             }
         }
     }

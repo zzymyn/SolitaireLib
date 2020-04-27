@@ -90,7 +90,7 @@ export class CardView extends TemplatedElementView implements ITouchResponder {
     }
 
     public onTouchMoved(id: number, x: number, y: number) {
-        if (this.touchTracking_ && this.touchId_ == id) {
+        if (this.touchTracking_ && this.touchId_ === id) {
             let dx = x - this.touchStartX_;
             let dy = y - this.touchStartY_;
 
@@ -189,10 +189,12 @@ export class CardView extends TemplatedElementView implements ITouchResponder {
 
     private touchStart_ = (e: TouchEvent) => {
         for (let i = 0; i < e.changedTouches.length; ++i) {
-            e.preventDefault();
-            let touch = e.changedTouches[i];
-            this.context.addTouchResponder(this);
-            this.onTouchDown(touch.identifier, touch.pageX, touch.pageY);
+            const touch = e.changedTouches.item(i);
+            if (touch) {
+                e.preventDefault();
+                this.context.addTouchResponder(this);
+                this.onTouchDown(touch.identifier, touch.pageX, touch.pageY);
+            }
         }
     }
 }

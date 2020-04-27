@@ -106,7 +106,7 @@ export class Game extends GameBase implements IGame {
 
         // if the player clicks the top card on the tableaux, reveal it:
         for (const pile of this.tableaux) {
-            if (pile.peek() == card && !card.faceUp) {
+            if (pile.peek() === card && !card.faceUp) {
                 card.flip(true);
                 yield* this.doAutoMoves_();
                 return;
@@ -261,7 +261,7 @@ export class Game extends GameBase implements IGame {
             if (this.options.autoMoveToFoundation > 0) {
                 let foundationMin = 999;
                 for (const pile of this.foundations) {
-                    let card = pile.peek();
+                    const card = pile.peek();
                     if (card) {
                         foundationMin = Math.min(foundationMin, this.getCardValue_(card));
                     } else{
@@ -270,7 +270,7 @@ export class Game extends GameBase implements IGame {
                 }
 
                 for (const pile of this.autoMoveSources_) {
-                    let card = pile.peek();
+                    const card = pile.peek();
                     if (card && card.faceUp && this.getCardValue_(card) <= foundationMin + this.options.autoMoveToFoundation) {
                         for (const foundation of this.foundations) {
                             if (this.isFoundationDrop(card, foundation)) {
@@ -284,7 +284,7 @@ export class Game extends GameBase implements IGame {
             }
 
             if (this.options.autoPlayStock) {
-                let card = this.stock.peek();
+                const card = this.stock.peek();
                 if (card && this.waste.length === 0) {
                     yield DelayHint.OneByOne;
                     this.waste.push(card);

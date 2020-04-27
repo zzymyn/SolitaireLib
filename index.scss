@@ -43,7 +43,23 @@ $suits: (
     "s4c2": "C",
 );
 
-$cardStyle: "bridge3-wider-modern-qr";
+@mixin cardFaces($cardStyle) {
+    .pile.showFrame {
+        background-image: url("Images/Cards/#{$cardStyle}/00.svg");
+    }
+
+    .card .cardBack {
+        background-image: url("Images/Cards/#{$cardStyle}/1B.svg");
+    }
+
+    @each $suit-key, $suit-value in $suits {
+        @each $rank-key, $rank-value in $ranks {
+            .card.#{$suit-key}#{$rank-key} .cardFront {
+                background-image: url("Images/Cards/#{$cardStyle}/#{$rank-value}#{$suit-value}.svg");
+            }
+        }
+    }
+}
 
 .pile {
     position: fixed;
@@ -53,7 +69,6 @@ $cardStyle: "bridge3-wider-modern-qr";
 }
 
 .pile.showFrame {
-    background-image: url("Images/Cards/#{$cardStyle}/00.svg");
     background-position: center;
     background-repeat: no-repeat;
     background-size: 100% 100%;
@@ -110,18 +125,12 @@ $cardStyle: "bridge3-wider-modern-qr";
     image-rendering: optimizeQuality;
 }
 
-.card .cardBack {
-    background-image: url("Images/Cards/#{$cardStyle}/1B.svg");
-}
-
 .card .cardFront {
     transform: rotateY(180deg);
 }
 
-@each $suit-key, $suit-value in $suits {
-    @each $rank-key, $rank-value in $ranks {
-        .card.#{$suit-key}#{$rank-key} .cardFront {
-            background-image: url("Images/Cards/#{$cardStyle}/#{$rank-value}#{$suit-value}.svg");
-        }
-    }
+@include cardFaces("bridge3-wider-modern-qr");
+
+@media screen and (max-width: 600px), screen and (max-height: 600px) {
+    @include cardFaces("bridge3-plain-super-qr");
 }
