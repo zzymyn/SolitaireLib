@@ -30,7 +30,7 @@ export class Game extends GameBase implements IGame {
         for (let y = 0; y < PYRAMID_SIZE; ++y) {
             this.pyramid.push([]);
             for (let x = 0; x <= y; ++x) {
-                let pile = new Pile(this);
+                const pile = new Pile(this);
                 this.pyramid[y].push(pile);
                 this.pyramidCoords.set(pile, { x, y });
                 this.piles.push(pile);
@@ -53,11 +53,11 @@ export class Game extends GameBase implements IGame {
         }
 
         for (let pileIndex = this.piles.length; pileIndex-- > 0;) {
-            let pile = this.piles[pileIndex];
+            const pile = this.piles[pileIndex];
             if (pile === this.stock)
                 continue;
             for (let cardIndex = pile.length; cardIndex-- > 0;) {
-                let card = pile.at(cardIndex);
+                const card = pile.at(cardIndex);
                 card.flip(false);
                 this.stock.push(card);
             }
@@ -74,7 +74,7 @@ export class Game extends GameBase implements IGame {
 
         for (const row of this.pyramid) {
             for (const pile of row) {
-                let card = this.stock.peek();
+                const card = this.stock.peek();
                 if (card) {
                     pile.push(card);
                     card.flip(true);
@@ -114,12 +114,12 @@ export class Game extends GameBase implements IGame {
         if (pile === this.stock && this.stock.length === 0 && this.waste.length > 0 && this.restocks < this.options.restocksAllowed) {
             this.restocks++;
             for (let i = this.waste.length; i-- > 0;) {
-                let card = this.waste.at(i);
+                const card = this.waste.at(i);
                 card.flip(false);
             }
             yield DelayHint.OneByOne;
             for (let i = this.waste.length; i-- > 0;) {
-                let card = this.waste.at(i);
+                const card = this.waste.at(i);
                 this.stock.push(card);
             }
 
@@ -161,13 +161,13 @@ export class Game extends GameBase implements IGame {
             return true;
 
         if (card.pile) {
-            let coords = this.pyramidCoords.get(card.pile);
+            const coords = this.pyramidCoords.get(card.pile);
             if (coords) {
-                let nextRow = this.pyramid[coords.y + 1];
+                const nextRow = this.pyramid[coords.y + 1];
                 if (!nextRow)
                     return true;
-                let block0 = nextRow[coords.x];
-                let block1 = nextRow[coords.x + 1];
+                const block0 = nextRow[coords.x];
+                const block1 = nextRow[coords.x + 1];
                 return block0.length == 0 && block1.length == 0;
             }
         }
@@ -180,7 +180,7 @@ export class Game extends GameBase implements IGame {
             return false;
         if (!this.isFree(card))
             return false;
-        let otherCard = pile.peek();
+        const otherCard = pile.peek();
         if (!otherCard)
             return false;
         if (!this.isFree(otherCard))
@@ -212,7 +212,7 @@ export class Game extends GameBase implements IGame {
         mainLoop: while (true) {
             if (this.options.autoPlayKings) {
                 {
-                    let card = this.stock.peek();
+                    const card = this.stock.peek();
                     if (card && this.isFree(card) && this.getCardValue(card) == 13) {
                         yield DelayHint.OneByOne;
                         this.foundation.push(card);
@@ -220,7 +220,7 @@ export class Game extends GameBase implements IGame {
                     }
                 }
                 {
-                    let card = this.waste.peek();
+                    const card = this.waste.peek();
                     if (card && this.isFree(card) && this.getCardValue(card) == 13) {
                         yield DelayHint.OneByOne;
                         this.foundation.push(card);
@@ -229,7 +229,7 @@ export class Game extends GameBase implements IGame {
                 }
                 for (const row of this.pyramid) {
                     for (const pile of row) {
-                        let card = pile.peek();
+                        const card = pile.peek();
                         if (card && this.isFree(card) && this.getCardValue(card) == 13) {
                             yield DelayHint.OneByOne;
                             this.foundation.push(card);
@@ -239,7 +239,7 @@ export class Game extends GameBase implements IGame {
                 }
             }
             if (this.options.autoRevealStockTop) {
-                let card = this.stock.peek();
+                const card = this.stock.peek();
                 if (card && card.faceUp === false) {
                     yield DelayHint.OneByOne;
                     card.flip(true);

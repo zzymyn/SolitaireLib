@@ -25,13 +25,13 @@ export class Game extends GameBase implements IGame {
         this.piles.push(this.stock);
         this.piles.push(this.waste);
         for (let i = 0; i < 4; ++i) {
-            let pile = new Pile(this);
+            const pile = new Pile(this);
             this.foundations.push(pile);
             this.piles.push(pile);
         }
 
         for (let i = 0; i < TABLEAUX_COUNT; ++i) {
-            let pile = new Pile(this);
+            const pile = new Pile(this);
             this.tableaux.push(pile);
             this.piles.push(pile);
         }
@@ -52,11 +52,11 @@ export class Game extends GameBase implements IGame {
         }
 
         for (let pileIndex = this.piles.length; pileIndex-- > 0;) {
-            let pile = this.piles[pileIndex];
+            const pile = this.piles[pileIndex];
             if (pile === this.stock)
                 continue;
             for (let cardIndex = pile.length; cardIndex-- > 0;) {
-                let card = pile.at(cardIndex);
+                const card = pile.at(cardIndex);
                 card.flip(false);
                 this.stock.push(card);
             }
@@ -72,9 +72,9 @@ export class Game extends GameBase implements IGame {
         yield DelayHint.Settle;
 
         for (let i = 0; i < this.tableaux.length; ++i) {
-            let pile = this.tableaux[i];
+            const pile = this.tableaux[i];
             for (let j = 0; j <= i; ++j) {
-                let card = this.stock.peek();
+                const card = this.stock.peek();
                 if (card) {
                     pile.push(card);
                     yield DelayHint.Quick;
@@ -104,12 +104,12 @@ export class Game extends GameBase implements IGame {
         if (pile === this.stock && this.stock.length === 0 && this.waste.length > 0 && this.restocks < this.options.restocksAllowed) {
             this.restocks++;
             for (let i = this.waste.length; i-- > 0;) {
-                let card = this.waste.at(i);
+                const card = this.waste.at(i);
                 card.flip(false);
             }
             yield DelayHint.OneByOne;
             for (let i = this.waste.length; i-- > 0;) {
-                let card = this.waste.at(i);
+                const card = this.waste.at(i);
                 this.stock.push(card);
             }
             yield DelayHint.OneByOne;
@@ -141,7 +141,7 @@ export class Game extends GameBase implements IGame {
 
     protected *dropCard_(card: Card, pile: Pile) {
         if (this.isTableauxDrop_(card, pile)) {
-            var cards = card.pile.slice(card.pileIndex);
+            const cards = card.pile.slice(card.pileIndex);
             for (const card of cards) {
                 pile.push(card);
             }
@@ -157,7 +157,7 @@ export class Game extends GameBase implements IGame {
             return false;
 
         if (this.tableaux.indexOf(pile) >= 0) {
-            let topCard = pile.peek();
+            const topCard = pile.peek();
 
             if (topCard) {
                 if (topCard.rank == this.getNextRank(card) && topCard.colour !== card.colour) {
@@ -178,7 +178,7 @@ export class Game extends GameBase implements IGame {
             return false;
 
         if (this.foundations.indexOf(pile) >= 0) {
-            let topCard = pile.peek();
+            const topCard = pile.peek();
 
             if (topCard) {
                 if (this.getNextRank(topCard) == card.rank && topCard.suit === card.suit) {
@@ -216,7 +216,7 @@ export class Game extends GameBase implements IGame {
     private *doAutoMoves_() {
         mainLoop: while (true) {
             for (const tableau of this.tableaux) {
-                let card = tableau.peek();
+                const card = tableau.peek();
                 if (card && !card.faceUp) {
                     yield DelayHint.Quick;
                     card.flip(true);

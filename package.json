@@ -7,7 +7,8 @@
     "dev": "parcel index.html -d bin-dev",
     "build": "rimraf bin && parcel build index.html --public-url \"./\" -d bin",
     "tswatch": "tsc --watch --noEmit --project tsconfig.json",
-    "tslint": "tslint --project ."
+    "tslint": "tslint --project .",
+    "tslintfix": "tslint --project . --fix"
   },
   "keywords": [],
   "author": "",

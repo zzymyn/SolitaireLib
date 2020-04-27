@@ -31,7 +31,7 @@ export abstract class GamePresenterBase {
     private readonly pileViewtoPile_ = new Map<PileView, IPile>();
 
     protected createPileView_(pile: IPile) {
-        let pileView = new PileView(this.htmlRoot_);
+        const pileView = new PileView(this.htmlRoot_);
         this.pileViews_.push(pileView);
         this.pileToPileView_.set(pile, pileView);
         this.pileViewtoPile_.set(pileView, pile);
@@ -45,13 +45,13 @@ export abstract class GamePresenterBase {
     }
 
     private getPile_(pileView: PileView) {
-        let pile = this.pileViewtoPile_.get(pileView);
+        const pile = this.pileViewtoPile_.get(pileView);
         if (!pile) Debug.error();
         return pile;
     }
 
     private getPileView_(pile: IPile) {
-        let pileView = this.pileToPileView_.get(pile);
+        const pileView = this.pileToPileView_.get(pile);
         if (!pileView) Debug.error();
         return pileView;
     }
@@ -62,8 +62,8 @@ export abstract class GamePresenterBase {
         let zIndex: number | undefined;
 
         for (let i = pile.length; i-- > 0;) {
-            let card = pile.at(i);
-            let cardView = this.getCardView_(card);
+            const card = pile.at(i);
+            const cardView = this.getCardView_(card);
 
             if (zIndex) {
                 cardView.zIndex = --zIndex;
@@ -71,7 +71,7 @@ export abstract class GamePresenterBase {
                 zIndex = cardView.zIndex;
             }
 
-            var rect = pileView.rect;
+            const rect = pileView.rect;
             rect.x += pileView.fanX * i;
             rect.y += pileView.fanY * i;
             cardView.rect = rect;
@@ -83,7 +83,7 @@ export abstract class GamePresenterBase {
     private readonly cardViewtoCard_ = new Map<CardView, ICard>();
 
     protected createCardView_(card: ICard) {
-        let cardView = new CardView(this.htmlRoot_, card.suit, card.colour, card.rank);
+        const cardView = new CardView(this.htmlRoot_, card.suit, card.colour, card.rank);
         this.cardViews_.push(cardView);
         this.cardToCardView_.set(card, cardView);
         this.cardViewtoCard_.set(cardView, card);
@@ -107,20 +107,20 @@ export abstract class GamePresenterBase {
     }
 
     private getCard_(cardView: CardView) {
-        let card = this.cardViewtoCard_.get(cardView);
+        const card = this.cardViewtoCard_.get(cardView);
         if (!card) Debug.error();
         return card;
     }
 
     private getCardView_(card: ICard) {
-        let cardView = this.cardToCardView_.get(card);
+        const cardView = this.cardToCardView_.get(card);
         if (!cardView) Debug.error();
         return cardView;
     }
 
     private onCardPileChanged(cardView: CardView, card: ICard) {
-        let pileView = this.getPileView_(card.pile);
-        var rect = pileView.rect;
+        const pileView = this.getPileView_(card.pile);
+        const rect = pileView.rect;
         rect.x += pileView.fanX * card.pileIndex;
         rect.y += pileView.fanY * card.pileIndex;
         cardView.rect = rect;
@@ -135,34 +135,34 @@ export abstract class GamePresenterBase {
     }
 
     private cardDragStart(cardView: CardView, card: ICard) {
-        let { canDrag, alsoDrag } = this.gameBase_.canDrag(card);
+        const { canDrag, alsoDrag } = this.gameBase_.canDrag(card);
 
         if (canDrag) {
             cardView.zIndex = this.getNextZIndex();
         }
 
-        let alsoDragViews: CardView[] = [];
+        const alsoDragViews: CardView[] = [];
         for (const card of alsoDrag) {
-            let cardView = this.getCardView_(card);
+            const cardView = this.getCardView_(card);
             alsoDragViews.push(cardView);
             if (canDrag) {
                 cardView.zIndex = this.getNextZIndex();
             }
         }
 
-        return { canDrag: canDrag, alsoDrag: alsoDragViews };
+        return { canDrag, alsoDrag: alsoDragViews };
     }
 
     private cardDragMoved(cardView: CardView, card: ICard, rect: Rect) {
-        let pile = this.getBestDragPile(card, rect);
+        const pile = this.getBestDragPile(card, rect);
         if (pile) {
-            let card = pile.peek();
+            const card = pile.peek();
             if (card) {
-                let cardView = this.getCardView_(card);
+                const cardView = this.getCardView_(card);
                 this.setDropPreview_(cardView);
                 return;
             } else {
-                let pileView = this.getPileView_(pile);
+                const pileView = this.getPileView_(pile);
                 this.setDropPreview_(pileView);
                 return;
             }
@@ -173,7 +173,7 @@ export abstract class GamePresenterBase {
 
     private cardDragEnd(cardView: CardView, card: ICard, rect: Rect, cancelled: boolean) {
         if (!cancelled) {
-            let bestPile = this.getBestDragPile(card, rect);
+            const bestPile = this.getBestDragPile(card, rect);
             if (bestPile) {
                 this.addOperation_(() => this.gameBase_.dropCard(card, bestPile!));
             }
@@ -186,9 +186,9 @@ export abstract class GamePresenterBase {
         let bestPileOverlap = 0;
 
         for (const pileView of this.pileViews_) {
-            let pile = this.getPile_(pileView);
-            let pileHitbox = pileView.hitbox;
-            let overlap = rect.overlaps(pileHitbox);
+            const pile = this.getPile_(pileView);
+            const pileHitbox = pileView.hitbox;
+            const overlap = rect.overlaps(pileHitbox);
             if (overlap <= 0)
                 continue;
 
@@ -217,7 +217,7 @@ export abstract class GamePresenterBase {
     private nextZIndex_ = 1000;
     private nextZIndexInc_ = 1;
     private getNextZIndex() {
-        let r = this.nextZIndex_;
+        const r = this.nextZIndex_;
         this.nextZIndex_ += this.nextZIndexInc_;
         return r;
     }
@@ -279,7 +279,7 @@ export abstract class GamePresenterBase {
             this.operations_.push(operation);
 
             while (this.operations_.length > 0) {
-                let op = this.operations_[0];
+                const op = this.operations_[0];
                 for (const delay of op()) {
                     await this.waitForDelay_(delay);
                 }

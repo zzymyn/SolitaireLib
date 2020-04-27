@@ -98,7 +98,7 @@ export class CardView extends TemplatedElementView {
     }
 
     private startDragging_() {
-        let { canDrag, alsoDrag } = this.dragStart();
+        const { canDrag, alsoDrag } = this.dragStart();
 
         if (canDrag) {
             this.dragging_ = true;
@@ -147,9 +147,9 @@ export class CardView extends TemplatedElementView {
         let dy = e.pageY - this.mouseStartY_;
 
         if (this.mouseInDeadZone_) {
-            let dLenSq = dx * dx + dy * dy;
+            const dLenSq = dx * dx + dy * dy;
             if (dLenSq > deadZoneSize * deadZoneSize) {
-                let dlen = Math.sqrt(dLenSq);
+                const dlen = Math.sqrt(dLenSq);
                 dx /= dlen;
                 dy /= dlen;
                 this.mouseStartX_ += deadZoneSize * dx;
@@ -162,8 +162,8 @@ export class CardView extends TemplatedElementView {
             this.mouseStartX_ = e.pageX;
             this.mouseStartY_ = e.pageY;
 
-            var style = getComputedStyle(document.body);
-            var pxSize = 1.0 / parseFloat(style.fontSize);
+            const style = getComputedStyle(document.body);
+            const pxSize = 1.0 / parseFloat(style.fontSize);
 
             this.dragRect_.x += pxSize * dx;
             this.dragRect_.y += pxSize * dy;

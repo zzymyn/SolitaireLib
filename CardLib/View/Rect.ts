@@ -15,25 +15,25 @@ export class Rect {
     public get yMax() { return this.y + 0.5 * this.sizeY; }
 
     public set xMin(xMin: number) {
-        let xMax = this.xMax;
+        const xMax = this.xMax;
         this.sizeX = xMax - xMin;
         this.x = 0.5 * xMin + 0.5 * xMax;
     }
 
     public set xMax(xMax: number) {
-        let xMin = this.xMin;
+        const xMin = this.xMin;
         this.sizeX = xMax - xMin;
         this.x = 0.5 * xMin + 0.5 * xMax;
     }
 
     public set yMin(yMin: number) {
-        let yMax = this.yMax;
+        const yMax = this.yMax;
         this.sizeX = yMax - yMin;
         this.y = 0.5 * yMin + 0.5 * yMax;
     }
 
     public set yMax(yMax: number) {
-        let yMin = this.yMin;
+        const yMin = this.yMin;
         this.sizeX = yMax - yMin;
         this.y = 0.5 * yMin + 0.5 * yMax;
     }
@@ -54,10 +54,10 @@ export class Rect {
     }
 
     public overlaps(o: Rect) {
-        let overlapX = Math.min(this.xMax, o.xMax) - Math.max(this.xMin, o.xMin);
+        const overlapX = Math.min(this.xMax, o.xMax) - Math.max(this.xMin, o.xMin);
         if (overlapX <= 0)
             return 0;
-        let overlapY = Math.min(this.yMax, o.yMax) - Math.max(this.yMin, o.yMin);
+        const overlapY = Math.min(this.yMax, o.yMax) - Math.max(this.yMin, o.yMin);
         if (overlapY <= 0)
             return 0;
         return overlapX * overlapY;

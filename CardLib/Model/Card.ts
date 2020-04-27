@@ -63,10 +63,10 @@ export class Card implements ICard {
         if (this.faceUp == faceUp)
             return;
 
-        let oldFaceUp = this.faceUp;
+        const oldFaceUp = this.faceUp;
 
-        let redo = () => this.flip_(faceUp);
-        let undo = () => this.flip_(oldFaceUp);
+        const redo = () => this.flip_(faceUp);
+        const undo = () => this.flip_(oldFaceUp);
         this.game.addUndoableOperation(redo, undo);
 
         return redo();

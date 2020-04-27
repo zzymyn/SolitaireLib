@@ -20,7 +20,7 @@ export abstract class GameBase implements IGameBase {
     private currentOperation_: UndoableOperation | null = null;
 
     public *restart(seed: number) {
-        let rng = prand.mersenne(seed);
+        const rng = prand.mersenne(seed);
         this.undoStack_ = [];
         this.redoStack_ = [];
         this.currentOperation_ = null;
@@ -28,7 +28,7 @@ export abstract class GameBase implements IGameBase {
     }
 
     public *undo() {
-        let undoOp = this.undoStack_.pop();
+        const undoOp = this.undoStack_.pop();
         if (undoOp) {
             undoOp.undo();
             this.redoStack_.push(undoOp);
@@ -36,7 +36,7 @@ export abstract class GameBase implements IGameBase {
     }
 
     public *redo() {
-        let redoOp = this.redoStack_.pop();
+        const redoOp = this.redoStack_.pop();
         if (redoOp) {
             redoOp.redo();
             this.undoStack_.push(redoOp);

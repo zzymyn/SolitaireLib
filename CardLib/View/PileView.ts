@@ -18,9 +18,9 @@ export class PileView extends TemplatedElementView {
     }
 
     public get hitbox() {
-        let rect = new Rect().set(this.rect_);
-        var dx = Math.max(0, this.cardCount - 1) * this.fanX;
-        var dy = Math.max(0, this.cardCount - 1) * this.fanY;
+        const rect = new Rect().set(this.rect_);
+        const dx = Math.max(0, this.cardCount - 1) * this.fanX;
+        const dy = Math.max(0, this.cardCount - 1) * this.fanY;
         rect.x += 0.5 * dx;
         rect.y += 0.5 * dy;
         rect.sizeX += dx;

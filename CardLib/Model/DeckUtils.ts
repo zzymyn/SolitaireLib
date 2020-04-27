@@ -9,10 +9,10 @@ const s52Ranks: Rank[] = [Rank.Ace, Rank.Two, Rank.Three, Rank.Four, Rank.Five, 
 
 export class DeckUtils {
     public static createStandard52Deck(pile: Pile): Card[] {
-        let deck: Card[] = [];
+        const deck: Card[] = [];
         for (const [suit, colour] of s52SuitColours) {
             for (const rank of s52Ranks) {
-                let card = pile.createCard(suit, colour, rank);
+                const card = pile.createCard(suit, colour, rank);
                 deck.push(card);
             }
         }

@@ -22,7 +22,7 @@ export class GamePresenter extends GamePresenterBase {
 
         // create piles:
         {
-            let pileView = this.createPileView_(game.stock);
+            const pileView = this.createPileView_(game.stock);
             pileView.rect = new Rect(sizeX, sizeY,
                 (0 - 0.5 * (game.pyramid.length - 1)) * (sizeX + pyramidMarginX),
                 (0 - 0.5 * (game.pyramid.length - 1)) * (sizeY + pyramidMarginY));
@@ -30,7 +30,7 @@ export class GamePresenter extends GamePresenterBase {
             this.stockPile_ = pileView;
         }
         {
-            let pileView = this.createPileView_(game.waste);
+            const pileView = this.createPileView_(game.waste);
             pileView.rect = new Rect(sizeX, sizeY,
                 (1 - 0.5 * (game.pyramid.length - 1)) * (sizeX + pyramidMarginX),
                 (0 - 0.5 * (game.pyramid.length - 1)) * (sizeY + pyramidMarginY));
@@ -39,7 +39,7 @@ export class GamePresenter extends GamePresenterBase {
             this.wastePile_ = pileView;
         }
         {
-            let pileView = this.createPileView_(game.foundation);
+            const pileView = this.createPileView_(game.foundation);
             pileView.rect = new Rect(sizeX, sizeY,
                 (game.pyramid.length - 1 - 0.5 * (game.pyramid.length - 1)) * (sizeX + pyramidMarginX),
                 (0 - 0.5 * (game.pyramid.length - 1)) * (sizeY + pyramidMarginY));
@@ -49,10 +49,10 @@ export class GamePresenter extends GamePresenterBase {
         }
         for (let y = 0; y < game.pyramid.length; ++y) {
             this.pyramidPiles_.push([]);
-            let row = game.pyramid[y];
+            const row = game.pyramid[y];
             for (let x = 0; x < row.length; ++x) {
-                let pile = row[x];
-                let pileView = this.createPileView_(pile);
+                const pile = row[x];
+                const pileView = this.createPileView_(pile);
                 this.pyramidPiles_[y].push(pileView);
 
                 pileView.rect = new Rect(

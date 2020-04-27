@@ -25,7 +25,7 @@ export class Pile implements IPile {
     }
 
     public createCard(suit: Suit, colour: Colour, rank: Rank) {
-        let card = new Card(this.game, suit, colour, rank, this, this.length - 1);
+        const card = new Card(this.game, suit, colour, rank, this, this.length - 1);
         this.cards_.push(card);
         this.cardsChanged();
         return card;
@@ -33,7 +33,7 @@ export class Pile implements IPile {
 
     public at(i: number) {
         Debug.assert(i >= 0 && i < this.cards_.length);
-        let card = this.cards_[i];
+        const card = this.cards_[i];
         Debug.assert(card.pile == this);
         return card;
     }
@@ -68,7 +68,7 @@ export class Pile implements IPile {
         for (let i = 0; i < this.cards_.length; ++i) {
             let swapIndex: number;
             [swapIndex, rng] = prand.uniformIntDistribution(i, this.cards_.length - 1, rng);
-            let tmp = this.cards_[i];
+            const tmp = this.cards_[i];
             this.cards_[i] = this.cards_[swapIndex];
             this.cards_[swapIndex] = tmp;
         }
@@ -91,11 +91,11 @@ export class Pile implements IPile {
     }
 
     public insert(index: number, card: Card) {
-        let oldPile = card.pile;
-        let oldIndex = card.pileIndex;
+        const oldPile = card.pile;
+        const oldIndex = card.pileIndex;
 
-        let redo = () => this.insert_(index, card);
-        let undo = () => oldPile.insert_(oldIndex, card);
+        const redo = () => this.insert_(index, card);
+        const undo = () => oldPile.insert_(oldIndex, card);
         this.game.addUndoableOperation(redo, undo);
         return redo();
     }
@@ -122,7 +122,7 @@ export class Pile implements IPile {
     private remove(card: Card) {
         Debug.assert(card.pile === this);
 
-        let index = card.pileIndex;
+        const index = card.pileIndex;
 
         Debug.assert(this.at(index) == card);
 
