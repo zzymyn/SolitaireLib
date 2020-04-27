@@ -8,17 +8,13 @@ export class Rect {
 
     public get xMin() { return this.x - 0.5 * this.sizeX; }
 
-    public get xMax() { return this.x + 0.5 * this.sizeX; }
-
-    public get yMin() { return this.y - 0.5 * this.sizeY; }
-
-    public get yMax() { return this.y + 0.5 * this.sizeY; }
-
     public set xMin(xMin: number) {
         const xMax = this.xMax;
         this.sizeX = xMax - xMin;
         this.x = 0.5 * xMin + 0.5 * xMax;
     }
+
+    public get xMax() { return this.x + 0.5 * this.sizeX; }
 
     public set xMax(xMax: number) {
         const xMin = this.xMin;
@@ -26,11 +22,15 @@ export class Rect {
         this.x = 0.5 * xMin + 0.5 * xMax;
     }
 
+    public get yMin() { return this.y - 0.5 * this.sizeY; }
+
     public set yMin(yMin: number) {
         const yMax = this.yMax;
         this.sizeX = yMax - yMin;
         this.y = 0.5 * yMin + 0.5 * yMax;
     }
+
+    public get yMax() { return this.y + 0.5 * this.sizeY; }
 
     public set yMax(yMax: number) {
         const yMin = this.yMin;

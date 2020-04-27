@@ -135,31 +135,31 @@ export abstract class GamePresenterBase {
     }
 
     private cardDragStart(cardView: CardView, card: ICard) {
-        const { canDrag, alsoDrag } = this.gameBase_.canDrag(card);
+        const { canDrag, extraCards: extraCards } = this.gameBase_.canDrag(card);
 
         if (canDrag) {
             cardView.zIndex = this.getNextZIndex();
         }
 
-        const alsoDragViews: CardView[] = [];
-        for (const card of alsoDrag) {
-            const cardView = this.getCardView_(card);
-            alsoDragViews.push(cardView);
+        const extraCardViews: CardView[] = [];
+        for (const extraCard of extraCards) {
+            const extraCardView = this.getCardView_(extraCard);
+            extraCardViews.push(extraCardView);
             if (canDrag) {
-                cardView.zIndex = this.getNextZIndex();
+                extraCardView.zIndex = this.getNextZIndex();
             }
         }
 
-        return { canDrag, alsoDrag: alsoDragViews };
+        return { canDrag, extraCardViews };
     }
 
     private cardDragMoved(cardView: CardView, card: ICard, rect: Rect) {
         const pile = this.getBestDragPile(card, rect);
         if (pile) {
-            const card = pile.peek();
-            if (card) {
-                const cardView = this.getCardView_(card);
-                this.setDropPreview_(cardView);
+            const topCard = pile.peek();
+            if (topCard) {
+                const topCardView = this.getCardView_(topCard);
+                this.setDropPreview_(topCardView);
                 return;
             } else {
                 const pileView = this.getPileView_(pile);
@@ -205,7 +205,7 @@ export abstract class GamePresenterBase {
 
     private dropPreview_: DropPreview | null = null;
     private setDropPreview_(view: DropPreview | null) {
-        if (view != this.dropPreview_) {
+        if (view !== this.dropPreview_) {
             if (this.dropPreview_)
                 this.dropPreview_.dropPreview = false;
             this.dropPreview_ = view;
@@ -274,7 +274,7 @@ export abstract class GamePresenterBase {
 
     private readonly operations_: (() => Generator<DelayHint, void>)[] = [];
     private async addOperation_(operation: () => Generator<DelayHint, void>) {
-        if (this.operations_.length == 0) {
+        if (this.operations_.length === 0) {
             // nothing else is already running, so start now:
             this.operations_.push(operation);
 

@@ -37,9 +37,9 @@ export interface IGameBase {
      * @param card the card being dragged
      * @returns an object containing keys:
      *  * `canDrag`: true on success
-     *  * `alsoDrag`: a list of cards that should be dragged along with the picked card
+     *  * `extraCards`: a list of cards that should be dragged along with the picked card
      */
-    canDrag(card: ICard): { canDrag: boolean; alsoDrag: ICard[]; };
+    canDrag(card: ICard): { canDrag: boolean; extraCards: ICard[]; };
 
     /** Will something happen if this card is dropped on this pile? */
     previewDrop(card: ICard, pile: IPile): boolean;

@@ -83,7 +83,7 @@ export abstract class GameBase implements IGameBase {
         }
     }
 
-    public canDrag(card: ICard): { canDrag: boolean; alsoDrag: ICard[]; } {
+    public canDrag(card: ICard): { canDrag: boolean; extraCards: ICard[]; } {
         if (!(card instanceof Card)) Debug.error();
         Debug.assert(this.cards.indexOf(card) >= 0);
         return this.canDrag_(card);
@@ -113,7 +113,7 @@ export abstract class GameBase implements IGameBase {
     protected abstract cardSecondary_(card: Card): Generator<DelayHint, void>;
     protected abstract pilePrimary_(pile: Pile): Generator<DelayHint, void>;
     protected abstract pileSecondary_(pile: Pile): Generator<DelayHint, void>;
-    protected abstract canDrag_(card: Card): { canDrag: boolean; alsoDrag: Card[]; };
+    protected abstract canDrag_(card: Card): { canDrag: boolean; extraCards: Card[]; };
     protected abstract previewDrop_(card: Card, pile: Pile): boolean;
     protected abstract dropCard_(card: Card, pile: Pile): Generator<DelayHint, void>;
 

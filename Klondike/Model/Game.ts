@@ -1,4 +1,5 @@
 import prand from 'pure-rand';
+import { Debug } from '~CardLib/Debug';
 import { Card } from '~CardLib/Model/Card';
 import { DeckUtils } from '~CardLib/Model/DeckUtils';
 import { DelayHint } from '~CardLib/Model/DelayHint';
@@ -16,6 +17,8 @@ export class Game extends GameBase implements IGame {
     public readonly waste = new Pile(this);
     public readonly foundations: Pile[] = [];
     public readonly tableaux: Pile[] = [];
+    public readonly dragSingleSources_: Pile[] = [];
+    public readonly autoMoveSources_: Pile[] = [];
     private restocks = 0;
 
     constructor(options: GameOptions) {
@@ -24,15 +27,20 @@ export class Game extends GameBase implements IGame {
         this.options = options;
         this.piles.push(this.stock);
         this.piles.push(this.waste);
+        this.dragSingleSources_.push(this.waste);
+        this.autoMoveSources_.push(this.waste);
+
         for (let i = 0; i < 4; ++i) {
             const pile = new Pile(this);
             this.foundations.push(pile);
+            this.dragSingleSources_.push(pile);
             this.piles.push(pile);
         }
 
         for (let i = 0; i < TABLEAUX_COUNT; ++i) {
             const pile = new Pile(this);
             this.tableaux.push(pile);
+            this.autoMoveSources_.push(pile);
             this.piles.push(pile);
         }
 
@@ -95,12 +103,34 @@ export class Game extends GameBase implements IGame {
             yield* this.doAutoMoves_();
             return;
         }
+
+        // if the player clicks the top card on the tableaux, reveal it:
+        for (const pile of this.tableaux) {
+            if (pile.peek() == card && !card.faceUp) {
+                card.flip(true);
+                yield* this.doAutoMoves_();
+                return;
+            }
+        }
     }
 
     protected *cardSecondary_(card: Card) {
+        // if the player double clicks a card, see if it can be auto-moved to the foundation:
+        for (const pile of this.autoMoveSources_) {
+            if (pile.peek() === card && card.faceUp) {
+                for (const foundation of this.foundations) {
+                    if (this.isFoundationDrop(card, foundation)) {
+                        foundation.push(card);
+                        yield* this.doAutoMoves_();
+                        return;
+                    }
+                }
+            }
+        }
     }
 
     protected *pilePrimary_(pile: Pile) {
+        // if the player clicks the stock and it has been depleted, move the waste back to the stock:
         if (pile === this.stock && this.stock.length === 0 && this.waste.length > 0 && this.restocks < this.options.restocksAllowed) {
             this.restocks++;
             for (let i = this.waste.length; i-- > 0;) {
@@ -121,18 +151,20 @@ export class Game extends GameBase implements IGame {
     protected *pileSecondary_(pile: Pile) {
     }
 
-    protected canDrag_(card: Card): { canDrag: boolean; alsoDrag: Card[]; } {
-        if (this.waste.peek() === card) {
-            return { canDrag: true, alsoDrag: [] };
+    protected canDrag_(card: Card): { canDrag: boolean; extraCards: Card[]; } {
+        for (const pile of this.dragSingleSources_) {
+            if (pile.peek() === card) {
+                return { canDrag: true, extraCards: [] };
+            }
         }
 
         for (const pile of this.tableaux) {
             if (card.pile === pile && card.faceUp) {
-                return { canDrag: true, alsoDrag: pile.slice(card.pileIndex + 1) };
+                return { canDrag: true, extraCards: pile.slice(card.pileIndex + 1) };
             }
         }
 
-        return { canDrag: false, alsoDrag: [] };
+        return { canDrag: false, extraCards: [] };
     }
 
     protected previewDrop_(card: Card, pile: Pile): boolean {
@@ -141,9 +173,9 @@ export class Game extends GameBase implements IGame {
 
     protected *dropCard_(card: Card, pile: Pile) {
         if (this.isTableauxDrop_(card, pile)) {
-            const cards = card.pile.slice(card.pileIndex);
-            for (const card of cards) {
-                pile.push(card);
+            const movingCards = card.pile.slice(card.pileIndex);
+            for (const movingCard of movingCards) {
+                pile.push(movingCard);
             }
             yield* this.doAutoMoves_();
         } else if (this.isFoundationDrop(card, pile)) {
@@ -160,11 +192,11 @@ export class Game extends GameBase implements IGame {
             const topCard = pile.peek();
 
             if (topCard) {
-                if (topCard.rank == this.getNextRank(card) && topCard.colour !== card.colour) {
+                if (this.getCardValue_(topCard) === this.getCardValue_(card) + 1 && topCard.colour !== card.colour) {
                     return true;
                 }
             } else {
-                if (card.rank == Rank.King) {
+                if (card.rank === Rank.King) {
                     return true;
                 }
             }
@@ -181,11 +213,11 @@ export class Game extends GameBase implements IGame {
             const topCard = pile.peek();
 
             if (topCard) {
-                if (this.getNextRank(topCard) == card.rank && topCard.suit === card.suit) {
+                if (this.getCardValue_(topCard) + 1 === this.getCardValue_(card) && topCard.suit === card.suit) {
                     return true;
                 }
             } else {
-                if (card.rank == Rank.Ace) {
+                if (card.rank === Rank.Ace) {
                     return true;
                 }
             }
@@ -194,35 +226,73 @@ export class Game extends GameBase implements IGame {
         return false;
     }
 
-    private getNextRank(card: Card) {
+    private getCardValue_(card: Card) {
         switch (card.rank) {
-            case Rank.Ace: return Rank.Two;
-            case Rank.Two: return Rank.Three;
-            case Rank.Three: return Rank.Four;
-            case Rank.Four: return Rank.Five;
-            case Rank.Five: return Rank.Six;
-            case Rank.Six: return Rank.Seven;
-            case Rank.Seven: return Rank.Eight;
-            case Rank.Eight: return Rank.Nine;
-            case Rank.Nine: return Rank.Ten;
-            case Rank.Ten: return Rank.Jack;
-            case Rank.Jack: return Rank.Queen;
-            case Rank.Queen: return Rank.King;
-            case Rank.King: return Rank.None;
-            default: return Rank.None;
+            case Rank.Ace: return 1;
+            case Rank.Two: return 2;
+            case Rank.Three: return 3;
+            case Rank.Four: return 4;
+            case Rank.Five: return 5;
+            case Rank.Six: return 6;
+            case Rank.Seven: return 7;
+            case Rank.Eight: return 8;
+            case Rank.Nine: return 9;
+            case Rank.Ten: return 10;
+            case Rank.Jack: return 11;
+            case Rank.Queen: return 12;
+            case Rank.King: return 13;
+            default: Debug.error();
         }
     }
 
     private *doAutoMoves_() {
         mainLoop: while (true) {
-            for (const tableau of this.tableaux) {
-                const card = tableau.peek();
-                if (card && !card.faceUp) {
-                    yield DelayHint.Quick;
+            if (this.options.autoReveal) {
+                for (const tableau of this.tableaux) {
+                    const card = tableau.peek();
+                    if (card && !card.faceUp) {
+                        yield DelayHint.Quick;
+                        card.flip(true);
+                        continue mainLoop;
+                    }
+                }
+            }
+
+            if (this.options.autoMoveToFoundation) {
+                let foundationMin = 999;
+                for (const pile of this.foundations) {
+                    let card = pile.peek();
+                    if (card) {
+                        foundationMin = Math.min(foundationMin, this.getCardValue_(card));
+                    } else{
+                        foundationMin = Math.min(foundationMin, 0);
+                    }
+                }
+
+                for (const pile of this.autoMoveSources_) {
+                    let card = pile.peek();
+                    if (card && card.faceUp && this.getCardValue_(card) == foundationMin + 1) {
+                        for (const foundation of this.foundations) {
+                            if (this.isFoundationDrop(card, foundation)) {
+                                yield DelayHint.OneByOne;
+                                foundation.push(card);
+                                continue mainLoop;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (this.options.autoPlayStock) {
+                let card = this.stock.peek();
+                if (card && this.waste.length === 0) {
+                    yield DelayHint.OneByOne;
+                    this.waste.push(card);
                     card.flip(true);
                     continue mainLoop;
                 }
             }
+
             break;
         }
     }

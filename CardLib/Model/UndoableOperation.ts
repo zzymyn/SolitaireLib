@@ -16,8 +16,8 @@ export class UndoableOperation {
     }
 
     public redo() {
-        for (let i = 0; i < this.redos_.length; ++i) {
-            this.redos_[i]();
+        for (const redo of this.redos_){
+            redo();
         }
     }
 }

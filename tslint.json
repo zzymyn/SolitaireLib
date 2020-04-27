@@ -1,6 +1,26 @@
 {
+    "$schema": "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/tslint.json",
     "extends": "tslint:recommended",
-
+    "rules": {
+        "new-parens": true,
+        "no-arg": true,
+        "no-bitwise": true,
+        "no-conditional-assignment": true,
+        "no-consecutive-blank-lines": false,
+        "no-console": {
+            "severity": "warning",
+            "options": [
+                "debug",
+                "info",
+                "log",
+                "time",
+                "timeEnd",
+                "trace"
+            ]
+        },
+        "variable-name": false,
+        "no-empty": false
+    },
     "linterOptions": {
         "exclude": [
             ".*/**",

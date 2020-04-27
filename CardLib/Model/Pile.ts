@@ -34,7 +34,7 @@ export class Pile implements IPile {
     public at(i: number) {
         Debug.assert(i >= 0 && i < this.cards_.length);
         const card = this.cards_[i];
-        Debug.assert(card.pile == this);
+        Debug.assert(card.pile === this);
         return card;
     }
 
@@ -103,7 +103,7 @@ export class Pile implements IPile {
     private insert_(index: number, card: Card) {
         Debug.assert(index >= 0 && index <= this.cards_.length);
 
-        if (card.pile == this && index >= card.pileIndex)
+        if (card.pile === this && index >= card.pileIndex)
             index--;
 
         card.pile.remove(card);
@@ -124,7 +124,7 @@ export class Pile implements IPile {
 
         const index = card.pileIndex;
 
-        Debug.assert(this.at(index) == card);
+        Debug.assert(this.at(index) === card);
 
         this.cards_.splice(index, 1);
 

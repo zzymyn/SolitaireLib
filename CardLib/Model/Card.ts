@@ -46,7 +46,7 @@ export class Card implements ICard {
     }
 
     public onPileIndexChanged(newPileIndex: number) {
-        if (this.pileIndex == newPileIndex)
+        if (this.pileIndex === newPileIndex)
             return;
         this.pileIndex = newPileIndex;
 
@@ -60,7 +60,7 @@ export class Card implements ICard {
     }
 
     public flip(faceUp: boolean) {
-        if (this.faceUp == faceUp)
+        if (this.faceUp === faceUp)
             return;
 
         const oldFaceUp = this.faceUp;

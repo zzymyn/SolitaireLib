@@ -9,7 +9,7 @@ const deadZoneSize = 5;
 export class CardView extends TemplatedElementView {
     public click = () => { };
     public dblClick = () => { };
-    public dragStart = () => { return { canDrag: false, alsoDrag: [] as CardView[] }; };
+    public dragStart = () => { return { canDrag: false, extraCardViews: [] as CardView[] }; };
     public dragMoved = (rect: Rect) => { };
     public dragEnd = (rect: Rect, cancelled: boolean) => { };
     private mouseTracking_ = false;
@@ -17,7 +17,7 @@ export class CardView extends TemplatedElementView {
     private mouseStartX_ = 0;
     private mouseStartY_ = 0;
     private dragging_ = false;
-    private alsoDragging_: CardView[] = [];
+    private dragExtraCardViews_: CardView[] = [];
     private readonly dragRect_ = new Rect();
 
     private readonly rect_ = new Rect();
@@ -33,7 +33,7 @@ export class CardView extends TemplatedElementView {
     private zIndex_ = 0;
     public get zIndex() { return this.zIndex_; }
     public set zIndex(zIndex: number) {
-        if (this.zIndex_ == zIndex)
+        if (this.zIndex_ === zIndex)
             return;
         this.zIndex_ = zIndex;
         this.element.style.zIndex = `${zIndex}`;
@@ -42,7 +42,7 @@ export class CardView extends TemplatedElementView {
     private faceUp_ = false;
     public get faceUp() { return this.faceUp_; }
     public set faceUp(faceUp: boolean) {
-        if (this.faceUp_ == faceUp)
+        if (this.faceUp_ === faceUp)
             return;
         this.faceUp_ = faceUp;
         if (faceUp) {
@@ -55,7 +55,7 @@ export class CardView extends TemplatedElementView {
     private dropPreview_ = false;
     public get dropPreview() { return this.dropPreview_; }
     public set dropPreview(dropPreview: boolean) {
-        if (this.dropPreview_ == dropPreview)
+        if (this.dropPreview_ === dropPreview)
             return;
         this.dropPreview_ = dropPreview;
         if (dropPreview) {
@@ -98,18 +98,18 @@ export class CardView extends TemplatedElementView {
     }
 
     private startDragging_() {
-        const { canDrag, alsoDrag } = this.dragStart();
+        const { canDrag, extraCardViews } = this.dragStart();
 
         if (canDrag) {
             this.dragging_ = true;
-            this.alsoDragging_ = alsoDrag;
+            this.dragExtraCardViews_ = extraCardViews;
 
             this.dragRect_.set(this.rect_);
             this.element.classList.add("dragging");
 
-            for (const alsoDragView of this.alsoDragging_) {
-                alsoDragView.dragRect_.set(alsoDragView.rect_);
-                alsoDragView.element.classList.add("dragging");
+            for (const dragExtraCardView of this.dragExtraCardViews_) {
+                dragExtraCardView.dragRect_.set(dragExtraCardView.rect_);
+                dragExtraCardView.element.classList.add("dragging");
             }
         }
     }
@@ -121,9 +121,9 @@ export class CardView extends TemplatedElementView {
             this.element.classList.remove("dragging");
             this.rect_.setOnElement(this.element);
 
-            for (const alsoDragView of this.alsoDragging_) {
-                alsoDragView.element.classList.remove("dragging");
-                alsoDragView.rect_.setOnElement(alsoDragView.element);
+            for (const dragExtraCardView of this.dragExtraCardViews_) {
+                dragExtraCardView.element.classList.remove("dragging");
+                dragExtraCardView.rect_.setOnElement(dragExtraCardView.element);
             }
 
             this.dragEnd(this.dragRect_, cancelled);
@@ -131,14 +131,14 @@ export class CardView extends TemplatedElementView {
     }
 
     private onMouseDown_ = (e: MouseEvent) => {
-        if (e.button == 0) {
+        if (e.button === 0) {
             e.preventDefault();
             this.startMouseTracking_(e.pageX, e.pageY);
         }
     }
 
     private onWindowMouseMove_ = (e: MouseEvent) => {
-        if ((e.buttons & 1) == 0) {
+        if (e.buttons !== 1) {
             this.stopMouseTracking_(true);
             return;
         }
@@ -169,10 +169,10 @@ export class CardView extends TemplatedElementView {
             this.dragRect_.y += pxSize * dy;
             this.dragRect_.setOnElement(this.element);
 
-            for (const alsoDragView of this.alsoDragging_) {
-                alsoDragView.dragRect_.x += pxSize * dx;
-                alsoDragView.dragRect_.y += pxSize * dy;
-                alsoDragView.dragRect_.setOnElement(alsoDragView.element);
+            for (const dragExtraCardView of this.dragExtraCardViews_) {
+                dragExtraCardView.dragRect_.x += pxSize * dx;
+                dragExtraCardView.dragRect_.y += pxSize * dy;
+                dragExtraCardView.dragRect_.setOnElement(dragExtraCardView.element);
             }
 
             this.dragMoved(this.dragRect_);

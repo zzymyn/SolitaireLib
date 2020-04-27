@@ -31,7 +31,7 @@ export class PileView extends TemplatedElementView {
     private zIndex_ = 0;
     public get zIndex() { return this.zIndex_; }
     public set zIndex(zIndex: number) {
-        if (this.zIndex_ == zIndex)
+        if (this.zIndex_ === zIndex)
             return;
         this.zIndex_ = zIndex;
         this.element.style.zIndex = `${zIndex}`;
@@ -40,7 +40,7 @@ export class PileView extends TemplatedElementView {
     private showFrame_ = false;
     public get showFrame() { return this.showFrame_; }
     public set showFrame(showFrame: boolean) {
-        if (this.showFrame_ == showFrame)
+        if (this.showFrame_ === showFrame)
             return;
         this.showFrame_ = showFrame;
         if (showFrame) {
@@ -53,7 +53,7 @@ export class PileView extends TemplatedElementView {
     private dropPreview_ = false;
     public get dropPreview() { return this.dropPreview_; }
     public set dropPreview(dropPreview: boolean) {
-        if (this.dropPreview_ == dropPreview)
+        if (this.dropPreview_ === dropPreview)
             return;
         this.dropPreview_ = dropPreview;
         if (dropPreview) {
