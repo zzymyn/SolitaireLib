@@ -1,4 +1,5 @@
 import { GamePresenterBase } from "~CardLib/Presenter/GamePresenterBase";
+import { IView } from "~CardLib/View/IView";
 import { PileView } from "~CardLib/View/PileView";
 import { Rect } from "~CardLib/View/Rect";
 import { IGame } from "../Model/IGame";
@@ -16,8 +17,8 @@ export class GamePresenter extends GamePresenterBase {
     private readonly foundationPile_: PileView;
     private readonly pyramidPiles_: PileView[][] = [];
 
-    constructor(game: IGame, htmlRoot: HTMLElement) {
-        super(game, htmlRoot);
+    constructor(game: IGame, rootView: IView) {
+        super(game, rootView);
         this.game_ = game;
 
         // create piles:

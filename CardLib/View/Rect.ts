@@ -39,11 +39,13 @@ export class Rect {
     }
 
     public set(rect: Rect) {
+        if (this.equals(rect))
+            return false;
         this.x = rect.x;
         this.y = rect.y;
         this.sizeX = rect.sizeX;
         this.sizeY = rect.sizeY;
-        return this;
+        return true;
     }
 
     public setOnElement(e: HTMLElement) {
@@ -51,6 +53,13 @@ export class Rect {
         e.style.right = `calc(50% + ${-this.x - 0.5 * this.sizeX}rem)`;
         e.style.top = `calc(50% + ${this.y - 0.5 * this.sizeY}rem)`;
         e.style.bottom = `calc(50% + ${-this.y - 0.5 * this.sizeY}rem)`;
+    }
+
+    public equals(o: Rect) {
+        return this.x == o.x
+            && this.y == o.y
+            && this.sizeX == o.sizeX
+            && this.sizeY == o.sizeY;
     }
 
     public overlaps(o: Rect) {

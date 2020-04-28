@@ -1,8 +1,10 @@
+import { ITouchResponder } from "./ITouchResponder";
+import { IView } from "./IView";
 import { Rect } from "./Rect";
 import { TemplatedElementView } from "./TemplatedElementView";
 import { ViewContext } from "./ViewContext";
 
-export class PileView extends TemplatedElementView {
+export class PileView extends TemplatedElementView implements ITouchResponder {
     public click = () => { };
     public dblClick = () => { };
     public fanX = 0;
@@ -11,15 +13,19 @@ export class PileView extends TemplatedElementView {
 
     private readonly rect_ = new Rect();
     public get rect() {
-        return new Rect().set(this.rect_);
+        const rect = new Rect();
+        rect.set(this.rect_);
+        return rect;
     }
     public set rect(rect: Rect) {
-        this.rect_.set(rect);
-        rect.setOnElement(this.element_);
+        if (this.rect_.set(rect)) {
+            rect.setOnElement(this.element);
+        }
     }
 
     public get hitbox() {
-        const rect = new Rect().set(this.rect_);
+        const rect = new Rect();
+        rect.set(this.rect_);
         const dx = Math.max(0, this.cardCount - 1) * this.fanX;
         const dy = Math.max(0, this.cardCount - 1) * this.fanY;
         rect.x += 0.5 * dx;
@@ -35,7 +41,7 @@ export class PileView extends TemplatedElementView {
         if (this.zIndex_ === zIndex)
             return;
         this.zIndex_ = zIndex;
-        this.element_.style.zIndex = `${zIndex}`;
+        this.element.style.zIndex = `${zIndex}`;
     }
 
     private showFrame_ = false;
@@ -45,9 +51,9 @@ export class PileView extends TemplatedElementView {
             return;
         this.showFrame_ = showFrame;
         if (showFrame) {
-            this.element_.classList.add("showFrame");
+            this.element.classList.add("showFrame");
         } else {
-            this.element_.classList.remove("showFrame");
+            this.element.classList.remove("showFrame");
         }
     }
 
@@ -58,23 +64,88 @@ export class PileView extends TemplatedElementView {
             return;
         this.dropPreview_ = dropPreview;
         if (dropPreview) {
-            this.element_.classList.add("dropPreview");
+            this.element.classList.add("dropPreview");
         } else {
-            this.element_.classList.remove("dropPreview");
+            this.element.classList.remove("dropPreview");
         }
     }
 
-    constructor(context: ViewContext, parent: HTMLElement) {
-        super(context, parent, "pileTemplate");
-        this.element_.addEventListener("click", this.onClick_);
-        this.element_.addEventListener("dblclick", this.onDblClick_);
+    constructor(parent: IView) {
+        super(parent, "pileTemplate");
+        this.element.addEventListener("mousedown", this.onMouseDown_);
+        this.element.addEventListener("touchstart", this.touchStart_);
     }
 
-    private readonly onClick_ = (e: MouseEvent) => {
-        this.click();
+    private touchTracking_ = false;
+    private touchId_ = 0;
+    private touchInDeadZone_ = false;
+    private touchStartX_ = 0;
+    private touchStartY_ = 0;
+    private lastTouchEndTimeStamp_ = 0;
+
+    public onTouchDown(id: number, x: number, y: number, timeStamp: number) {
+        if (!this.touchTracking_) {
+            this.touchId_ = id;
+            this.touchTracking_ = true;
+            this.touchInDeadZone_ = true;
+            this.touchStartX_ = x;
+            this.touchStartY_ = y;
+        }
     }
 
-    private readonly onDblClick_ = (e: MouseEvent) => {
-        this.dblClick();
+    public onTouchMoved(id: number, x: number, y: number, timeStamp: number) {
+        if (this.touchTracking_ && this.touchId_ === id) {
+            let dx = x - this.touchStartX_;
+            let dy = y - this.touchStartY_;
+
+            if (this.touchInDeadZone_) {
+                const dLenSq = dx * dx + dy * dy;
+                if (dLenSq > ViewContext.TOUCH_DEADZONE_SQ) {
+                    const dlen = Math.sqrt(dLenSq);
+                    dx /= dlen;
+                    dy /= dlen;
+                    this.touchStartX_ += ViewContext.TOUCH_DEADZONE * dx;
+                    this.touchStartY_ += ViewContext.TOUCH_DEADZONE * dy;
+                    this.touchInDeadZone_ = false;
+                }
+            }
+        }
+    }
+
+    public onTouchUp(id: number, cancelled: boolean, timeStamp: number) {
+        if (this.touchTracking_ && this.touchId_ === id) {
+            this.touchTracking_ = false;
+
+            this.context.removeTouchResponder(this);
+
+            if (this.touchInDeadZone_) {
+                if (timeStamp < this.lastTouchEndTimeStamp_ + 1000) {
+                    this.dblClick();
+                } else {
+                    this.click();
+                }
+            }
+
+            this.lastTouchEndTimeStamp_ = timeStamp;
+        }
+    }
+
+    private readonly onMouseDown_ = (e: MouseEvent) => {
+        if (e.button === 0) {
+            e.preventDefault();
+            this.context.addTouchResponder(this);
+            this.onTouchDown(-1, e.pageX, e.pageY, e.timeStamp);
+        }
+    }
+
+    private readonly touchStart_ = (e: TouchEvent) => {
+        for (let i = 0; i < e.changedTouches.length; ++i) {
+            const touch = e.changedTouches.item(i);
+            if (touch) {
+                e.preventDefault();
+                this.context.addTouchResponder(this);
+                this.onTouchDown(touch.identifier, touch.pageX, touch.pageY, e.timeStamp);
+            }
+        }
     }
 }

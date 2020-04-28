@@ -1,12 +1,13 @@
 import { Debug } from "../Debug";
+import { IView } from "./IView";
 import { ViewContext } from "./ViewContext";
 
-export abstract class TemplatedElementView {
-    protected readonly context_: ViewContext;
-    protected readonly element_: HTMLElement;
+export abstract class TemplatedElementView implements IView {
+    public readonly context: ViewContext;
+    public readonly element: HTMLElement;
 
-    constructor(context: ViewContext, parent: HTMLElement, templateId: string) {
-        this.context_ = context;
+    constructor(parent: IView, templateId: string) {
+        this.context = parent.context;
 
         const template = document.getElementById(templateId);
         if (!(template instanceof HTMLTemplateElement))
@@ -19,8 +20,8 @@ export abstract class TemplatedElementView {
         if (!(element instanceof HTMLElement))
             Debug.error();
 
-        this.element_ = element as HTMLElement;
+        this.element = element as HTMLElement;
 
-        parent.appendChild(element);
+        parent.element.appendChild(element);
     }
 }

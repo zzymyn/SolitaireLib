@@ -2,11 +2,10 @@ import { Colour } from "../Model/Colour";
 import { Rank } from "../Model/Rank";
 import { Suit } from "../Model/Suit";
 import { ITouchResponder } from "./ITouchResponder";
+import { IView } from "./IView";
 import { Rect } from "./Rect";
 import { TemplatedElementView } from "./TemplatedElementView";
 import { ViewContext } from "./ViewContext";
-
-const deadZoneSize = 5;
 
 export class CardView extends TemplatedElementView implements ITouchResponder {
     public click = () => { };
@@ -17,12 +16,14 @@ export class CardView extends TemplatedElementView implements ITouchResponder {
 
     private readonly rect_ = new Rect();
     public get rect() {
-        return new Rect().set(this.rect_);
+        const rect = new Rect();
+        rect.set(this.rect_);
+        return rect;
     }
     public set rect(rect: Rect) {
-        this.onTouchUp(this.touchId_, true);
-        this.rect_.set(rect);
-        rect.setOnElement(this.element_);
+        if (this.rect_.set(rect)) {
+            rect.setOnElement(this.element);
+        }
     }
 
     private zIndex_ = 0;
@@ -31,7 +32,7 @@ export class CardView extends TemplatedElementView implements ITouchResponder {
         if (this.zIndex_ === zIndex)
             return;
         this.zIndex_ = zIndex;
-        this.element_.style.zIndex = `${zIndex}`;
+        this.element.style.zIndex = `${zIndex}`;
     }
 
     private faceUp_ = false;
@@ -41,9 +42,9 @@ export class CardView extends TemplatedElementView implements ITouchResponder {
             return;
         this.faceUp_ = faceUp;
         if (faceUp) {
-            this.element_.classList.add("faceUp");
+            this.element.classList.add("faceUp");
         } else {
-            this.element_.classList.remove("faceUp");
+            this.element.classList.remove("faceUp");
         }
     }
 
@@ -54,22 +55,17 @@ export class CardView extends TemplatedElementView implements ITouchResponder {
             return;
         this.dropPreview_ = dropPreview;
         if (dropPreview) {
-            this.element_.classList.add("dropPreview");
+            this.element.classList.add("dropPreview");
         } else {
-            this.element_.classList.remove("dropPreview");
+            this.element.classList.remove("dropPreview");
         }
     }
 
-    constructor(context: ViewContext, parent: HTMLElement, suit: Suit, colour: Colour, rank: Rank) {
-        super(context, parent, "cardTemplate");
-        this.element_.classList.add(`s${suit}c${colour}r${rank}`);
-        this.element_.addEventListener("dblclick", this.onDblClick_);
-        this.element_.addEventListener("mousedown", this.onMouseDown_);
-        this.element_.addEventListener("touchstart", this.touchStart_);
-    }
-
-    private readonly onDblClick_ = (e: MouseEvent) => {
-        this.dblClick();
+    constructor(parent: IView, suit: Suit, colour: Colour, rank: Rank) {
+        super(parent, "cardTemplate");
+        this.element.classList.add(`s${suit}c${colour}r${rank}`);
+        this.element.addEventListener("mousedown", this.onMouseDown_);
+        this.element.addEventListener("touchstart", this.touchStart_);
     }
 
     private touchTracking_ = false;
@@ -77,8 +73,9 @@ export class CardView extends TemplatedElementView implements ITouchResponder {
     private touchInDeadZone_ = false;
     private touchStartX_ = 0;
     private touchStartY_ = 0;
+    private lastTouchEndTimeStamp_ = 0;
 
-    public onTouchDown(id: number, x: number, y: number) {
+    public onTouchDown(id: number, x: number, y: number, timeStamp: number) {
         if (!this.touchTracking_) {
             this.touchId_ = id;
             this.touchTracking_ = true;
@@ -89,19 +86,19 @@ export class CardView extends TemplatedElementView implements ITouchResponder {
         }
     }
 
-    public onTouchMoved(id: number, x: number, y: number) {
+    public onTouchMoved(id: number, x: number, y: number, timeStamp: number) {
         if (this.touchTracking_ && this.touchId_ === id) {
             let dx = x - this.touchStartX_;
             let dy = y - this.touchStartY_;
 
             if (this.touchInDeadZone_) {
                 const dLenSq = dx * dx + dy * dy;
-                if (dLenSq > deadZoneSize * deadZoneSize) {
+                if (dLenSq > ViewContext.TOUCH_DEADZONE_SQ) {
                     const dlen = Math.sqrt(dLenSq);
                     dx /= dlen;
                     dy /= dlen;
-                    this.touchStartX_ += deadZoneSize * dx;
-                    this.touchStartY_ += deadZoneSize * dy;
+                    this.touchStartX_ += ViewContext.TOUCH_DEADZONE * dx;
+                    this.touchStartY_ += ViewContext.TOUCH_DEADZONE * dy;
                     this.touchInDeadZone_ = false;
                     this.startDragging_();
                 }
@@ -110,16 +107,16 @@ export class CardView extends TemplatedElementView implements ITouchResponder {
                 this.touchStartX_ = x;
                 this.touchStartY_ = y;
 
-                const pxSize = this.context_.pxPerRem;
+                const pxSize = this.context.pxPerRem;
 
                 this.dragRect_.x += pxSize * dx;
                 this.dragRect_.y += pxSize * dy;
-                this.dragRect_.setOnElement(this.element_);
+                this.dragRect_.setOnElement(this.element);
 
                 for (const dragExtraCardView of this.dragExtraCardViews_) {
                     dragExtraCardView.dragRect_.x += pxSize * dx;
                     dragExtraCardView.dragRect_.y += pxSize * dy;
-                    dragExtraCardView.dragRect_.setOnElement(dragExtraCardView.element_);
+                    dragExtraCardView.dragRect_.setOnElement(dragExtraCardView.element);
                 }
 
                 this.dragMoved(this.dragRect_);
@@ -127,18 +124,24 @@ export class CardView extends TemplatedElementView implements ITouchResponder {
         }
     }
 
-    public onTouchUp(id: number, cancelled: boolean) {
+    public onTouchUp(id: number, cancelled: boolean, timeStamp: number) {
         if (this.touchTracking_ && this.touchId_ === id) {
             this.touchTracking_ = false;
 
-            this.context_.removeTouchResponder(this);
+            this.context.removeTouchResponder(this);
 
             if (this.touchInDeadZone_) {
-                this.click();
+                if (timeStamp < this.lastTouchEndTimeStamp_ + 1000) {
+                    this.dblClick();
+                } else {
+                    this.click();
+                }
                 this.stopDragging_(true);
             } else {
                 this.stopDragging_(false);
             }
+
+            this.lastTouchEndTimeStamp_ = timeStamp;
         }
     }
 
@@ -154,11 +157,11 @@ export class CardView extends TemplatedElementView implements ITouchResponder {
             this.dragExtraCardViews_ = extraCardViews;
 
             this.dragRect_.set(this.rect_);
-            this.element_.classList.add("dragging");
+            this.element.classList.add("dragging");
 
             for (const dragExtraCardView of this.dragExtraCardViews_) {
                 dragExtraCardView.dragRect_.set(dragExtraCardView.rect_);
-                dragExtraCardView.element_.classList.add("dragging");
+                dragExtraCardView.element.classList.add("dragging");
             }
         }
     }
@@ -167,12 +170,12 @@ export class CardView extends TemplatedElementView implements ITouchResponder {
         if (this.dragging_) {
             this.dragging_ = false;
 
-            this.element_.classList.remove("dragging");
-            this.rect_.setOnElement(this.element_);
+            this.element.classList.remove("dragging");
+            this.rect_.setOnElement(this.element);
 
             for (const dragExtraCardView of this.dragExtraCardViews_) {
-                dragExtraCardView.element_.classList.remove("dragging");
-                dragExtraCardView.rect_.setOnElement(dragExtraCardView.element_);
+                dragExtraCardView.element.classList.remove("dragging");
+                dragExtraCardView.rect_.setOnElement(dragExtraCardView.element);
             }
 
             this.dragEnd(this.dragRect_, cancelled);
@@ -182,8 +185,8 @@ export class CardView extends TemplatedElementView implements ITouchResponder {
     private readonly onMouseDown_ = (e: MouseEvent) => {
         if (e.button === 0) {
             e.preventDefault();
-            this.context_.addTouchResponder(this);
-            this.onTouchDown(-1, e.pageX, e.pageY);
+            this.context.addTouchResponder(this);
+            this.onTouchDown(-1, e.pageX, e.pageY, e.timeStamp);
         }
     }
 
@@ -192,8 +195,8 @@ export class CardView extends TemplatedElementView implements ITouchResponder {
             const touch = e.changedTouches.item(i);
             if (touch) {
                 e.preventDefault();
-                this.context_.addTouchResponder(this);
-                this.onTouchDown(touch.identifier, touch.pageX, touch.pageY);
+                this.context.addTouchResponder(this);
+                this.onTouchDown(touch.identifier, touch.pageX, touch.pageY, e.timeStamp);
             }
         }
     }

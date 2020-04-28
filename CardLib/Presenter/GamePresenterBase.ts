@@ -4,22 +4,20 @@ import { ICard } from "../Model/ICard";
 import { IGameBase } from "../Model/IGameBase";
 import { IPile } from "../Model/IPile";
 import { CardView } from "../View/CardView";
+import { IView } from "../View/IView";
 import { PileView } from "../View/PileView";
 import { Rect } from "../View/Rect";
-import { ViewContext } from "../View/ViewContext";
 
 type DropPreview = { dropPreview: boolean };
 type ZIndexed = { zIndex: number };
 
 export abstract class GamePresenterBase {
     protected readonly gameBase_: IGameBase;
-    protected readonly htmlRoot_: HTMLElement;
-    protected readonly viewContext_: ViewContext;
+    protected readonly rootView_: IView;
 
-    constructor(game: IGameBase, htmlRoot: HTMLElement) {
+    constructor(game: IGameBase, rootView: IView) {
         this.gameBase_ = game;
-        this.htmlRoot_ = htmlRoot;
-        this.viewContext_ = new ViewContext(this.htmlRoot_);
+        this.rootView_ = rootView;
 
         window.addEventListener("resize", this.onWindowResize_);
         window.addEventListener("keydown", this.onWindowKeyDown_);
@@ -34,7 +32,7 @@ export abstract class GamePresenterBase {
     private readonly pileViewtoPile_ = new Map<PileView, IPile>();
 
     protected createPileView_(pile: IPile) {
-        const pileView = new PileView(this.viewContext_, this.htmlRoot_);
+        const pileView = new PileView(this.rootView_);
         this.pileViews_.push(pileView);
         this.pileToPileView_.set(pile, pileView);
         this.pileViewtoPile_.set(pileView, pile);
@@ -86,7 +84,7 @@ export abstract class GamePresenterBase {
     private readonly cardViewtoCard_ = new Map<CardView, ICard>();
 
     protected createCardView_(card: ICard) {
-        const cardView = new CardView(this.viewContext_, this.htmlRoot_, card.suit, card.colour, card.rank);
+        const cardView = new CardView(this.rootView_, card.suit, card.colour, card.rank);
         this.cardViews_.push(cardView);
         this.cardToCardView_.set(card, cardView);
         this.cardViewtoCard_.set(cardView, card);
@@ -301,7 +299,7 @@ export abstract class GamePresenterBase {
 
         switch (delay) {
             case DelayHint.None:
-                    return;
+                return;
             case DelayHint.Quick:
                 await new Promise(resolve => setTimeout(resolve, speedUp * 20));
                 return;
