@@ -1,10 +1,10 @@
-import { ITouchResponder } from "./ITouchResponder";
 import { Debug } from "~CardLib/Debug";
+import { ITouchResponder } from "./ITouchResponder";
 
 export class ViewContext {
-    private htmlRoot_: HTMLElement;
+    private readonly htmlRoot_: HTMLElement;
     public pxPerRem = 0;
-    private touchResponders_: ITouchResponder[] = [];
+    private readonly touchResponders_: ITouchResponder[] = [];
 
     public addTouchResponder(touchResponder: ITouchResponder) {
         const index = this.touchResponders_.indexOf(touchResponder);
@@ -29,19 +29,19 @@ export class ViewContext {
         window.addEventListener("touchend", this.onWindowTouchEnd_);
         window.addEventListener("touchcancel", this.onWindowTouchCancel_);
 
-        this.refresh();
+        this.refresh_();
     }
 
-    private onResize_ = () => {
-        this.refresh();
+    private readonly onResize_ = () => {
+        this.refresh_();
     }
 
-    private refresh() {
+    private refresh_() {
         const style = getComputedStyle(document.body);
-        this.pxPerRem = 1.0 / parseFloat(style.fontSize);
+        this.pxPerRem = 1 / parseFloat(style.fontSize);
     }
 
-    private onWindowMouseMove_ = (e: MouseEvent) => {
+    private readonly onWindowMouseMove_ = (e: MouseEvent) => {
         if (e.buttons !== 1) {
             for (const r of this.touchResponders_) {
                 r.onTouchUp(-1, true);
@@ -53,7 +53,7 @@ export class ViewContext {
         }
     }
 
-    private onWindowMouseUp_ = (e: MouseEvent) => {
+    private readonly onWindowMouseUp_ = (e: MouseEvent) => {
         if (e.button === 0) {
             for (const r of this.touchResponders_) {
                 r.onTouchUp(-1, false);
@@ -61,7 +61,7 @@ export class ViewContext {
         }
     }
 
-    private onWindowTouchMove_ = (e: TouchEvent) => {
+    private readonly onWindowTouchMove_ = (e: TouchEvent) => {
         for (let i = 0; i < e.changedTouches.length; ++i) {
             const touch = e.changedTouches.item(i);
             if (touch) {
@@ -72,7 +72,7 @@ export class ViewContext {
         }
     }
 
-    private onWindowTouchEnd_ = (e: TouchEvent) => {
+    private readonly onWindowTouchEnd_ = (e: TouchEvent) => {
         for (let i = 0; i < e.changedTouches.length; ++i) {
             const touch = e.changedTouches.item(i);
             if (touch) {
@@ -83,7 +83,7 @@ export class ViewContext {
         }
     }
 
-    private onWindowTouchCancel_ = (e: TouchEvent) => {
+    private readonly onWindowTouchCancel_ = (e: TouchEvent) => {
         for (let i = 0; i < e.changedTouches.length; ++i) {
             const touch = e.changedTouches.item(i);
             if (touch) {

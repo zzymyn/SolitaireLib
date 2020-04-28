@@ -8,11 +8,11 @@ const sizeY = 18;
 const sizeX = sizeY / 1.555555555555;
 
 export class GamePresenter extends GamePresenterBase {
-    private game_: IGame;
-    private stockPile_: PileView;
-    private wastePile_: PileView;
-    private foundationPiles_: PileView[] = [];
-    private tableauPiles_: PileView[] = [];
+    private readonly game_: IGame;
+    private readonly stockPile_: PileView;
+    private readonly wastePile_: PileView;
+    private readonly foundationPiles_: PileView[] = [];
+    private readonly tableauPiles_: PileView[] = [];
 
     constructor(game: IGame, htmlRoot: HTMLElement) {
         super(game, htmlRoot);
@@ -21,7 +21,7 @@ export class GamePresenter extends GamePresenterBase {
         const tableSize = this.game_.tableaux.length;
 
         const xPos = (i: number) => {
-            return (i - 0.5 * (tableSize - 1)) * (sizeX + margin)
+            return (i - 0.5 * (tableSize - 1)) * (sizeX + margin);
         };
 
         // create piles:

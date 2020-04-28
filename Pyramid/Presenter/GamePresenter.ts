@@ -10,11 +10,11 @@ const pyramidMarginX = 2;
 const pyramidMarginY = -6;
 
 export class GamePresenter extends GamePresenterBase {
-    private game_: IGame;
-    private stockPile_: PileView;
-    private wastePile_: PileView;
-    private foundationPile_: PileView;
-    private pyramidPiles_: PileView[][] = [];
+    private readonly game_: IGame;
+    private readonly stockPile_: PileView;
+    private readonly wastePile_: PileView;
+    private readonly foundationPile_: PileView;
+    private readonly pyramidPiles_: PileView[][] = [];
 
     constructor(game: IGame, htmlRoot: HTMLElement) {
         super(game, htmlRoot);

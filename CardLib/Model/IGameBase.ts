@@ -1,6 +1,6 @@
+import { DelayHint } from "./DelayHint";
 import { ICard } from "./ICard";
 import { IPile } from "./IPile";
-import { DelayHint } from "./DelayHint";
 
 export interface IGameBase {
     /** All the cards in the game. */

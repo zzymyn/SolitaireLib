@@ -1,8 +1,20 @@
 {
     "$schema": "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/tslint.json",
     "extends": "tslint:recommended",
+    "rulesDirectory": [
+        "tslint-consistent-codestyle"
+    ],
     "rules": {
+        "arrow-parens": [
+            true,
+            "ban-single-arg-parens"
+        ],
+        "arrow-return-shorthand": true,
+        "import-spacing": true,
+        "indent": true,
+        "member-access": true,
         "new-parens": true,
+        "no-accessor-recursion": true,
         "no-arg": true,
         "no-bitwise": true,
         "no-conditional-assignment": true,
@@ -18,8 +30,127 @@
                 "trace"
             ]
         },
+        "no-duplicate-imports": true,
+        "no-empty": false,
+        "no-for-in-array": true,
+        "no-import-side-effect": true,
+        "no-inferrable-types": true,
+        "no-irregular-whitespace": true,
+        "no-null-keyword": true,
+        "no-reference-import": true,
+        "no-require-imports": true,
+        "no-static-this": true,
+        "no-unnecessary-type-annotation": true,
+        "no-var-before-return": true,
+        "no-var-keyword": true,
+        "no-var-requires": true,
+        "number-literal-format": true,
+        "only-arrow-functions": true,
+        "ordered-imports": true,
+        "prefer-const-enum": true,
+        "prefer-readonly": true,
+        "restrict-plus-operands": true,
+        "semicolon": [
+            true,
+            "always"
+        ],
+        "unnecessary-bind": true,
         "variable-name": false,
-        "no-empty": false
+        "whitespace": [
+            true,
+            "check-branch",
+            "check-decl",
+            "check-operator",
+            "check-module",
+            "check-separator",
+            "check-rest-spread",
+            "check-type",
+            "check-typecast",
+            "check-type-operator",
+            "check-preblock",
+            "check-postbrace"
+        ],
+        "naming-convention": [
+            true,
+            {
+                "type": "default",
+                "format": "camelCase",
+                "leadingUnderscore": "forbid",
+                "trailingUnderscore": "forbid"
+            },
+            {
+                "type": "variable",
+                "modifiers": [
+                    "global",
+                    "const"
+                ],
+                "format": [
+                    "camelCase",
+                    "UPPER_CASE"
+                ]
+            },
+            {
+                "type": "variable",
+                "modifiers": [
+                    "export",
+                    "const"
+                ],
+                "format": "UPPER_CASE"
+            },
+            {
+                "type": "functionVariable",
+                "modifiers": [
+                    "export",
+                    "const"
+                ],
+                "format": "camelCase"
+            },
+            {
+                "type": "parameter",
+                "modifiers": "unused",
+                "leadingUnderscore": "allow"
+            },
+            {
+                "type": "member",
+                "modifiers": "private",
+                "trailingUnderscore": "require"
+            },
+            {
+                "type": "member",
+                "modifiers": "protected",
+                "trailingUnderscore": "require"
+            },
+            {
+                "type": "method",
+                "filter": "^toJSON$",
+                "format": null
+            },
+            {
+                "type": "property",
+                "modifiers": [
+                    "public",
+                    "static",
+                    "const"
+                ],
+                "format": "UPPER_CASE"
+            },
+            {
+                "type": "type",
+                "format": "PascalCase"
+            },
+            {
+                "type": "interface",
+                "prefix": "I"
+            },
+            {
+                "type": "genericTypeParameter",
+                "prefix": "T"
+            },
+            {
+                "type": "enumMember",
+                "format": "PascalCase"
+            }
+        ]
     },
     "linterOptions": {
         "exclude": [

@@ -17,9 +17,9 @@ export class Game extends GameBase implements IGame {
     public readonly waste = new Pile(this);
     public readonly foundations: Pile[] = [];
     public readonly tableaux: Pile[] = [];
-    public readonly dragSingleSources_: Pile[] = [];
-    public readonly autoMoveSources_: Pile[] = [];
-    private restocks = 0;
+    private readonly dragSingleSources_: Pile[] = [];
+    private readonly autoMoveSources_: Pile[] = [];
+    private restocks_ = 0;
 
     constructor(options: GameOptions) {
         super();
@@ -52,7 +52,7 @@ export class Game extends GameBase implements IGame {
     public get unwinnable(): boolean { return false; }
 
     protected *restart_(rng: prand.RandomGenerator) {
-        this.restocks = 0;
+        this.restocks_ = 0;
 
         // put all the cards face down back into the stock
         for (const card of this.stock) {
@@ -119,7 +119,7 @@ export class Game extends GameBase implements IGame {
         for (const pile of this.autoMoveSources_) {
             if (pile.peek() === card && card.faceUp) {
                 for (const foundation of this.foundations) {
-                    if (this.isFoundationDrop(card, foundation)) {
+                    if (this.isFoundationDrop_(card, foundation)) {
                         foundation.push(card);
                         yield* this.doAutoMoves_();
                         return;
@@ -131,8 +131,8 @@ export class Game extends GameBase implements IGame {
 
     protected *pilePrimary_(pile: Pile) {
         // if the player clicks the stock and it has been depleted, move the waste back to the stock:
-        if (pile === this.stock && this.stock.length === 0 && this.waste.length > 0 && this.restocks < this.options.restocksAllowed) {
-            this.restocks++;
+        if (pile === this.stock && this.stock.length === 0 && this.waste.length > 0 && this.restocks_ < this.options.restocksAllowed) {
+            this.restocks_++;
             for (let i = this.waste.length; i-- > 0;) {
                 const card = this.waste.at(i);
                 card.flip(false);
@@ -168,7 +168,7 @@ export class Game extends GameBase implements IGame {
     }
 
     protected previewDrop_(card: Card, pile: Pile): boolean {
-        return this.isTableauxDrop_(card, pile) || this.isFoundationDrop(card, pile);
+        return this.isTableauxDrop_(card, pile) || this.isFoundationDrop_(card, pile);
     }
 
     protected *dropCard_(card: Card, pile: Pile) {
@@ -178,7 +178,7 @@ export class Game extends GameBase implements IGame {
                 pile.push(movingCard);
             }
             yield* this.doAutoMoves_();
-        } else if (this.isFoundationDrop(card, pile)) {
+        } else if (this.isFoundationDrop_(card, pile)) {
             pile.push(card);
             yield* this.doAutoMoves_();
         }
@@ -205,7 +205,7 @@ export class Game extends GameBase implements IGame {
         return false;
     }
 
-    private isFoundationDrop(card: Card, pile: Pile) {
+    private isFoundationDrop_(card: Card, pile: Pile) {
         if (card.pile === pile)
             return false;
 
@@ -264,7 +264,7 @@ export class Game extends GameBase implements IGame {
                     const card = pile.peek();
                     if (card) {
                         foundationMin = Math.min(foundationMin, this.getCardValue_(card));
-                    } else{
+                    } else {
                         foundationMin = Math.min(foundationMin, 0);
                     }
                 }
@@ -273,7 +273,7 @@ export class Game extends GameBase implements IGame {
                     const card = pile.peek();
                     if (card && card.faceUp && this.getCardValue_(card) <= foundationMin + this.options.autoMoveToFoundation) {
                         for (const foundation of this.foundations) {
-                            if (this.isFoundationDrop(card, foundation)) {
+                            if (this.isFoundationDrop_(card, foundation)) {
                                 yield DelayHint.OneByOne;
                                 foundation.push(card);
                                 continue mainLoop;

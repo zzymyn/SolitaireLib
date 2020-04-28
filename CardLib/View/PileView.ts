@@ -15,7 +15,7 @@ export class PileView extends TemplatedElementView {
     }
     public set rect(rect: Rect) {
         this.rect_.set(rect);
-        rect.setOnElement(this.element);
+        rect.setOnElement(this.element_);
     }
 
     public get hitbox() {
@@ -35,7 +35,7 @@ export class PileView extends TemplatedElementView {
         if (this.zIndex_ === zIndex)
             return;
         this.zIndex_ = zIndex;
-        this.element.style.zIndex = `${zIndex}`;
+        this.element_.style.zIndex = `${zIndex}`;
     }
 
     private showFrame_ = false;
@@ -45,9 +45,9 @@ export class PileView extends TemplatedElementView {
             return;
         this.showFrame_ = showFrame;
         if (showFrame) {
-            this.element.classList.add("showFrame");
+            this.element_.classList.add("showFrame");
         } else {
-            this.element.classList.remove("showFrame");
+            this.element_.classList.remove("showFrame");
         }
     }
 
@@ -58,23 +58,23 @@ export class PileView extends TemplatedElementView {
             return;
         this.dropPreview_ = dropPreview;
         if (dropPreview) {
-            this.element.classList.add("dropPreview");
+            this.element_.classList.add("dropPreview");
         } else {
-            this.element.classList.remove("dropPreview");
+            this.element_.classList.remove("dropPreview");
         }
     }
 
     constructor(context: ViewContext, parent: HTMLElement) {
         super(context, parent, "pileTemplate");
-        this.element.addEventListener("click", this.onClick);
-        this.element.addEventListener("dblclick", this.onDblClick);
+        this.element_.addEventListener("click", this.onClick_);
+        this.element_.addEventListener("dblclick", this.onDblClick_);
     }
 
-    private onClick = (e: MouseEvent) => {
+    private readonly onClick_ = (e: MouseEvent) => {
         this.click();
     }
 
-    private onDblClick = (e: MouseEvent) => {
+    private readonly onDblClick_ = (e: MouseEvent) => {
         this.dblClick();
     }
 }

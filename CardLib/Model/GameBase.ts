@@ -17,13 +17,13 @@ export abstract class GameBase implements IGameBase {
 
     private undoStack_: UndoableOperation[] = [];
     private redoStack_: UndoableOperation[] = [];
-    private currentOperation_: UndoableOperation | null = null;
+    private currentOperation_: UndoableOperation | undefined = undefined;
 
     public *restart(seed: number) {
         const rng = prand.mersenne(seed);
         this.undoStack_ = [];
         this.redoStack_ = [];
-        this.currentOperation_ = null;
+        this.currentOperation_ = undefined;
         yield* this.restart_(rng);
     }
 
@@ -48,38 +48,38 @@ export abstract class GameBase implements IGameBase {
     }
 
     public *pilePrimary(pile: IPile): Generator<DelayHint, void> {
-        if (this.startOperation()) {
+        if (this.startOperation_()) {
             if (!(pile instanceof Pile)) Debug.error();
             Debug.assert(this.piles.indexOf(pile) >= 0);
             yield* this.pilePrimary_(pile);
-            this.commitOperation();
+            this.commitOperation_();
         }
     }
 
     public *pileSecondary(pile: IPile): Generator<DelayHint, void> {
-        if (this.startOperation()) {
+        if (this.startOperation_()) {
             if (!(pile instanceof Pile)) Debug.error();
             Debug.assert(this.piles.indexOf(pile) >= 0);
             yield* this.pileSecondary_(pile);
-            this.commitOperation();
+            this.commitOperation_();
         }
     }
 
     public *cardPrimary(card: ICard): Generator<DelayHint, void> {
-        if (this.startOperation()) {
+        if (this.startOperation_()) {
             if (!(card instanceof Card)) Debug.error();
             Debug.assert(this.cards.indexOf(card) >= 0);
             yield* this.cardPrimary_(card);
-            this.commitOperation();
+            this.commitOperation_();
         }
     }
 
     public *cardSecondary(card: ICard): Generator<DelayHint, void> {
-        if (this.startOperation()) {
+        if (this.startOperation_()) {
             if (!(card instanceof Card)) Debug.error();
             Debug.assert(this.cards.indexOf(card) >= 0);
             yield* this.cardSecondary_(card);
-            this.commitOperation();
+            this.commitOperation_();
         }
     }
 
@@ -98,13 +98,13 @@ export abstract class GameBase implements IGameBase {
     }
 
     public *dropCard(card: ICard, pile: IPile) {
-        if (this.startOperation()) {
+        if (this.startOperation_()) {
             if (!(card instanceof Card)) Debug.error();
             if (!(pile instanceof Pile)) Debug.error();
             Debug.assert(this.cards.indexOf(card) >= 0);
             Debug.assert(this.piles.indexOf(pile) >= 0);
             yield* this.dropCard_(card, pile);
-            this.commitOperation();
+            this.commitOperation_();
         }
     }
 
@@ -117,7 +117,7 @@ export abstract class GameBase implements IGameBase {
     protected abstract previewDrop_(card: Card, pile: Pile): boolean;
     protected abstract dropCard_(card: Card, pile: Pile): Generator<DelayHint, void>;
 
-    private startOperation() {
+    private startOperation_() {
         if (this.currentOperation_)
             return false;
         this.currentOperation_ = new UndoableOperation();
@@ -130,13 +130,13 @@ export abstract class GameBase implements IGameBase {
         }
     }
 
-    private commitOperation() {
+    private commitOperation_() {
         if (!this.currentOperation_)
             Debug.error();
         if (this.currentOperation_.length > 0) {
             this.undoStack_.push(this.currentOperation_);
             this.redoStack_ = [];
         }
-        this.currentOperation_ = null;
+        this.currentOperation_ = undefined;
     }
 }

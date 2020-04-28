@@ -8,7 +8,7 @@ export interface IPile {
     at(index: number): ICard;
 
     /** Get the top card in this pile. */
-    peek(): ICard | null;
+    peek(): ICard | undefined;
 
     /** Find the index of a card in this pile. */
     indexOf(card: ICard): number;

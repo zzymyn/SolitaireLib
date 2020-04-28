@@ -2,11 +2,11 @@ import { Debug } from "../Debug";
 import { ViewContext } from "./ViewContext";
 
 export abstract class TemplatedElementView {
-    protected readonly context: ViewContext;
-    protected readonly element: HTMLElement;
+    protected readonly context_: ViewContext;
+    protected readonly element_: HTMLElement;
 
     constructor(context: ViewContext, parent: HTMLElement, templateId: string) {
-        this.context = context;
+        this.context_ = context;
 
         const template = document.getElementById(templateId);
         if (!(template instanceof HTMLTemplateElement))
@@ -19,7 +19,7 @@ export abstract class TemplatedElementView {
         if (!(element instanceof HTMLElement))
             Debug.error();
 
-        this.element = element as HTMLElement;
+        this.element_ = element as HTMLElement;
 
         parent.appendChild(element);
     }

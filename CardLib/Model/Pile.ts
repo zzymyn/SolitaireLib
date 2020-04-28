@@ -1,16 +1,16 @@
 import prand from 'pure-rand';
 import { Debug } from "../Debug";
 import { Card } from "./Card";
+import { Colour } from './Colour';
 import { GameBase } from './GameBase';
 import { IPile } from "./IPile";
-import { Suit } from './Suit';
-import { Colour } from './Colour';
 import { Rank } from './Rank';
+import { Suit } from './Suit';
 
 export class Pile implements IPile {
     public readonly game: GameBase;
     public cardsChanged = () => { };
-    private cards_: Card[] = [];
+    private readonly cards_: Card[] = [];
 
     public get length() { return this.cards_.length; }
 
@@ -18,7 +18,7 @@ export class Pile implements IPile {
         this.game = game;
     }
 
-    *[Symbol.iterator]() {
+    public *[Symbol.iterator]() {
         for (const card of this.cards_) {
             yield card;
         }
@@ -86,7 +86,7 @@ export class Pile implements IPile {
 
     public peek() {
         if (this.cards_.length <= 0)
-            return null;
+            return undefined;
         return this.at(this.cards_.length - 1);
     }
 
@@ -106,7 +106,7 @@ export class Pile implements IPile {
         if (card.pile === this && index >= card.pileIndex)
             index--;
 
-        card.pile.remove(card);
+        card.pile.remove_(card);
 
         this.cards_.splice(index, 0, card);
 
@@ -119,7 +119,7 @@ export class Pile implements IPile {
         return card;
     }
 
-    private remove(card: Card) {
+    private remove_(card: Card) {
         Debug.assert(card.pile === this);
 
         const index = card.pileIndex;

@@ -24,7 +24,7 @@ export abstract class GamePresenterBase {
         window.addEventListener("resize", this.onWindowResize_);
         window.addEventListener("keydown", this.onWindowKeyDown_);
 
-        this.restart();
+        this.restart_();
     }
 
     protected abstract onResize_(): void;
@@ -91,20 +91,20 @@ export abstract class GamePresenterBase {
         this.cardToCardView_.set(card, cardView);
         this.cardViewtoCard_.set(cardView, card);
 
-        this.onCardPileChanged(cardView, card);
-        card.pileChanged = () => this.onCardPileChanged(cardView, card);
+        this.onCardPileChanged_(cardView, card);
+        card.pileChanged = () => this.onCardPileChanged_(cardView, card);
 
-        this.onCardPileIndexChanged(cardView, card);
-        card.pileIndexChanged = () => this.onCardPileIndexChanged(cardView, card);
+        this.onCardPileIndexChanged_(cardView, card);
+        card.pileIndexChanged = () => this.onCardPileIndexChanged_(cardView, card);
 
-        this.onCardFaceUpChanged(cardView, card);
-        card.faceUpChanged = () => this.onCardFaceUpChanged(cardView, card);
+        this.onCardFaceUpChanged_(cardView, card);
+        card.faceUpChanged = () => this.onCardFaceUpChanged_(cardView, card);
 
         cardView.click = () => this.cardPrimary_(card);
         cardView.dblClick = () => this.cardSecondary_(card);
-        cardView.dragStart = () => this.cardDragStart(cardView, card);
-        cardView.dragMoved = (rect) => this.cardDragMoved(cardView, card, rect);
-        cardView.dragEnd = (rect, cancelled) => this.cardDragEnd(cardView, card, rect, cancelled);
+        cardView.dragStart = () => this.cardDragStart_(cardView, card);
+        cardView.dragMoved = rect => this.cardDragMoved_(cardView, card, rect);
+        cardView.dragEnd = (rect, cancelled) => this.cardDragEnd_(cardView, card, rect, cancelled);
 
         return cardView;
     }
@@ -121,27 +121,27 @@ export abstract class GamePresenterBase {
         return cardView;
     }
 
-    private onCardPileChanged(cardView: CardView, card: ICard) {
+    private onCardPileChanged_(cardView: CardView, card: ICard) {
         const pileView = this.getPileView_(card.pile);
         const rect = pileView.rect;
         rect.x += pileView.fanX * card.pileIndex;
         rect.y += pileView.fanY * card.pileIndex;
         cardView.rect = rect;
-        cardView.zIndex = this.getNextZIndex();
+        cardView.zIndex = this.getNextZIndex_();
     }
 
-    private onCardPileIndexChanged(cardView: CardView, card: ICard) {
+    private onCardPileIndexChanged_(cardView: CardView, card: ICard) {
     }
 
-    private onCardFaceUpChanged(cardView: CardView, card: ICard) {
+    private onCardFaceUpChanged_(cardView: CardView, card: ICard) {
         cardView.faceUp = card.faceUp;
     }
 
-    private cardDragStart(cardView: CardView, card: ICard) {
+    private cardDragStart_(cardView: CardView, card: ICard) {
         const { canDrag, extraCards: extraCards } = this.gameBase_.canDrag(card);
 
         if (canDrag) {
-            cardView.zIndex = this.getNextZIndex();
+            cardView.zIndex = this.getNextZIndex_();
         }
 
         const extraCardViews: CardView[] = [];
@@ -149,15 +149,15 @@ export abstract class GamePresenterBase {
             const extraCardView = this.getCardView_(extraCard);
             extraCardViews.push(extraCardView);
             if (canDrag) {
-                extraCardView.zIndex = this.getNextZIndex();
+                extraCardView.zIndex = this.getNextZIndex_();
             }
         }
 
         return { canDrag, extraCardViews };
     }
 
-    private cardDragMoved(cardView: CardView, card: ICard, rect: Rect) {
-        const pile = this.getBestDragPile(card, rect);
+    private cardDragMoved_(cardView: CardView, card: ICard, rect: Rect) {
+        const pile = this.getBestDragPile_(card, rect);
         if (pile) {
             const topCard = pile.peek();
             if (topCard) {
@@ -171,21 +171,21 @@ export abstract class GamePresenterBase {
             }
         }
 
-        this.setDropPreview_(null);
+        this.setDropPreview_(undefined);
     }
 
-    private cardDragEnd(cardView: CardView, card: ICard, rect: Rect, cancelled: boolean) {
+    private cardDragEnd_(cardView: CardView, card: ICard, rect: Rect, cancelled: boolean) {
         if (!cancelled) {
-            const bestPile = this.getBestDragPile(card, rect);
+            const bestPile = this.getBestDragPile_(card, rect);
             if (bestPile) {
                 this.addOperation_(() => this.gameBase_.dropCard(card, bestPile!));
             }
         }
-        this.setDropPreview_(null);
+        this.setDropPreview_(undefined);
     }
 
-    private getBestDragPile(card: ICard, rect: Rect) {
-        let bestPile: IPile | null = null;
+    private getBestDragPile_(card: ICard, rect: Rect) {
+        let bestPile: IPile | undefined;
         let bestPileOverlap = 0;
 
         for (const pileView of this.pileViews_) {
@@ -206,8 +206,8 @@ export abstract class GamePresenterBase {
         return bestPile;
     }
 
-    private dropPreview_: DropPreview | null = null;
-    private setDropPreview_(view: DropPreview | null) {
+    private dropPreview_: DropPreview | undefined = undefined;
+    private setDropPreview_(view: DropPreview | undefined) {
         if (view !== this.dropPreview_) {
             if (this.dropPreview_)
                 this.dropPreview_.dropPreview = false;
@@ -218,18 +218,18 @@ export abstract class GamePresenterBase {
     }
 
     private nextZIndex_ = 1000;
-    private nextZIndexInc_ = 1;
-    private getNextZIndex() {
+    private readonly nextZIndexInc_ = 1;
+    private getNextZIndex_() {
         const r = this.nextZIndex_;
         this.nextZIndex_ += this.nextZIndexInc_;
         return r;
     }
 
-    private onWindowResize_ = (e: UIEvent) => {
+    private readonly onWindowResize_ = (e: UIEvent) => {
         this.onResize_();
     }
 
-    private onWindowKeyDown_ = (e: KeyboardEvent) => {
+    private readonly onWindowKeyDown_ = (e: KeyboardEvent) => {
         if (e) {
             if (e.key === "y" && e.ctrlKey) {
                 this.redo_();
@@ -240,7 +240,7 @@ export abstract class GamePresenterBase {
                 e.stopPropagation();
                 e.preventDefault();
             } else if (e.key === "n") {
-                this.restart();
+                this.restart_();
                 e.stopPropagation();
                 e.preventDefault();
             }
@@ -255,7 +255,7 @@ export abstract class GamePresenterBase {
         this.addOperation_(() => this.gameBase_.redo());
     }
 
-    private async restart() {
+    private async restart_() {
         this.addOperation_(() => this.gameBase_.restart(Date.now()));
     }
 

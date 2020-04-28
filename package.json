@@ -22,6 +22,7 @@
     "rimraf": "^3.0.2",
     "sass": "^1.26.3",
     "tslint": "^6.1.2",
+    "tslint-consistent-codestyle": "^1.16.0",
     "typescript": "^3.8.3"
   }
 }

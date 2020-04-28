@@ -16,8 +16,8 @@ export class Game extends GameBase implements IGame {
     public readonly waste = new Pile(this);
     public readonly foundation = new Pile(this);
     public readonly pyramid: Pile[][] = [];
-    private pyramidCoords = new Map<Pile, { x: number, y: number }>();
-    private restocks = 0;
+    private readonly pyramidCoords_ = new Map<Pile, { x: number, y: number }>();
+    private restocks_ = 0;
 
     constructor(options: GameOptions) {
         super();
@@ -32,7 +32,7 @@ export class Game extends GameBase implements IGame {
             for (let x = 0; x <= y; ++x) {
                 const pile = new Pile(this);
                 this.pyramid[y].push(pile);
-                this.pyramidCoords.set(pile, { x, y });
+                this.pyramidCoords_.set(pile, { x, y });
                 this.piles.push(pile);
             }
         }
@@ -45,7 +45,7 @@ export class Game extends GameBase implements IGame {
     public get unwinnable(): boolean { return false; }
 
     protected *restart_(rng: prand.RandomGenerator) {
-        this.restocks = 0;
+        this.restocks_ = 0;
 
         // put all the cards face down back into the stock
         for (const card of this.stock) {
@@ -83,14 +83,14 @@ export class Game extends GameBase implements IGame {
             }
         }
 
-        yield* this.doAutoMoves();
+        yield* this.doAutoMoves_();
     }
 
     protected *cardPrimary_(card: Card) {
         // if the player clicks on an unblocked king, move it to the foundation:
-        if (card.rank === Rank.King && this.isFree(card)) {
+        if (card.rank === Rank.King && this.isFree_(card)) {
             this.foundation.push(card);
-            yield* this.doAutoMoves();
+            yield* this.doAutoMoves_();
             return;
         }
 
@@ -101,7 +101,7 @@ export class Game extends GameBase implements IGame {
             } else {
                 this.waste.push(card);
             }
-            yield* this.doAutoMoves();
+            yield* this.doAutoMoves_();
             return;
         }
     }
@@ -111,8 +111,8 @@ export class Game extends GameBase implements IGame {
 
     protected *pilePrimary_(pile: Pile) {
         // if the stock is exhausted and the player click on it, move all the cards from the waste back to the stock:
-        if (pile === this.stock && this.stock.length === 0 && this.waste.length > 0 && this.restocks < this.options.restocksAllowed) {
-            this.restocks++;
+        if (pile === this.stock && this.stock.length === 0 && this.waste.length > 0 && this.restocks_ < this.options.restocksAllowed) {
+            this.restocks_++;
             for (let i = this.waste.length; i-- > 0;) {
                 const card = this.waste.at(i);
                 card.flip(false);
@@ -123,7 +123,7 @@ export class Game extends GameBase implements IGame {
                 this.stock.push(card);
             }
 
-            yield* this.doAutoMoves();
+            yield* this.doAutoMoves_();
             return;
         }
     }
@@ -133,24 +133,24 @@ export class Game extends GameBase implements IGame {
 
     protected canDrag_(card: Card): { canDrag: boolean; extraCards: Card[]; } {
         return {
-            canDrag: this.isFree(card),
+            canDrag: this.isFree_(card),
             extraCards: []
-        }
+        };
     }
 
     protected previewDrop_(card: Card, pile: Pile): boolean {
-        return this.is13Move(card, pile);
+        return this.is13Move_(card, pile);
     }
 
     protected *dropCard_(card: Card, pile: Pile) {
-        if (this.is13Move(card, pile)) {
+        if (this.is13Move_(card, pile)) {
             this.foundation.push(pile.peek()!);
             this.foundation.push(card);
-            yield* this.doAutoMoves();
+            yield* this.doAutoMoves_();
         }
     }
 
-    private isFree(card: Card) {
+    private isFree_(card: Card) {
         if (!card.faceUp)
             return false;
 
@@ -161,7 +161,7 @@ export class Game extends GameBase implements IGame {
             return true;
 
         if (card.pile) {
-            const coords = this.pyramidCoords.get(card.pile);
+            const coords = this.pyramidCoords_.get(card.pile);
             if (coords) {
                 const nextRow = this.pyramid[coords.y + 1];
                 if (!nextRow)
@@ -175,20 +175,20 @@ export class Game extends GameBase implements IGame {
         return false;
     }
 
-    private is13Move(card: Card, pile: Pile) {
+    private is13Move_(card: Card, pile: Pile) {
         if (card.pile === pile)
             return false;
-        if (!this.isFree(card))
+        if (!this.isFree_(card))
             return false;
         const otherCard = pile.peek();
         if (!otherCard)
             return false;
-        if (!this.isFree(otherCard))
+        if (!this.isFree_(otherCard))
             return false;
-        return this.getCardValue(card) + this.getCardValue(otherCard) === 13;
+        return this.getCardValue_(card) + this.getCardValue_(otherCard) === 13;
     }
 
-    private getCardValue(card: Card) {
+    private getCardValue_(card: Card) {
         switch (card.rank) {
             case Rank.Ace: return 1;
             case Rank.Two: return 2;
@@ -208,12 +208,12 @@ export class Game extends GameBase implements IGame {
         }
     }
 
-    private *doAutoMoves() {
+    private *doAutoMoves_() {
         mainLoop: while (true) {
             if (this.options.autoPlayKings) {
                 {
                     const card = this.stock.peek();
-                    if (card && this.isFree(card) && this.getCardValue(card) === 13) {
+                    if (card && this.isFree_(card) && this.getCardValue_(card) === 13) {
                         yield DelayHint.OneByOne;
                         this.foundation.push(card);
                         continue mainLoop;
@@ -221,7 +221,7 @@ export class Game extends GameBase implements IGame {
                 }
                 {
                     const card = this.waste.peek();
-                    if (card && this.isFree(card) && this.getCardValue(card) === 13) {
+                    if (card && this.isFree_(card) && this.getCardValue_(card) === 13) {
                         yield DelayHint.OneByOne;
                         this.foundation.push(card);
                         continue mainLoop;
@@ -230,7 +230,7 @@ export class Game extends GameBase implements IGame {
                 for (const row of this.pyramid) {
                     for (const pile of row) {
                         const card = pile.peek();
-                        if (card && this.isFree(card) && this.getCardValue(card) === 13) {
+                        if (card && this.isFree_(card) && this.getCardValue_(card) === 13) {
                             yield DelayHint.OneByOne;
                             this.foundation.push(card);
                             continue mainLoop;

@@ -1,6 +1,6 @@
 export class UndoableOperation {
-    private redos_: (() => void)[] = [];
-    private undos_: (() => void)[] = [];
+    private readonly redos_: (() => void)[] = [];
+    private readonly undos_: (() => void)[] = [];
 
     public get length() { return this.undos_.length; }
 
@@ -16,7 +16,7 @@ export class UndoableOperation {
     }
 
     public redo() {
-        for (const redo of this.redos_){
+        for (const redo of this.redos_) {
             redo();
         }
     }

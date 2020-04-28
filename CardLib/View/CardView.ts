@@ -11,7 +11,7 @@ const deadZoneSize = 5;
 export class CardView extends TemplatedElementView implements ITouchResponder {
     public click = () => { };
     public dblClick = () => { };
-    public dragStart = () => { return { canDrag: false, extraCardViews: [] as CardView[] }; };
+    public dragStart = () => ({ canDrag: false, extraCardViews: [] as CardView[] });
     public dragMoved = (rect: Rect) => { };
     public dragEnd = (rect: Rect, cancelled: boolean) => { };
 
@@ -22,7 +22,7 @@ export class CardView extends TemplatedElementView implements ITouchResponder {
     public set rect(rect: Rect) {
         this.onTouchUp(this.touchId_, true);
         this.rect_.set(rect);
-        rect.setOnElement(this.element);
+        rect.setOnElement(this.element_);
     }
 
     private zIndex_ = 0;
@@ -31,7 +31,7 @@ export class CardView extends TemplatedElementView implements ITouchResponder {
         if (this.zIndex_ === zIndex)
             return;
         this.zIndex_ = zIndex;
-        this.element.style.zIndex = `${zIndex}`;
+        this.element_.style.zIndex = `${zIndex}`;
     }
 
     private faceUp_ = false;
@@ -41,9 +41,9 @@ export class CardView extends TemplatedElementView implements ITouchResponder {
             return;
         this.faceUp_ = faceUp;
         if (faceUp) {
-            this.element.classList.add("faceUp");
+            this.element_.classList.add("faceUp");
         } else {
-            this.element.classList.remove("faceUp");
+            this.element_.classList.remove("faceUp");
         }
     }
 
@@ -54,21 +54,21 @@ export class CardView extends TemplatedElementView implements ITouchResponder {
             return;
         this.dropPreview_ = dropPreview;
         if (dropPreview) {
-            this.element.classList.add("dropPreview");
+            this.element_.classList.add("dropPreview");
         } else {
-            this.element.classList.remove("dropPreview");
+            this.element_.classList.remove("dropPreview");
         }
     }
 
     constructor(context: ViewContext, parent: HTMLElement, suit: Suit, colour: Colour, rank: Rank) {
         super(context, parent, "cardTemplate");
-        this.element.classList.add(`s${suit}c${colour}r${rank}`);
-        this.element.addEventListener("dblclick", this.onDblClick);
-        this.element.addEventListener("mousedown", this.onMouseDown_);
-        this.element.addEventListener("touchstart", this.touchStart_);
+        this.element_.classList.add(`s${suit}c${colour}r${rank}`);
+        this.element_.addEventListener("dblclick", this.onDblClick_);
+        this.element_.addEventListener("mousedown", this.onMouseDown_);
+        this.element_.addEventListener("touchstart", this.touchStart_);
     }
 
-    private onDblClick = (e: MouseEvent) => {
+    private readonly onDblClick_ = (e: MouseEvent) => {
         this.dblClick();
     }
 
@@ -110,16 +110,16 @@ export class CardView extends TemplatedElementView implements ITouchResponder {
                 this.touchStartX_ = x;
                 this.touchStartY_ = y;
 
-                const pxSize = this.context.pxPerRem;
+                const pxSize = this.context_.pxPerRem;
 
                 this.dragRect_.x += pxSize * dx;
                 this.dragRect_.y += pxSize * dy;
-                this.dragRect_.setOnElement(this.element);
+                this.dragRect_.setOnElement(this.element_);
 
                 for (const dragExtraCardView of this.dragExtraCardViews_) {
                     dragExtraCardView.dragRect_.x += pxSize * dx;
                     dragExtraCardView.dragRect_.y += pxSize * dy;
-                    dragExtraCardView.dragRect_.setOnElement(dragExtraCardView.element);
+                    dragExtraCardView.dragRect_.setOnElement(dragExtraCardView.element_);
                 }
 
                 this.dragMoved(this.dragRect_);
@@ -131,7 +131,7 @@ export class CardView extends TemplatedElementView implements ITouchResponder {
         if (this.touchTracking_ && this.touchId_ === id) {
             this.touchTracking_ = false;
 
-            this.context.removeTouchResponder(this);
+            this.context_.removeTouchResponder(this);
 
             if (this.touchInDeadZone_) {
                 this.click();
@@ -154,11 +154,11 @@ export class CardView extends TemplatedElementView implements ITouchResponder {
             this.dragExtraCardViews_ = extraCardViews;
 
             this.dragRect_.set(this.rect_);
-            this.element.classList.add("dragging");
+            this.element_.classList.add("dragging");
 
             for (const dragExtraCardView of this.dragExtraCardViews_) {
                 dragExtraCardView.dragRect_.set(dragExtraCardView.rect_);
-                dragExtraCardView.element.classList.add("dragging");
+                dragExtraCardView.element_.classList.add("dragging");
             }
         }
     }
@@ -167,32 +167,32 @@ export class CardView extends TemplatedElementView implements ITouchResponder {
         if (this.dragging_) {
             this.dragging_ = false;
 
-            this.element.classList.remove("dragging");
-            this.rect_.setOnElement(this.element);
+            this.element_.classList.remove("dragging");
+            this.rect_.setOnElement(this.element_);
 
             for (const dragExtraCardView of this.dragExtraCardViews_) {
-                dragExtraCardView.element.classList.remove("dragging");
-                dragExtraCardView.rect_.setOnElement(dragExtraCardView.element);
+                dragExtraCardView.element_.classList.remove("dragging");
+                dragExtraCardView.rect_.setOnElement(dragExtraCardView.element_);
             }
 
             this.dragEnd(this.dragRect_, cancelled);
         }
     }
 
-    private onMouseDown_ = (e: MouseEvent) => {
+    private readonly onMouseDown_ = (e: MouseEvent) => {
         if (e.button === 0) {
             e.preventDefault();
-            this.context.addTouchResponder(this);
+            this.context_.addTouchResponder(this);
             this.onTouchDown(-1, e.pageX, e.pageY);
         }
     }
 
-    private touchStart_ = (e: TouchEvent) => {
+    private readonly touchStart_ = (e: TouchEvent) => {
         for (let i = 0; i < e.changedTouches.length; ++i) {
             const touch = e.changedTouches.item(i);
             if (touch) {
                 e.preventDefault();
-                this.context.addTouchResponder(this);
+                this.context_.addTouchResponder(this);
                 this.onTouchDown(touch.identifier, touch.pageX, touch.pageY);
             }
         }
