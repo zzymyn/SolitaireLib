@@ -56,10 +56,10 @@ export class Rect {
     }
 
     public equals(o: Rect) {
-        return this.x == o.x
-            && this.y == o.y
-            && this.sizeX == o.sizeX
-            && this.sizeY == o.sizeY;
+        return this.x === o.x
+            && this.y === o.y
+            && this.sizeX === o.sizeX
+            && this.sizeY === o.sizeY;
     }
 
     public overlaps(o: Rect) {

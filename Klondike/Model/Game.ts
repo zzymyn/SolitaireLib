@@ -95,6 +95,7 @@ export class Game extends GameBase implements IGame {
         // if the player clicks on the top card of the stock, move it to the waste and turn over a new card:
         if (this.stock.peek() === card) {
             this.waste.push(card);
+            yield DelayHint.Quick;
             card.flip(true);
             yield* this.doAutoMoves_();
             return;
@@ -284,6 +285,7 @@ export class Game extends GameBase implements IGame {
                 if (card && this.waste.length === 0) {
                     yield DelayHint.OneByOne;
                     this.waste.push(card);
+                    yield DelayHint.Quick;
                     card.flip(true);
                     continue mainLoop;
                 }

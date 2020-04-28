@@ -7,8 +7,10 @@ import { ViewContext } from "./ViewContext";
 export class PileView extends TemplatedElementView implements ITouchResponder {
     public click = () => { };
     public dblClick = () => { };
-    public fanX = 0;
-    public fanY = 0;
+    public fanXDown = 0;
+    public fanXUp = 0;
+    public fanYDown = 0;
+    public fanYUp = 0;
     public cardCount = 0;
 
     private readonly rect_ = new Rect();
@@ -23,16 +25,14 @@ export class PileView extends TemplatedElementView implements ITouchResponder {
         }
     }
 
+    private readonly hitbox_ = new Rect();
     public get hitbox() {
-        const rect = new Rect();
-        rect.set(this.rect_);
-        const dx = Math.max(0, this.cardCount - 1) * this.fanX;
-        const dy = Math.max(0, this.cardCount - 1) * this.fanY;
-        rect.x += 0.5 * dx;
-        rect.y += 0.5 * dy;
-        rect.sizeX += dx;
-        rect.sizeY += dy;
-        return rect;
+        const hitbox = new Rect();
+        hitbox.set(this.hitbox_);
+        return hitbox;
+    }
+    public set hitbox(hitbox: Rect) {
+        this.hitbox_.set(hitbox);
     }
 
     private zIndex_ = 0;

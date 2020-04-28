@@ -19,39 +19,28 @@ export class GamePresenter extends GamePresenterBase {
         super(game, rootView);
         this.game_ = game;
 
-        const tableSize = this.game_.tableaux.length;
-
-        const xPos = (i: number) => {
-            return (i - 0.5 * (tableSize - 1)) * (sizeX + margin);
-        };
-
         // create piles:
         {
             const pileView = this.createPileView_(game.stock);
-            pileView.rect = new Rect(sizeX, sizeY, xPos(0), -35 + margin);
             pileView.showFrame = true;
             this.stockPile_ = pileView;
         }
         {
             const pileView = this.createPileView_(game.waste);
-            pileView.rect = new Rect(sizeX, sizeY, xPos(1), -35 + margin);
             pileView.showFrame = true;
             pileView.zIndex = 50;
             this.wastePile_ = pileView;
         }
         for (let i = 0; i < this.game_.foundations.length; ++i) {
             const pileView = this.createPileView_(game.foundations[i]);
-            pileView.rect = new Rect(sizeX, sizeY, xPos(tableSize - this.game_.foundations.length + i), -35 + margin);
             pileView.showFrame = true;
             pileView.zIndex = 800;
             this.foundationPiles_.push(pileView);
         }
         for (let i = 0; i < this.game_.tableaux.length; ++i) {
             const pileView = this.createPileView_(game.tableaux[i]);
-            pileView.rect = new Rect(sizeX, sizeY, xPos(i), -35 + margin + margin + sizeY + margin);
             pileView.showFrame = true;
             pileView.zIndex = 800;
-            pileView.fanY = 3.5;
             this.tableauPiles_.push(pileView);
         }
 
@@ -59,8 +48,50 @@ export class GamePresenter extends GamePresenterBase {
         for (const card of game.cards) {
             this.createCardView_(card);
         }
+
+        this.layoutPiles_();
     }
 
     protected onResize_() {
+        this.layoutPiles_();
+    }
+
+    private layoutPiles_() {
+        const tableSize = this.game_.tableaux.length;
+
+        let vExpand = 1;
+        if (window.matchMedia("screen and (max-aspect-ratio: 100/130)").matches) {
+            vExpand = 1.5;
+        }
+        const xPos = (i: number) => {
+            return (i - 0.5 * (tableSize - 1)) * (sizeX + margin);
+        };
+
+        {
+            const pile = this.game_.stock;
+            const pileView = this.getPileView_(pile);
+            pileView.rect = new Rect(sizeX, sizeY, xPos(0), vExpand * -35 + margin);
+            this.relayoutPile_(pileView, pile);
+        }
+        {
+            const pile = this.game_.waste;
+            const pileView = this.getPileView_(this.game_.waste);
+            pileView.rect = new Rect(sizeX, sizeY, xPos(1), vExpand * -35 + margin);
+            this.relayoutPile_(pileView, pile);
+        }
+        for (let i = 0; i < this.game_.foundations.length; ++i) {
+            const pile = this.game_.foundations[i];
+            const pileView = this.getPileView_(pile);
+            pileView.rect = new Rect(sizeX, sizeY, xPos(tableSize - this.game_.foundations.length + i), vExpand * -35 + margin);
+            this.relayoutPile_(pileView, pile);
+        }
+        for (let i = 0; i < this.game_.tableaux.length; ++i) {
+            const pile = this.game_.tableaux[i];
+            const pileView = this.getPileView_(pile);
+            pileView.rect = new Rect(sizeX, sizeY, xPos(i), vExpand * -35 + margin + margin + sizeY + margin);
+            pileView.fanYDown = 3.5;
+            pileView.fanYUp = vExpand * 3.5;
+            this.relayoutPile_(pileView, pile);
+        }
     }
 }

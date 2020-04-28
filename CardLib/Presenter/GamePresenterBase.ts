@@ -56,23 +56,27 @@ export abstract class GamePresenterBase {
         return pileView;
     }
 
-    private getPile_(pileView: PileView) {
+    protected getPile_(pileView: PileView) {
         const pile = this.pileViewtoPile_.get(pileView);
         if (!pile) Debug.error();
         return pile;
     }
 
-    private getPileView_(pile: IPile) {
+    protected getPileView_(pile: IPile) {
         const pileView = this.pileToPileView_.get(pile);
         if (!pileView) Debug.error();
         return pileView;
     }
 
     private onPileCardsChanged_(pileView: PileView, pile: IPile) {
+        this.relayoutPile_(pileView, pile);
+    }
+
+    protected relayoutPile_(pileView: PileView, pile: IPile) {
         pileView.cardCount = pile.length;
 
+        // go top to bottom to set z-indicies:
         let zIndex: number | undefined;
-
         for (let i = pile.length; i-- > 0;) {
             const card = pile.at(i);
             const cardView = this.getCardView_(card);
@@ -82,12 +86,42 @@ export abstract class GamePresenterBase {
             } else {
                 zIndex = cardView.zIndex;
             }
+        }
+
+        // go bottom to top to set positions:
+        let dx0 = 0;
+        let dy0 = 0;
+        let dx1 = 0;
+        let dy1 = 0;
+
+        for (let i = 0; i < pile.length; ++i) {
+            const card = pile.at(i);
+            const cardView = this.getCardView_(card);
 
             const rect = pileView.rect;
-            rect.x += pileView.fanX * i;
-            rect.y += pileView.fanY * i;
+
+            dx0 = dx1;
+            dy0 = dy1;
+            rect.x += dx1;
+            rect.y += dy1;
+
+            if (card.faceUp) {
+                dx1 += pileView.fanXUp;
+                dy1 += pileView.fanYUp;
+            } else {
+                dx1 += pileView.fanXDown;
+                dy1 += pileView.fanYDown;
+            }
+
             cardView.rect = rect;
         }
+
+        let hitbox = pileView.rect;
+        hitbox.x += 0.5 * dx0;
+        hitbox.y += 0.5 * dy0;
+        hitbox.sizeX += dx0;
+        hitbox.sizeY += dy0;
+        pileView.hitbox = hitbox;
     }
 
     private readonly cardViews_: CardView[] = [];
@@ -118,24 +152,19 @@ export abstract class GamePresenterBase {
         return cardView;
     }
 
-    private getCard_(cardView: CardView) {
+    protected getCard_(cardView: CardView) {
         const card = this.cardViewtoCard_.get(cardView);
         if (!card) Debug.error();
         return card;
     }
 
-    private getCardView_(card: ICard) {
+    protected getCardView_(card: ICard) {
         const cardView = this.cardToCardView_.get(card);
         if (!cardView) Debug.error();
         return cardView;
     }
 
     private onCardPileChanged_(cardView: CardView, card: ICard) {
-        const pileView = this.getPileView_(card.pile);
-        const rect = pileView.rect;
-        rect.x += pileView.fanX * card.pileIndex;
-        rect.y += pileView.fanY * card.pileIndex;
-        cardView.rect = rect;
         cardView.zIndex = this.getNextZIndex_();
     }
 

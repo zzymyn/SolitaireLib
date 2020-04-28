@@ -20,7 +20,7 @@ export class GamePresenter extends GamePresenterBase {
         super(game, rootView);
         this.game_ = game;
 
-        var yPos = (y: number) => (y - 0.5 * (game.pyramid.length - 1)) * (sizeY + pyramidMarginY);
+        const yPos = (y: number) => (y - 0.5 * (game.pyramid.length - 1)) * (sizeY + pyramidMarginY);
 
         // create piles:
         {
