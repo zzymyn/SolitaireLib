@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "parcel index.html -d bin-dev",
-    "build": "parcel build index.html --public-url \"./\" -d bin",
+    "build": "parcel build index.html --public-url \"./\" -d bin --no-source-maps",
     "tswatch": "tsc --watch --noEmit --project tsconfig.json",
     "tslint": "tslint --project .",
     "tslintfix": "tslint --project . --fix"

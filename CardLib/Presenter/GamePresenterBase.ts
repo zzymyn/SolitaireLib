@@ -277,6 +277,7 @@ export abstract class GamePresenterBase {
 
     private readonly operations_: (() => Generator<DelayHint, void>)[] = [];
     private async addOperation_(operation: () => Generator<DelayHint, void>) {
+        let waitCount = 0;
         if (this.operations_.length === 0) {
             // nothing else is already running, so start now:
             this.operations_.push(operation);
@@ -284,7 +285,7 @@ export abstract class GamePresenterBase {
             while (this.operations_.length > 0) {
                 const op = this.operations_[0];
                 for (const delay of op()) {
-                    await this.waitForDelay_(delay);
+                    await this.waitForDelay_(delay, waitCount++);
                 }
                 this.operations_.shift();
             }
@@ -294,18 +295,21 @@ export abstract class GamePresenterBase {
         }
     }
 
-    private async waitForDelay_(delay: DelayHint) {
+    private async waitForDelay_(delay: DelayHint, waitCount: number) {
+        // make delays slightly shorter as things go on:
+        const speedUp = Math.pow(0.95, waitCount);
+
         switch (delay) {
             case DelayHint.None:
-                return;
+                    return;
             case DelayHint.Quick:
-                await new Promise(resolve => setTimeout(resolve, 20));
+                await new Promise(resolve => setTimeout(resolve, speedUp * 20));
                 return;
             case DelayHint.OneByOne:
-                await new Promise(resolve => setTimeout(resolve, 200));
+                await new Promise(resolve => setTimeout(resolve, speedUp * 200));
                 return;
             case DelayHint.Settle:
-                await new Promise(resolve => setTimeout(resolve, 400));
+                await new Promise(resolve => setTimeout(resolve, speedUp * 400));
                 return;
         }
     }
