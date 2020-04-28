@@ -19,6 +19,17 @@ export abstract class GamePresenterBase {
         this.gameBase_ = game;
         this.rootView_ = rootView;
 
+        // TODO: make nicer:
+        document.getElementById("newGameButton")?.addEventListener("click", () => {
+            this.restart_();
+        });
+        document.getElementById("undoButton")?.addEventListener("click", () => {
+            this.undo_();
+        });
+        document.getElementById("redoButton")?.addEventListener("click", () => {
+            this.redo_();
+        });
+
         window.addEventListener("resize", this.onWindowResize_);
         window.addEventListener("keydown", this.onWindowKeyDown_);
 

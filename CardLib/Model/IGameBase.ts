@@ -9,13 +9,13 @@ export interface IGameBase {
     /** All the piles in the game. */
     piles: IPile[];
 
-    won: boolean;
-
-    unwinnable: boolean;
-
     restart(seed: number): Generator<DelayHint, void>;
 
+    readonly canUndo: boolean;
+
     undo(): Generator<DelayHint, void>;
+
+    readonly canRedo: boolean;
 
     redo(): Generator<DelayHint, void>;
 

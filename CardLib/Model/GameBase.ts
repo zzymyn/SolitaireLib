@@ -12,9 +12,6 @@ export abstract class GameBase implements IGameBase {
     public cards: Card[] = [];
     public piles: Pile[] = [];
 
-    public abstract get won(): boolean;
-    public abstract get unwinnable(): boolean;
-
     private undoStack_: UndoableOperation[] = [];
     private redoStack_: UndoableOperation[] = [];
     private currentOperation_: UndoableOperation | undefined = undefined;
@@ -27,6 +24,8 @@ export abstract class GameBase implements IGameBase {
         yield* this.restart_(rng);
     }
 
+    public get canUndo() { return this.undoStack_.length > 0; }
+
     public *undo() {
         const undoOp = this.undoStack_.pop();
         if (undoOp) {
@@ -34,6 +33,8 @@ export abstract class GameBase implements IGameBase {
             this.redoStack_.push(undoOp);
         }
     }
+
+    public get canRedo() { return this.redoStack_.length > 0; }
 
     public *redo() {
         const redoOp = this.redoStack_.pop();

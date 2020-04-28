@@ -7,43 +7,96 @@
 }
 
 html {
-    background: #477148;
-    font-size: 1vmin;
+    background-color: #477148;
+    background-image: linear-gradient(180deg, #477148 0%, #416941 100%);
+    font-size: 1vw;
+}
+
+@media screen and (min-aspect-ratio : 95/100) {
+    html {
+        font-size: 0.95vh;
+    }
 }
 
 body {
+    font-family: "Avenir-Book", "Avenir", sans-serif;
     margin: 0;
     padding: 0;
 }
 
-$ranks: (
-    "r1": "A",
-    "r2": "2",
-    "r3": "3",
-    "r4": "4",
-    "r5": "5",
-    "r6": "6",
-    "r7": "7",
-    "r8": "8",
-    "r9": "9",
-    "r10": "T",
-    "r100": "J",
-    "r101": "Q",
-    "r102": "K",
-);
+div#buttons {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #aaa;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: stretch;
+    align-content: center;
+    overflow: visible;
+    text-transform: none;
+}
 
-$suits: (
-    "s1c1": "S",
-    "s1c2": "S",
-    "s2c1": "H",
-    "s2c2": "H",
-    "s3c1": "D",
-    "s3c2": "D",
-    "s4c1": "C",
-    "s4c2": "C",
-);
+div#buttons button {
+    margin: 0 1px;
+    padding: 0;
+    height: 5vh;
+    font-family: inherit;
+    font-size: 2.5vh;
+    border: none;
+    background-color: #ddd;
+    flex-grow: 1;
+    flex-basis: 0;
+    max-width: 30vh;
+}
+
+div#table {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 5vh;
+    top: 0;
+}
+
+div#tabletest {
+    position: absolute;
+    outline: 1px solid red;
+    left: calc(50% - 50rem);
+    right: calc(50% - 50rem);
+    top: calc(50% - 50rem);
+    bottom: calc(50% - 50rem);
+}
 
 @mixin cardFaces($cardStyle) {
+    $ranks: (
+        "r1": "A",
+        "r2": "2",
+        "r3": "3",
+        "r4": "4",
+        "r5": "5",
+        "r6": "6",
+        "r7": "7",
+        "r8": "8",
+        "r9": "9",
+        "r10": "T",
+        "r100": "J",
+        "r101": "Q",
+        "r102": "K",
+    );
+
+    $suits: (
+        "s1c1": "S",
+        "s1c2": "S",
+        "s2c1": "H",
+        "s2c2": "H",
+        "s3c1": "D",
+        "s3c2": "D",
+        "s4c1": "C",
+        "s4c2": "C",
+    );
+
     .pile.showFrame {
         background-image: url("Images/Cards/#{$cardStyle}/00.svg");
     }
@@ -62,7 +115,7 @@ $suits: (
 }
 
 .pile {
-    position: fixed;
+    position: absolute;
     transition-property: left, top, right, bottom, filter, background-color;
     transition-duration: 0.25s, 0.25s, 0.25s, 0.25s, 0.1s, 0.1s;
     transition-timing-function: ease-in-out;
@@ -82,7 +135,7 @@ $suits: (
 }
 
 .card {
-    position: fixed;
+    position: absolute;
     transition-property: left, top, right, bottom, filter;
     transition-duration: 0.25s, 0.25s, 0.25s, 0.25s, 0.1s;
     transition-timing-function: ease-in-out;

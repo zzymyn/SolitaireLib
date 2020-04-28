@@ -47,10 +47,6 @@ export class Game extends GameBase implements IGame {
         this.cards = DeckUtils.createStandard52Deck(this.stock);
     }
 
-    public get won(): boolean { return false; }
-
-    public get unwinnable(): boolean { return false; }
-
     protected *restart_(rng: prand.RandomGenerator) {
         this.restocks_ = 0;
 

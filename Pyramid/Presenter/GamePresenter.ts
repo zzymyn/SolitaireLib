@@ -4,11 +4,10 @@ import { PileView } from "~CardLib/View/PileView";
 import { Rect } from "~CardLib/View/Rect";
 import { IGame } from "../Model/IGame";
 
-const edgeMargin = 2;
-const sizeY = 18;
+const sizeY = 20;
 const sizeX = sizeY / 1.555555555555;
-const pyramidMarginX = 2;
-const pyramidMarginY = -6;
+const pyramidMarginX = 1.5;
+const pyramidMarginY = -7;
 
 export class GamePresenter extends GamePresenterBase {
     private readonly game_: IGame;
@@ -21,12 +20,14 @@ export class GamePresenter extends GamePresenterBase {
         super(game, rootView);
         this.game_ = game;
 
+        var yPos = (y: number) => (y - 0.5 * (game.pyramid.length - 1)) * (sizeY + pyramidMarginY);
+
         // create piles:
         {
             const pileView = this.createPileView_(game.stock);
             pileView.rect = new Rect(sizeX, sizeY,
                 (0 - 0.5 * (game.pyramid.length - 1)) * (sizeX + pyramidMarginX),
-                (0 - 0.5 * (game.pyramid.length - 1)) * (sizeY + pyramidMarginY));
+                yPos(0));
             pileView.showFrame = true;
             this.stockPile_ = pileView;
         }
@@ -34,7 +35,7 @@ export class GamePresenter extends GamePresenterBase {
             const pileView = this.createPileView_(game.waste);
             pileView.rect = new Rect(sizeX, sizeY,
                 (1 - 0.5 * (game.pyramid.length - 1)) * (sizeX + pyramidMarginX),
-                (0 - 0.5 * (game.pyramid.length - 1)) * (sizeY + pyramidMarginY));
+                yPos(0));
             pileView.showFrame = true;
             pileView.zIndex = 50;
             this.wastePile_ = pileView;
@@ -43,7 +44,7 @@ export class GamePresenter extends GamePresenterBase {
             const pileView = this.createPileView_(game.foundation);
             pileView.rect = new Rect(sizeX, sizeY,
                 (game.pyramid.length - 1 - 0.5 * (game.pyramid.length - 1)) * (sizeX + pyramidMarginX),
-                (0 - 0.5 * (game.pyramid.length - 1)) * (sizeY + pyramidMarginY));
+                yPos(0));
             pileView.showFrame = true;
             pileView.zIndex = 800;
             this.foundationPile_ = pileView;
@@ -59,7 +60,7 @@ export class GamePresenter extends GamePresenterBase {
                 pileView.rect = new Rect(
                     sizeX, sizeY,
                     (x - 0.5 * (row.length - 1)) * (sizeX + pyramidMarginX),
-                    (y - 0.5 * (game.pyramid.length - 1)) * (sizeY + pyramidMarginY));
+                    yPos(y));
                 pileView.zIndex = 100 * y;
             }
         }
