@@ -121,6 +121,7 @@ export class PileView extends TemplatedElementView implements ITouchResponder {
             if (this.touchInDeadZone_) {
                 if (timeStamp < this.lastTouchEndTimeStamp_ + 1000) {
                     this.dblClick();
+                    timeStamp = 0;
                 } else {
                     this.click();
                 }
