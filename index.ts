@@ -36,7 +36,7 @@ window.addEventListener("load", () => {
             gameKey = hash.substr(1);
         }
 
-        const gamePresenterFactory = gamePresenterFactories.get(gameKey);
+        const gamePresenterFactory = gamePresenterFactories.get(gameKey.toLowerCase());
         if (!gamePresenterFactory)
             Debug.error(`Unknown game ${gameKey}.`);
 
