@@ -1,10 +1,12 @@
 import { ITouchResponder } from "./ITouchResponder";
 import { IView } from "./IView";
 import { Rect } from "./Rect";
-import { TemplatedElementView } from "./TemplatedElementView";
 import { ViewContext } from "./ViewContext";
+import { ViewUtils } from "./ViewUtils";
 
-export class PileView extends TemplatedElementView implements ITouchResponder {
+export class PileView implements IView, ITouchResponder {
+    public readonly context: ViewContext;
+    public readonly element: HTMLElement;
     public click = () => { };
     public dblClick = () => { };
     public fanXDown = 0;
@@ -71,7 +73,8 @@ export class PileView extends TemplatedElementView implements ITouchResponder {
     }
 
     constructor(parent: IView) {
-        super(parent, "pileTemplate");
+        this.context = parent.context;
+        this.element = ViewUtils.instantiateTemplate(parent.element, "pileViewTemplate");
         this.element.addEventListener("mousedown", this.onMouseDown_);
         this.element.addEventListener("touchstart", this.touchStart_);
     }
@@ -121,13 +124,11 @@ export class PileView extends TemplatedElementView implements ITouchResponder {
             if (this.touchInDeadZone_) {
                 if (timeStamp < this.lastTouchEndTimeStamp_ + 1000) {
                     this.dblClick();
-                    timeStamp = 0;
+                    this.lastTouchEndTimeStamp_ = timeStamp;
                 } else {
                     this.click();
                 }
             }
-
-            this.lastTouchEndTimeStamp_ = timeStamp;
         }
     }
 

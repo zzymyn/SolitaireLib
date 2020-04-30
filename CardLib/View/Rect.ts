@@ -49,10 +49,10 @@ export class Rect {
     }
 
     public setOnElement(e: HTMLElement) {
-        e.style.left = `calc(50% + ${this.x - 0.5 * this.sizeX}rem)`;
-        e.style.right = `calc(50% + ${-this.x - 0.5 * this.sizeX}rem)`;
-        e.style.top = `calc(50% + ${this.y - 0.5 * this.sizeY}rem)`;
-        e.style.bottom = `calc(50% + ${-this.y - 0.5 * this.sizeY}rem)`;
+        e.style.left = `calc(50% + ${this.x - 0.5 * this.sizeX}em)`;
+        e.style.right = `calc(50% + ${-this.x - 0.5 * this.sizeX}em)`;
+        e.style.top = `calc(50% + ${this.y - 0.5 * this.sizeY}em)`;
+        e.style.bottom = `calc(50% + ${-this.y - 0.5 * this.sizeY}em)`;
     }
 
     public equals(o: Rect) {

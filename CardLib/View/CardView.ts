@@ -4,10 +4,12 @@ import { Suit } from "../Model/Suit";
 import { ITouchResponder } from "./ITouchResponder";
 import { IView } from "./IView";
 import { Rect } from "./Rect";
-import { TemplatedElementView } from "./TemplatedElementView";
 import { ViewContext } from "./ViewContext";
+import { ViewUtils } from "./ViewUtils";
 
-export class CardView extends TemplatedElementView implements ITouchResponder {
+export class CardView implements IView, ITouchResponder {
+    public readonly context: ViewContext;
+    public readonly element: HTMLElement;
     public click = () => { };
     public dblClick = () => { };
     public dragStart = () => ({ canDrag: false, extraCardViews: [] as CardView[] });
@@ -62,7 +64,8 @@ export class CardView extends TemplatedElementView implements ITouchResponder {
     }
 
     constructor(parent: IView, suit: Suit, colour: Colour, rank: Rank) {
-        super(parent, "cardTemplate");
+        this.context = parent.context;
+        this.element = ViewUtils.instantiateTemplate(parent.element, "cardViewTemplate");
         this.element.classList.add(`s${suit}c${colour}r${rank}`);
         this.element.addEventListener("mousedown", this.onMouseDown_);
         this.element.addEventListener("touchstart", this.touchStart_);
@@ -133,16 +136,14 @@ export class CardView extends TemplatedElementView implements ITouchResponder {
             if (this.touchInDeadZone_) {
                 if (timeStamp < this.lastTouchEndTimeStamp_ + 1000) {
                     this.dblClick();
-                    timeStamp = 0;
                 } else {
+                    this.lastTouchEndTimeStamp_ = timeStamp;
                     this.click();
                 }
                 this.stopDragging_(true);
             } else {
                 this.stopDragging_(false);
             }
-
-            this.lastTouchEndTimeStamp_ = timeStamp;
         }
     }
 

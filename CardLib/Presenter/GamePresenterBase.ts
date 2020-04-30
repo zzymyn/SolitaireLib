@@ -20,13 +20,16 @@ export abstract class GamePresenterBase {
         this.rootView_ = rootView;
 
         // TODO: make nicer:
-        document.getElementById("newGameButton")?.addEventListener("click", () => {
+        document.getElementById("newGameButton")?.addEventListener("click", e => {
+            e.preventDefault();
             this.restart_();
         });
-        document.getElementById("undoButton")?.addEventListener("click", () => {
+        document.getElementById("undoButton")?.addEventListener("click", e => {
+            e.preventDefault();
             this.undo_();
         });
-        document.getElementById("redoButton")?.addEventListener("click", () => {
+        document.getElementById("redoButton")?.addEventListener("click", e => {
+            e.preventDefault();
             this.redo_();
         });
 
@@ -116,7 +119,7 @@ export abstract class GamePresenterBase {
             cardView.rect = rect;
         }
 
-        let hitbox = pileView.rect;
+        const hitbox = pileView.rect;
         hitbox.x += 0.5 * dx0;
         hitbox.y += 0.5 * dy0;
         hitbox.sizeX += dx0;

@@ -25,7 +25,7 @@ body {
 }
 
 div#buttons {
-    position: fixed;
+    position: absolute;
     left: 0;
     right: 0;
     bottom: 0;
@@ -52,21 +52,21 @@ div#buttons button {
     max-width: 30vh;
 }
 
-div#table {
-    position: fixed;
+#tableHolder {
+    position: absolute;
     left: 0;
     right: 0;
     bottom: 5vh;
     top: 0;
 }
 
-div#tabletest {
+.cardTable{
     position: absolute;
-    outline: 1px solid red;
-    left: calc(50% - 50rem);
-    right: calc(50% - 50rem);
-    top: calc(50% - 50rem);
-    bottom: calc(50% - 50rem);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    overflow: hidden;
 }
 
 @mixin cardFaces($cardStyle) {

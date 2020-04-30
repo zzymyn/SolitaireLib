@@ -5,12 +5,15 @@ export class ViewContext {
     public static readonly TOUCH_DEADZONE = 5;
     public static readonly TOUCH_DEADZONE_SQ = 5 * 5;
 
+    private readonly element_: HTMLElement;
     private readonly touchResponders_: ITouchResponder[] = [];
 
     private pxPerRem_ = 0;
     public get pxPerRem() { return this.pxPerRem_; }
 
-    constructor() {
+    constructor(element: HTMLElement) {
+        this.element_ = element;
+
         window.addEventListener("resize", this.onResize_);
 
         window.addEventListener("mousemove", this.onWindowMouseMove_);
@@ -28,7 +31,7 @@ export class ViewContext {
     }
 
     private refreshUnits_() {
-        const style = getComputedStyle(document.body);
+        const style = getComputedStyle(this.element_);
         this.pxPerRem_ = 1 / parseFloat(style.fontSize);
     }
 

@@ -4,9 +4,9 @@ import { GameOptions } from "~Pyramid/Model/GameOptions";
 import { GamePresenter } from "~Pyramid/Presenter/GamePresenter";
 
 window.addEventListener("load", () => {
-    const table = document.getElementById("table") ?? document.body;
+    const tableHolder = document.getElementById("tableHolder") ?? document.body;
     const options = new GameOptions();
     const game = new Game(options);
-    const view = new RootView(table);
+    const view = new RootView(tableHolder);
     const gamePresenter = new GamePresenter(game, view);
 });
