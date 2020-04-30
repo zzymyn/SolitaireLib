@@ -40,6 +40,7 @@ export class Game extends GameBase implements IGame {
         for (let i = 0; i < TABLEAUX_COUNT; ++i) {
             const pile = new Pile(this);
             this.tableaux.push(pile);
+            this.dragSingleSources_.push(pile);
             this.autoMoveSources_.push(pile);
             this.piles.push(pile);
         }
@@ -93,18 +94,17 @@ export class Game extends GameBase implements IGame {
 
     protected *cardPrimary_(card: Card) {
         // if the player clicks on the top card of the stock, move it to the waste and turn over a new card:
-        if (this.stock.peek() === card) {
-            this.waste.push(card);
-            yield DelayHint.Quick;
-            card.flip(true);
+        if (this.stock.peek() === card && this.canDrawFromStock_()) {
+            yield* this.doDrawFromStock_();
             yield* this.doAutoMoves_();
             return;
         }
 
         // if the player clicks the top card on the tableaux, reveal it:
-        for (const pile of this.tableaux) {
-            if (pile.peek() === card && !card.faceUp) {
+        if (this.tableaux.indexOf(card.pile)) {
+            if (card.pile.peek() === card && !card.faceUp) {
                 card.flip(true);
+                yield DelayHint.Quick;
                 yield* this.doAutoMoves_();
                 return;
             }
@@ -113,14 +113,13 @@ export class Game extends GameBase implements IGame {
 
     protected *cardSecondary_(card: Card) {
         // if the player double clicks a card, see if it can be auto-moved to the foundation:
-        for (const pile of this.autoMoveSources_) {
-            if (pile.peek() === card && card.faceUp) {
-                for (const foundation of this.foundations) {
-                    if (this.isFoundationDrop_(card, foundation)) {
-                        foundation.push(card);
-                        yield* this.doAutoMoves_();
-                        return;
-                    }
+        if (this.autoMoveSources_.indexOf(card.pile) >= 0) {
+            for (const foundation of this.foundations) {
+                if (this.isFoundationDrop_(card, foundation)) {
+                    foundation.push(card);
+                    yield DelayHint.OneByOne;
+                    yield* this.doAutoMoves_();
+                    return;
                 }
             }
         }
@@ -134,6 +133,7 @@ export class Game extends GameBase implements IGame {
                 const card = this.waste.at(i);
                 card.flip(false);
             }
+            this.waste.maxFan = 0;
             yield DelayHint.OneByOne;
             for (let i = this.waste.length; i-- > 0;) {
                 const card = this.waste.at(i);
@@ -149,18 +149,11 @@ export class Game extends GameBase implements IGame {
     }
 
     protected canDrag_(card: Card): { canDrag: boolean; extraCards: Card[]; } {
-        for (const pile of this.dragSingleSources_) {
-            if (pile.peek() === card) {
-                return { canDrag: true, extraCards: [] };
-            }
+        if (this.isFoundationDropSource_(card)) {
+            return { canDrag: true, extraCards: [] };
+        } else if (this.isTableauxDropSource_(card)) {
+            return { canDrag: true, extraCards: card.pile.slice(card.pileIndex + 1) };
         }
-
-        for (const pile of this.tableaux) {
-            if (card.pile === pile && card.faceUp) {
-                return { canDrag: true, extraCards: pile.slice(card.pileIndex + 1) };
-            }
-        }
-
         return { canDrag: false, extraCards: [] };
     }
 
@@ -170,19 +163,37 @@ export class Game extends GameBase implements IGame {
 
     protected *dropCard_(card: Card, pile: Pile) {
         if (this.isTableauxDrop_(card, pile)) {
-            const movingCards = card.pile.slice(card.pileIndex);
-            for (const movingCard of movingCards) {
-                pile.push(movingCard);
-            }
+            yield* this.doTableauxDrop_(card, pile);
             yield* this.doAutoMoves_();
         } else if (this.isFoundationDrop_(card, pile)) {
-            pile.push(card);
+            yield* this.doFoundationDrop_(card, pile);
             yield* this.doAutoMoves_();
+        }
+    }
+
+    private canDrawFromStock_() {
+        return this.stock.length > 0;
+    }
+
+    private *doDrawFromStock_() {
+        this.waste.maxFan = 0;
+
+        for (let i = 0; i < this.options.stockDraws; ++i) {
+            const card = this.stock.peek();
+            if (card) {
+                this.waste.push(card);
+                this.waste.maxFan++;
+                yield DelayHint.Quick;
+                card.flip(true);
+                yield DelayHint.Quick;
+            }
         }
     }
 
     private isTableauxDrop_(card: Card, pile: Pile) {
         if (card.pile === pile)
+            return false;
+        if (!this.isTableauxDropSource_(card))
             return false;
 
         if (this.tableaux.indexOf(pile) >= 0) {
@@ -202,8 +213,41 @@ export class Game extends GameBase implements IGame {
         return false;
     }
 
+    private isTableauxDropSource_(card: Card) {
+        if (this.dragSingleSources_.indexOf(card.pile) >= 0 && card.pile.peek() === card && card.faceUp) {
+            return true;
+        } else if (this.tableaux.indexOf(card.pile) >= 0 && card.pile.peek()?.faceUp) {
+            for (let i = card.pile.length - 1; i-- > 0;) {
+                const card0 = card.pile.at(i);
+                const card1 = card.pile.at(i + 1);
+                if (card0?.faceUp && card1?.faceUp && card0.colour !== card1.colour && this.getCardValue_(card1) === this.getCardValue_(card0) - 1) {
+                    if (card0 === card) {
+                        return true;
+                    }
+                } else {
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+
+    private *doTableauxDrop_(card: Card, pile: Pile) {
+        const sourcePile = card.pile;
+        const movingCards = card.pile.slice(card.pileIndex);
+        for (const movingCard of movingCards) {
+            pile.push(movingCard);
+        }
+        if (sourcePile === this.waste) {
+            this.waste.maxFan--;
+        }
+        yield DelayHint.OneByOne;
+    }
+
     private isFoundationDrop_(card: Card, pile: Pile) {
         if (card.pile === pile)
+            return false;
+        if (!this.isFoundationDropSource_(card))
             return false;
 
         if (this.foundations.indexOf(pile) >= 0) {
@@ -221,6 +265,19 @@ export class Game extends GameBase implements IGame {
         }
 
         return false;
+    }
+
+    private isFoundationDropSource_(card: Card) {
+        return this.dragSingleSources_.indexOf(card.pile) >= 0 && card.pile.peek() === card && card.faceUp;
+    }
+
+    private *doFoundationDrop_(card: Card, pile: Pile) {
+        const sourcePile = card.pile;
+        pile.push(card);
+        if (sourcePile === this.waste) {
+            this.waste.maxFan--;
+        }
+        yield DelayHint.OneByOne;
     }
 
     private getCardValue_(card: Card) {
@@ -268,11 +325,10 @@ export class Game extends GameBase implements IGame {
 
                 for (const pile of this.autoMoveSources_) {
                     const card = pile.peek();
-                    if (card && card.faceUp && this.getCardValue_(card) <= foundationMin + (this.options.autoMoveToFoundation ?? 2)) {
+                    if (card) {
                         for (const foundation of this.foundations) {
                             if (this.isFoundationDrop_(card, foundation)) {
-                                yield DelayHint.OneByOne;
-                                foundation.push(card);
+                                yield* this.doFoundationDrop_(card, foundation);
                                 continue mainLoop;
                             }
                         }
@@ -281,12 +337,8 @@ export class Game extends GameBase implements IGame {
             }
 
             if (this.options.autoPlayStock) {
-                const card = this.stock.peek();
-                if (card && this.waste.length === 0) {
-                    yield DelayHint.OneByOne;
-                    this.waste.push(card);
-                    yield DelayHint.Quick;
-                    card.flip(true);
+                if (this.waste.length === 0 && this.canDrawFromStock_()) {
+                    yield* this.doDrawFromStock_();
                     continue mainLoop;
                 }
             }

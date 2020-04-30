@@ -2,7 +2,10 @@ import { ICard } from "./ICard";
 
 export interface IPile {
     /** The number of cards in this pile. */
-    length: number;
+    readonly length: number;
+
+    /** Maximum number of cards to show fanned (from the top). */
+    readonly maxFan: number;
 
     /** Get the card in the pile by index. */
     at(index: number): ICard;
@@ -15,4 +18,7 @@ export interface IPile {
 
     /** Contents of the pile has changed. */
     cardsChanged: () => void;
+
+    /** Max fan has changed. */
+    maxFanChanged: () => void;
 }

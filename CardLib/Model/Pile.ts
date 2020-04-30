@@ -10,9 +10,30 @@ import { Suit } from './Suit';
 export class Pile implements IPile {
     public readonly game: GameBase;
     public cardsChanged = () => { };
+    public maxFanChanged = () => { };
     private readonly cards_: Card[] = [];
 
     public get length() { return this.cards_.length; }
+
+    private maxFan_ = Infinity;
+    public get maxFan() { return this.maxFan_; }
+    public set maxFan(maxFan: number) {
+        maxFan = Math.max(0, maxFan);
+        if (this.maxFan_ === maxFan)
+            return;
+
+        const prevMaxFan = this.maxFan_;
+        const redo = () => {
+            this.maxFan_ = maxFan;
+            this.maxFanChanged();
+        };
+        const undo = () => {
+            this.maxFan_ = prevMaxFan;
+            this.maxFanChanged();
+        };
+        this.game.addUndoableOperation(redo, undo);
+        redo();
+    }
 
     constructor(game: GameBase) {
         this.game = game;

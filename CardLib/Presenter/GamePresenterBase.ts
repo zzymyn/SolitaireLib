@@ -57,6 +57,7 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
         this.pileViewtoPile_.set(pileView, pile);
 
         pile.cardsChanged = () => this.onPileCardsChanged_(pileView, pile);
+        pile.maxFanChanged = () => this.onPileMaxFanChanged_(pileView, pile);
 
         pileView.click = () => this.pilePrimary_(pile);
         pileView.dblClick = () => this.pileSecondary_(pile);
@@ -80,11 +81,16 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
         this.relayoutPile_(pileView, pile);
     }
 
+    private onPileMaxFanChanged_(pileView: PileView, pile: IPile) {
+        this.relayoutPile_(pileView, pile);
+    }
+
     protected relayoutPile_(pileView: PileView, pile: IPile) {
         pileView.cardCount = pile.length;
 
         // go top to bottom to set z-indicies:
         let zIndex: number | undefined;
+
         for (let i = pile.length; i-- > 0;) {
             const card = pile.at(i);
             const cardView = this.getCardView_(card);
@@ -97,6 +103,7 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
         }
 
         // go bottom to top to set positions:
+        const fanStart = pile.length - pile.maxFan;
         let dx0 = 0;
         let dy0 = 0;
         let dx1 = 0;
@@ -110,15 +117,18 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
 
             dx0 = dx1;
             dy0 = dy1;
+
             rect.x += dx1;
             rect.y += dy1;
 
-            if (card.faceUp) {
-                dx1 += pileView.fanXUp;
-                dy1 += pileView.fanYUp;
-            } else {
-                dx1 += pileView.fanXDown;
-                dy1 += pileView.fanYDown;
+            if (i >= fanStart) {
+                if (card.faceUp) {
+                    dx1 += pileView.fanXUp;
+                    dy1 += pileView.fanYUp;
+                } else {
+                    dx1 += pileView.fanXDown;
+                    dy1 += pileView.fanYDown;
+                }
             }
 
             cardView.rect = rect;

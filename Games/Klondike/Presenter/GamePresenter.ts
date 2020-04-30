@@ -27,6 +27,7 @@ export class GamePresenter extends GamePresenterBase<IGame> {
             const pileView = this.createPileView_(game.waste);
             pileView.showFrame = true;
             pileView.zIndex = 50;
+            pileView.fanXUp = 3;
             this.wastePile_ = pileView;
         }
         for (let i = 0; i < this.game_.foundations.length; ++i) {
