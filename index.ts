@@ -6,6 +6,7 @@ import * as Pyramid from "~Games/Pyramid/Presenter/GamePresenterFactory";
 
 window.addEventListener("load", () => {
     const gamePresenterFactories = new Map<string, IGamePresenterFactory>();
+    gamePresenterFactories.set("", new Klondike.GamePresenterFactory());
     gamePresenterFactories.set("klondike", new Klondike.GamePresenterFactory());
     gamePresenterFactories.set("pyramid", new Pyramid.GamePresenterFactory());
 
