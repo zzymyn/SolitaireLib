@@ -8,8 +8,7 @@ const margin = 1;
 const sizeY = 20;
 const sizeX = sizeY / 1.555555555555;
 
-export class GamePresenter extends GamePresenterBase {
-    private readonly game_: IGame;
+export class GamePresenter extends GamePresenterBase<IGame> {
     private readonly stockPile_: PileView;
     private readonly wastePile_: PileView;
     private readonly foundationPiles_: PileView[] = [];
@@ -17,7 +16,6 @@ export class GamePresenter extends GamePresenterBase {
 
     constructor(game: IGame, rootView: IView) {
         super(game, rootView);
-        this.game_ = game;
 
         // create piles:
         {

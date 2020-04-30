@@ -10,4 +10,8 @@ export class RootView implements IView {
         this.context = new ViewContext(parentElement);
         this.element = ViewUtils.instantiateTemplate(parentElement, "rootViewTemplate");
     }
+
+    public dispose() {
+        this.element.remove();
+    }
 }

@@ -268,7 +268,7 @@ export class Game extends GameBase implements IGame {
 
                 for (const pile of this.autoMoveSources_) {
                     const card = pile.peek();
-                    if (card && card.faceUp && this.getCardValue_(card) <= foundationMin + this.options.autoMoveToFoundation) {
+                    if (card && card.faceUp && this.getCardValue_(card) <= foundationMin + (this.options.autoMoveToFoundation ?? 2)) {
                         for (const foundation of this.foundations) {
                             if (this.isFoundationDrop_(card, foundation)) {
                                 yield DelayHint.OneByOne;

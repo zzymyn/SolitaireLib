@@ -71,6 +71,10 @@ export class CardView implements IView, ITouchResponder {
         this.element.addEventListener("touchstart", this.touchStart_);
     }
 
+    public dispose() {
+        this.element.remove();
+    }
+
     private touchTracking_ = false;
     private touchId_ = 0;
     private touchInDeadZone_ = false;

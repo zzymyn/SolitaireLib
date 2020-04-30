@@ -9,8 +9,7 @@ const sizeX = sizeY / 1.555555555555;
 const pyramidMarginX = 1.5;
 const pyramidMarginY = -7;
 
-export class GamePresenter extends GamePresenterBase {
-    private readonly game_: IGame;
+export class GamePresenter extends GamePresenterBase<IGame> {
     private readonly stockPile_: PileView;
     private readonly wastePile_: PileView;
     private readonly foundationPile_: PileView;
@@ -18,7 +17,6 @@ export class GamePresenter extends GamePresenterBase {
 
     constructor(game: IGame, rootView: IView) {
         super(game, rootView);
-        this.game_ = game;
 
         const yPos = (y: number) => (y - 0.5 * (game.pyramid.length - 1)) * (sizeY + pyramidMarginY);
 

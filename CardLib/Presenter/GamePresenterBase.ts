@@ -7,16 +7,17 @@ import { CardView } from "../View/CardView";
 import { IView } from "../View/IView";
 import { PileView } from "../View/PileView";
 import { Rect } from "../View/Rect";
+import { IGamePresenter } from "./IGamePresenter";
 
 type DropPreview = { dropPreview: boolean };
 type ZIndexed = { zIndex: number };
 
-export abstract class GamePresenterBase {
-    protected readonly gameBase_: IGameBase;
+export abstract class GamePresenterBase<TGame extends IGameBase> implements IGamePresenter {
+    protected readonly game_: TGame;
     protected readonly rootView_: IView;
 
-    constructor(game: IGameBase, rootView: IView) {
-        this.gameBase_ = game;
+    constructor(game: TGame, rootView: IView) {
+        this.game_ = game;
         this.rootView_ = rootView;
 
         // TODO: make nicer:
@@ -37,6 +38,10 @@ export abstract class GamePresenterBase {
         window.addEventListener("keydown", this.onWindowKeyDown_);
 
         this.restart_();
+    }
+
+    public dispose() {
+        this.rootView_.dispose();
     }
 
     protected abstract onResize_(): void;
@@ -179,7 +184,7 @@ export abstract class GamePresenterBase {
     }
 
     private cardDragStart_(cardView: CardView, card: ICard) {
-        const { canDrag, extraCards: extraCards } = this.gameBase_.canDrag(card);
+        const { canDrag, extraCards: extraCards } = this.game_.canDrag(card);
 
         if (canDrag) {
             cardView.zIndex = this.getNextZIndex_();
@@ -219,7 +224,7 @@ export abstract class GamePresenterBase {
         if (!cancelled) {
             const bestPile = this.getBestDragPile_(card, rect);
             if (bestPile) {
-                this.addOperation_(() => this.gameBase_.dropCard(card, bestPile!));
+                this.addOperation_(() => this.game_.dropCard(card, bestPile!));
             }
         }
         this.setDropPreview_(undefined);
@@ -237,7 +242,7 @@ export abstract class GamePresenterBase {
                 continue;
 
             if (!bestPile || bestPileOverlap < overlap) {
-                if (this.gameBase_.previewDrop(card, pile)) {
+                if (this.game_.previewDrop(card, pile)) {
                     bestPile = pile;
                     bestPileOverlap = overlap;
                 }
@@ -289,31 +294,31 @@ export abstract class GamePresenterBase {
     }
 
     private async undo_() {
-        this.addOperation_(() => this.gameBase_.undo());
+        this.addOperation_(() => this.game_.undo());
     }
 
     private async redo_() {
-        this.addOperation_(() => this.gameBase_.redo());
+        this.addOperation_(() => this.game_.redo());
     }
 
     private async restart_() {
-        this.addOperation_(() => this.gameBase_.restart(Date.now()));
+        this.addOperation_(() => this.game_.restart(Date.now()));
     }
 
     private async pilePrimary_(pile: IPile) {
-        this.addOperation_(() => this.gameBase_.pilePrimary(pile));
+        this.addOperation_(() => this.game_.pilePrimary(pile));
     }
 
     private async pileSecondary_(pile: IPile) {
-        this.addOperation_(() => this.gameBase_.pileSecondary(pile));
+        this.addOperation_(() => this.game_.pileSecondary(pile));
     }
 
     private async cardPrimary_(card: ICard) {
-        this.addOperation_(() => this.gameBase_.cardPrimary(card));
+        this.addOperation_(() => this.game_.cardPrimary(card));
     }
 
     private async cardSecondary_(card: ICard) {
-        this.addOperation_(() => this.gameBase_.cardSecondary(card));
+        this.addOperation_(() => this.game_.cardSecondary(card));
     }
 
     private readonly operations_: (() => Generator<DelayHint, void>)[] = [];
