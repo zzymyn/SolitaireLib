@@ -1,7 +1,7 @@
 import { RootView } from "~CardLib/View/RootView";
-import { Game } from "~Klondike/Model/Game";
-import { GameOptions } from "~Klondike/Model/GameOptions";
-import { GamePresenter } from "~Klondike/Presenter/GamePresenter";
+import { Game } from "~Pyramid/Model/Game";
+import { GameOptions } from "~Pyramid/Model/GameOptions";
+import { GamePresenter } from "~Pyramid/Presenter/GamePresenter";
 
 window.addEventListener("load", () => {
     const table = document.getElementById("table") ?? document.body;
