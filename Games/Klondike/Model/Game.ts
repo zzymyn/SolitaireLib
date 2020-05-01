@@ -325,7 +325,7 @@ export class Game extends GameBase implements IGame {
 
                 for (const pile of this.autoMoveSources_) {
                     const card = pile.peek();
-                    if (card) {
+                    if (card && this.getCardValue_(card) <= foundationMin + this.options.autoMoveToFoundation) {
                         for (const foundation of this.foundations) {
                             if (this.isFoundationDrop_(card, foundation)) {
                                 yield* this.doFoundationDrop_(card, foundation);
