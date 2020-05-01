@@ -1,8 +1,5 @@
 export class GameOptionsBase {
-    protected params_: URLSearchParams;
-
-    constructor(params: URLSearchParams) {
-        this.params_ = params;
+    constructor(protected readonly params_: URLSearchParams) {
     }
 
     protected getFloat_(key: string, defaultValue: number) {

@@ -5,6 +5,7 @@ import { ICard } from "./ICard";
 import { Pile } from "./Pile";
 import { Rank } from "./Rank";
 import { Suit } from "./Suit";
+import { CardFlipOperation } from "./Undoable/CardFlipOperation";
 
 export class Card implements ICard {
     public readonly suit: Suit;
@@ -62,17 +63,13 @@ export class Card implements ICard {
     public flip(faceUp: boolean) {
         if (this.faceUp === faceUp)
             return;
-
         const oldFaceUp = this.faceUp;
-
-        const redo = () => this.flip_(faceUp);
-        const undo = () => this.flip_(oldFaceUp);
-        this.game.addUndoableOperation(redo, undo);
-
-        return redo();
+        const op = new CardFlipOperation(this, oldFaceUp, faceUp);
+        this.game.addUndoableOperation(op);
+        op.redo();
     }
 
-    private flip_(faceUp: boolean) {
+    public doFlip(faceUp: boolean) {
         this.faceUp = faceUp;
         this.faceUpChanged();
     }

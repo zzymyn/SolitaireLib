@@ -6,6 +6,8 @@ import { GameBase } from './GameBase';
 import { IPile } from "./IPile";
 import { Rank } from './Rank';
 import { Suit } from './Suit';
+import { PileInsertOperation } from './Undoable/PileInsertOperation';
+import { PileMaxFanOperation } from './Undoable/PileMaxFanOperation';
 
 export class Pile implements IPile {
     public readonly game: GameBase;
@@ -22,17 +24,14 @@ export class Pile implements IPile {
         if (this.maxFan_ === maxFan)
             return;
 
-        const prevMaxFan = this.maxFan_;
-        const redo = () => {
-            this.maxFan_ = maxFan;
-            this.maxFanChanged();
-        };
-        const undo = () => {
-            this.maxFan_ = prevMaxFan;
-            this.maxFanChanged();
-        };
-        this.game.addUndoableOperation(redo, undo);
-        redo();
+        const oldMaxFan = this.maxFan_;
+        const op = new PileMaxFanOperation(this, oldMaxFan, maxFan);
+        this.game.addUndoableOperation(op);
+        op.redo();
+    }
+    public doSetMaxFan(maxFan: number) {
+        this.maxFan_ = maxFan;
+        this.maxFanChanged();
     }
 
     constructor(game: GameBase) {
@@ -114,14 +113,12 @@ export class Pile implements IPile {
     public insert(index: number, card: Card) {
         const oldPile = card.pile;
         const oldIndex = card.pileIndex;
-
-        const redo = () => this.insert_(index, card);
-        const undo = () => oldPile.insert_(oldIndex, card);
-        this.game.addUndoableOperation(redo, undo);
-        return redo();
+        const op = new PileInsertOperation(card, oldPile, oldIndex, this, index);
+        this.game.addUndoableOperation(op);
+        op.redo();
     }
 
-    private insert_(index: number, card: Card) {
+    public doInsert(index: number, card: Card) {
         Debug.assert(index >= 0 && index <= this.cards_.length);
 
         if (card.pile === this && index >= card.pileIndex)

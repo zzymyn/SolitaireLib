@@ -6,15 +6,16 @@ import { ICard } from "./ICard";
 import { IGameBase } from "./IGameBase";
 import { IPile } from "./IPile";
 import { Pile } from "./Pile";
-import { UndoableOperation } from "./UndoableOperation";
+import { CompoundUndoableOperation } from "./Undoable/CompoundUndoableOperation";
+import { IUndoableOperation } from './Undoable/IUndoableOperation';
 
 export abstract class GameBase implements IGameBase {
     public cards: Card[] = [];
     public piles: Pile[] = [];
 
-    private undoStack_: UndoableOperation[] = [];
-    private redoStack_: UndoableOperation[] = [];
-    private currentOperation_: UndoableOperation | undefined = undefined;
+    private undoStack_: CompoundUndoableOperation[] = [];
+    private redoStack_: CompoundUndoableOperation[] = [];
+    private currentOperation_: CompoundUndoableOperation | undefined = undefined;
 
     public *restart(seed: number) {
         const rng = prand.mersenne(seed);
@@ -121,13 +122,13 @@ export abstract class GameBase implements IGameBase {
     private startOperation_() {
         if (this.currentOperation_)
             return false;
-        this.currentOperation_ = new UndoableOperation();
+        this.currentOperation_ = new CompoundUndoableOperation();
         return true;
     }
 
-    public addUndoableOperation(redo: () => void, undo: () => void) {
+    public addUndoableOperation(op: IUndoableOperation) {
         if (this.currentOperation_) {
-            this.currentOperation_.addOperation(redo, undo);
+            this.currentOperation_.addOperation(op);
         }
     }
 
