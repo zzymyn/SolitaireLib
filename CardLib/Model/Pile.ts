@@ -1,8 +1,10 @@
 import prand from 'pure-rand';
+import { TypeEx } from '~CardLib/TypeEx';
 import { Debug } from "../Debug";
 import { Card } from "./Card";
 import { Colour } from './Colour';
 import { GameBase } from './GameBase';
+import { GameSerializationContext } from './GameSerializationContext';
 import { IPile } from "./IPile";
 import { Rank } from './Rank';
 import { Suit } from './Suit';
@@ -17,7 +19,7 @@ export class Pile implements IPile {
 
     public get length() { return this.cards_.length; }
 
-    private maxFan_ = Infinity;
+    private maxFan_ = 999;
     public get maxFan() { return this.maxFan_; }
     public set maxFan(maxFan: number) {
         maxFan = Math.max(0, maxFan);
@@ -45,7 +47,7 @@ export class Pile implements IPile {
     }
 
     public createCard(suit: Suit, colour: Colour, rank: Rank) {
-        const card = new Card(this.game, suit, colour, rank, this, this.length - 1);
+        const card = new Card(this.game, suit, colour, rank, this, this.length);
         this.cards_.push(card);
         this.cardsChanged();
         return card;
@@ -121,7 +123,7 @@ export class Pile implements IPile {
     public doInsert(index: number, card: Card) {
         Debug.assert(index >= 0 && index <= this.cards_.length);
 
-        if (card.pile === this && index >= card.pileIndex)
+        if (card.pile === this && index > card.pileIndex)
             index--;
 
         card.pile.remove_(card);
@@ -152,5 +154,22 @@ export class Pile implements IPile {
         this.cardsChanged();
 
         return card;
+    }
+
+    public serializeState(context: GameSerializationContext) {
+        context.write(this.maxFan);
+        context.write(this.cards_.length);
+        for (const card of this.cards_) {
+            context.write(context.getCardId(card));
+        }
+    }
+
+    public deserializeState(context: GameSerializationContext) {
+        this.maxFan = context.readRange(0, 999);
+        const len = context.readRange(0, 999);
+        for (let i = 0; i < len; ++i) {
+            const card = context.getCard(context.read());
+            this.insert(i, card);
+        }
     }
 }

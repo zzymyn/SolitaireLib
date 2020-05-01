@@ -7,9 +7,6 @@ export class Debug {
 
     public static error(message?: string): never {
         message = message || "Assert failed";
-        if (typeof Error) {
-            throw new Error(message);
-        }
-        throw message;
+        throw new Error(message);
     }
 }

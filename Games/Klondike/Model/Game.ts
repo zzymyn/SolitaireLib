@@ -53,7 +53,7 @@ export class Game extends GameBase implements IGame {
 
         // put all the cards face down back into the stock
         for (const card of this.stock) {
-            card.flip(false);
+            card.faceUp = false;
         }
 
         for (let pileIndex = this.piles.length; pileIndex-- > 0;) {
@@ -62,7 +62,7 @@ export class Game extends GameBase implements IGame {
                 continue;
             for (let cardIndex = pile.length; cardIndex-- > 0;) {
                 const card = pile.at(cardIndex);
-                card.flip(false);
+                card.faceUp = false;
                 this.stock.push(card);
             }
         }
@@ -103,7 +103,7 @@ export class Game extends GameBase implements IGame {
         // if the player clicks the top card on the tableaux, reveal it:
         if (this.tableaux.indexOf(card.pile)) {
             if (card.pile.peek() === card && !card.faceUp) {
-                card.flip(true);
+                card.faceUp = true;
                 yield DelayHint.Quick;
                 yield* this.doAutoMoves_();
                 return;
@@ -131,7 +131,7 @@ export class Game extends GameBase implements IGame {
             this.restocks_++;
             for (let i = this.waste.length; i-- > 0;) {
                 const card = this.waste.at(i);
-                card.flip(false);
+                card.faceUp = false;
             }
             this.waste.maxFan = 0;
             yield DelayHint.OneByOne;
@@ -184,7 +184,7 @@ export class Game extends GameBase implements IGame {
                 this.waste.push(card);
                 this.waste.maxFan++;
                 yield DelayHint.Quick;
-                card.flip(true);
+                card.faceUp = true;
                 yield DelayHint.Quick;
             }
         }
@@ -306,7 +306,7 @@ export class Game extends GameBase implements IGame {
                     const card = tableau.peek();
                     if (card && !card.faceUp) {
                         yield DelayHint.Quick;
-                        card.flip(true);
+                        card.faceUp = true;
                         continue mainLoop;
                     }
                 }

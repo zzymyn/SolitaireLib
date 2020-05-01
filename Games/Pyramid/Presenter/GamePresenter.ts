@@ -15,60 +15,83 @@ export class GamePresenter extends GamePresenterBase<IGame> {
     private readonly foundationPile_: PileView;
     private readonly pyramidPiles_: PileView[][] = [];
 
+    protected get saveDataKey_() {
+        return JSON.stringify({
+            gameName: "pyramid",
+            version: 0,
+            options: this.game_.options.saveKey
+        });
+    }
+
     constructor(game: IGame, rootView: IView) {
         super(game, rootView);
-
-        const yPos = (y: number) => (y - 0.5 * (game.pyramid.length - 1)) * (sizeY + pyramidMarginY);
 
         // create piles:
         {
             const pileView = this.createPileView_(game.stock);
-            pileView.rect = new Rect(sizeX, sizeY,
-                (0 - 0.5 * (game.pyramid.length - 1)) * (sizeX + pyramidMarginX),
-                yPos(0));
             pileView.showFrame = true;
             this.stockPile_ = pileView;
         }
         {
             const pileView = this.createPileView_(game.waste);
-            pileView.rect = new Rect(sizeX, sizeY,
-                (1 - 0.5 * (game.pyramid.length - 1)) * (sizeX + pyramidMarginX),
-                yPos(0));
             pileView.showFrame = true;
             pileView.zIndex = 50;
             this.wastePile_ = pileView;
         }
         {
             const pileView = this.createPileView_(game.foundation);
-            pileView.rect = new Rect(sizeX, sizeY,
-                (game.pyramid.length - 1 - 0.5 * (game.pyramid.length - 1)) * (sizeX + pyramidMarginX),
-                yPos(0));
             pileView.showFrame = true;
             pileView.zIndex = 800;
             this.foundationPile_ = pileView;
         }
         for (let y = 0; y < game.pyramid.length; ++y) {
-            this.pyramidPiles_.push([]);
-            const row = game.pyramid[y];
-            for (let x = 0; x < row.length; ++x) {
-                const pile = row[x];
+            const piles = game.pyramid[y];
+            const pileViews: PileView[] = [];
+            for (const pile of piles) {
                 const pileView = this.createPileView_(pile);
-                this.pyramidPiles_[y].push(pileView);
-
-                pileView.rect = new Rect(
-                    sizeX, sizeY,
-                    (x - 0.5 * (row.length - 1)) * (sizeX + pyramidMarginX),
-                    yPos(y));
                 pileView.zIndex = 100 * y;
+                pileViews.push(pileView);
             }
+            this.pyramidPiles_.push(pileViews);
         }
 
         // create cards:
         for (const card of game.cards) {
             this.createCardView_(card);
         }
+
+        this.layoutPiles_();
+        this.relayoutAll_();
     }
 
     protected onResize_() {
+        this.layoutPiles_();
+        this.relayoutAll_();
+    }
+
+    private layoutPiles_() {
+        const pyramidSize = this.game_.pyramid.length;
+        const xPos = (x: number, xMax: number) => (x - 0.5 * (xMax - 1)) * (sizeX + pyramidMarginX);
+        const yPos = (y: number) => (y - 0.5 * (pyramidSize - 1)) * (sizeY + pyramidMarginY);
+
+        {
+            const pileView = this.stockPile_;
+            pileView.rect = new Rect(sizeX, sizeY, xPos(0, pyramidSize), yPos(0));
+        }
+        {
+            const pileView = this.wastePile_;
+            pileView.rect = new Rect(sizeX, sizeY, xPos(1, pyramidSize), yPos(0));
+        }
+        {
+            const pileView = this.foundationPile_;
+            pileView.rect = new Rect(sizeX, sizeY, xPos(pyramidSize - 1, pyramidSize), yPos(0));
+        }
+        for (let y = 0; y < pyramidSize; ++y) {
+            const row = this.game_.pyramid[y];
+            for (let x = 0; x < row.length; ++x) {
+                const pileView = this.pyramidPiles_[y][x];
+                pileView.rect = new Rect(sizeX, sizeY, xPos(x, row.length), yPos(y));
+            }
+        }
     }
 }

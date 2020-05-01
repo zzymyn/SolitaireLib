@@ -8,12 +8,19 @@ export class GameOptions extends GameOptionsBase {
     public autoPlayStock = true;
     public autoMoveToFoundation = 2;
 
+    public get saveKey() {
+        return {
+            stockDraws: this.stockDraws,
+            restocksAllowed: this.restocksAllowed
+        };
+    }
+
     constructor(params: URLSearchParams) {
         super(params);
-        this.stockDraws = MathEx.clamp(this.getFloat_("stockDraws", 1), 1, 3);
-        this.restocksAllowed = this.getFloat_("restocksAllowed", Infinity);
+        this.stockDraws = MathEx.clamp(this.getNumber_("stockDraws", 1), 1, 3);
+        this.restocksAllowed = this.getNumber_("restocksAllowed", Infinity);
         this.autoReveal = this.getBool_("autoReveal", true);
         this.autoPlayStock = this.getBool_("autoPlayStock", true);
-        this.autoMoveToFoundation = Math.max(0, this.getInt_("autoMoveToFoundation", 2));
+        this.autoMoveToFoundation = Math.max(0, this.getNumber_("autoMoveToFoundation", 2));
     }
 }

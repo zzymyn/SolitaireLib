@@ -14,6 +14,14 @@ export class GamePresenter extends GamePresenterBase<IGame> {
     private readonly foundationPiles_: PileView[] = [];
     private readonly tableauPiles_: PileView[] = [];
 
+    protected get saveDataKey_() {
+        return JSON.stringify({
+            gameName: "klondike",
+            version: 0,
+            options: this.game_.options.saveKey
+        });
+    }
+
     constructor(game: IGame, rootView: IView) {
         super(game, rootView);
 
@@ -49,10 +57,12 @@ export class GamePresenter extends GamePresenterBase<IGame> {
         }
 
         this.layoutPiles_();
+        this.relayoutAll_();
     }
 
     protected onResize_() {
         this.layoutPiles_();
+        this.relayoutAll_();
     }
 
     private layoutPiles_() {
@@ -70,19 +80,16 @@ export class GamePresenter extends GamePresenterBase<IGame> {
             const pile = this.game_.stock;
             const pileView = this.getPileView_(pile);
             pileView.rect = new Rect(sizeX, sizeY, xPos(0), vExpand * -35 + margin);
-            this.relayoutPile_(pileView, pile);
         }
         {
             const pile = this.game_.waste;
             const pileView = this.getPileView_(this.game_.waste);
             pileView.rect = new Rect(sizeX, sizeY, xPos(1), vExpand * -35 + margin);
-            this.relayoutPile_(pileView, pile);
         }
         for (let i = 0; i < this.game_.foundations.length; ++i) {
             const pile = this.game_.foundations[i];
             const pileView = this.getPileView_(pile);
             pileView.rect = new Rect(sizeX, sizeY, xPos(tableSize - this.game_.foundations.length + i), vExpand * -35 + margin);
-            this.relayoutPile_(pileView, pile);
         }
         for (let i = 0; i < this.game_.tableaux.length; ++i) {
             const pile = this.game_.tableaux[i];
@@ -90,7 +97,6 @@ export class GamePresenter extends GamePresenterBase<IGame> {
             pileView.rect = new Rect(sizeX, sizeY, xPos(i), vExpand * -35 + margin + margin + sizeY + margin);
             pileView.fanYDown = 3.5;
             pileView.fanYUp = vExpand * 3.5;
-            this.relayoutPile_(pileView, pile);
         }
     }
 }

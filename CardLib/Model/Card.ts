@@ -1,6 +1,8 @@
+import { TypeEx } from "~CardLib/TypeEx";
 import { Debug } from "../Debug";
 import { Colour } from "./Colour";
 import { GameBase } from "./GameBase";
+import { GameSerializationContext } from "./GameSerializationContext";
 import { ICard } from "./ICard";
 import { Pile } from "./Pile";
 import { Rank } from "./Rank";
@@ -8,16 +10,31 @@ import { Suit } from "./Suit";
 import { CardFlipOperation } from "./Undoable/CardFlipOperation";
 
 export class Card implements ICard {
+    public readonly game: GameBase;
     public readonly suit: Suit;
     public readonly colour: Colour;
     public readonly rank: Rank;
-    public readonly game: GameBase;
     public pile: Pile;
     public pileIndex = 0;
-    public faceUp = false;
     public pileChanged = () => { };
     public pileIndexChanged = () => { };
     public faceUpChanged = () => { };
+
+    private faceUp_ = false;
+    public get faceUp() { return this.faceUp_; }
+    public set faceUp(faceUp: boolean) {
+        if (this.faceUp_ === faceUp)
+            return;
+
+        const oldFaceUp = this.faceUp_;
+        const op = new CardFlipOperation(this, oldFaceUp, faceUp);
+        this.game.addUndoableOperation(op);
+        op.redo();
+    }
+    public doSetFaceUp(faceUp: boolean) {
+        this.faceUp_ = faceUp;
+        this.faceUpChanged();
+    }
 
     public constructor(game: GameBase, suit: Suit, colour: Colour, rank: Rank, pile: Pile, pileIndex: number) {
         this.game = game;
@@ -60,94 +77,11 @@ export class Card implements ICard {
         this.pileIndexChanged();
     }
 
-    public flip(faceUp: boolean) {
-        if (this.faceUp === faceUp)
-            return;
-        const oldFaceUp = this.faceUp;
-        const op = new CardFlipOperation(this, oldFaceUp, faceUp);
-        this.game.addUndoableOperation(op);
-        op.redo();
+    public serializeState(context: GameSerializationContext) {
+        context.write(this.faceUp ? 1 : 0);
     }
 
-    public doFlip(faceUp: boolean) {
-        this.faceUp = faceUp;
-        this.faceUpChanged();
-    }
-
-    public getEmoji() {
-        if (!this.faceUp)
-            return "🂠";
-        switch (this.suit) {
-            case Suit.Spades:
-                switch (this.rank) {
-                    case Rank.Ace: return "🂡";
-                    case Rank.Two: return "🂢";
-                    case Rank.Three: return "🂣";
-                    case Rank.Four: return "🂤";
-                    case Rank.Five: return "🂥";
-                    case Rank.Six: return "🂦";
-                    case Rank.Seven: return "🂧";
-                    case Rank.Eight: return "🂨";
-                    case Rank.Nine: return "🂩";
-                    case Rank.Ten: return "🂪";
-                    case Rank.Jack: return "🂫";
-                    case Rank.Queen: return "🂭";
-                    case Rank.King: return "🂮";
-                }
-                break;
-            case Suit.Hearts:
-                switch (this.rank) {
-                    case Rank.Ace: return "🂱";
-                    case Rank.Two: return "🂲";
-                    case Rank.Three: return "🂳";
-                    case Rank.Four: return "🂴";
-                    case Rank.Five: return "🂵";
-                    case Rank.Six: return "🂶";
-                    case Rank.Seven: return "🂷";
-                    case Rank.Eight: return "🂸";
-                    case Rank.Nine: return "🂹";
-                    case Rank.Ten: return "🂺";
-                    case Rank.Jack: return "🂻";
-                    case Rank.Queen: return "🂽";
-                    case Rank.King: return "🂾";
-                }
-                break;
-            case Suit.Diamonds:
-                switch (this.rank) {
-                    case Rank.Ace: return "🃁";
-                    case Rank.Two: return "🃂";
-                    case Rank.Three: return "🃃";
-                    case Rank.Four: return "🃄";
-                    case Rank.Five: return "🃅";
-                    case Rank.Six: return "🃆";
-                    case Rank.Seven: return "🃇";
-                    case Rank.Eight: return "🃈";
-                    case Rank.Nine: return "🃉";
-                    case Rank.Ten: return "🃊";
-                    case Rank.Jack: return "🃋";
-                    case Rank.Queen: return "🃍";
-                    case Rank.King: return "🃎";
-                }
-                break;
-            case Suit.Clubs:
-                switch (this.rank) {
-                    case Rank.Ace: return "🃑";
-                    case Rank.Two: return "🃒";
-                    case Rank.Three: return "🃓";
-                    case Rank.Four: return "🃔";
-                    case Rank.Five: return "🃕";
-                    case Rank.Six: return "🃖";
-                    case Rank.Seven: return "🃗";
-                    case Rank.Eight: return "🃘";
-                    case Rank.Nine: return "🃙";
-                    case Rank.Ten: return "🃚";
-                    case Rank.Jack: return "🃛";
-                    case Rank.Queen: return "🃝";
-                    case Rank.King: return "🃞";
-                }
-                break;
-        }
-
-        return "";
+    public deserializeState(context: GameSerializationContext) {
+        this.faceUp = context.readRange(0, 1) !== 0;
     }
 }

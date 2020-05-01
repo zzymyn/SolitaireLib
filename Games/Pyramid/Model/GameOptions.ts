@@ -5,9 +5,15 @@ export class GameOptions extends GameOptionsBase {
     public autoRevealStockTop = true;
     public autoPlayKings = true;
 
+    public get saveKey() {
+        return {
+            restocksAllowed: this.restocksAllowed
+        };
+    }
+
     constructor(params: URLSearchParams) {
         super(params);
-        this.restocksAllowed = this.getFloat_("restocksAllowed", Infinity);
+        this.restocksAllowed = this.getNumber_("restocksAllowed", Infinity);
         this.autoRevealStockTop = this.getBool_("autoRevealStockTop", true);
         this.autoPlayKings = this.getBool_("autoPlayKings", true);
     }

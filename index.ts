@@ -41,6 +41,7 @@ window.addEventListener("load", () => {
             Debug.error(`Unknown game ${gameKey}.`);
 
         currentGame = gamePresenterFactory.createGame(tableHolder, params);
+        currentGame.start();
     };
 
     window.addEventListener("hashchange", refreashGame);

@@ -46,4 +46,10 @@ export interface IGameBase {
 
     /** A card has been dragged from somewhere and dropped on a pile. */
     dropCard(card: ICard, pile: IPile): Generator<DelayHint, void>;
+
+    /** Serialize the game's state to a string. */
+    serialize(): string;
+
+    /** Deserialize the game's state from a string. */
+    deserialize(value: string): boolean;
 }

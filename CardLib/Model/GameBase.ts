@@ -1,13 +1,17 @@
 import prand from 'pure-rand';
+import { TypeEx } from '~CardLib/TypeEx';
 import { Debug } from "../Debug";
 import { Card } from "./Card";
 import { DelayHint } from "./DelayHint";
+import { GameSerializationContext } from './GameSerializationContext';
 import { ICard } from "./ICard";
 import { IGameBase } from "./IGameBase";
 import { IPile } from "./IPile";
 import { Pile } from "./Pile";
 import { CompoundUndoableOperation } from "./Undoable/CompoundUndoableOperation";
 import { IUndoableOperation } from './Undoable/IUndoableOperation';
+
+const SAVE_DATA_FORMAT = 0;
 
 export abstract class GameBase implements IGameBase {
     public cards: Card[] = [];
@@ -18,11 +22,13 @@ export abstract class GameBase implements IGameBase {
     private currentOperation_: CompoundUndoableOperation | undefined = undefined;
 
     public *restart(seed: number) {
-        const rng = prand.mersenne(seed);
-        this.undoStack_ = [];
-        this.redoStack_ = [];
-        this.currentOperation_ = undefined;
-        yield* this.restart_(rng);
+        if (this.startOperation_()) {
+            const rng = prand.mersenne(seed);
+            yield* this.restart_(rng);
+            this.commitOperation_();
+            this.undoStack_ = [];
+            this.redoStack_ = [];
+        }
     }
 
     public get canUndo() { return this.undoStack_.length > 0; }
@@ -140,5 +146,50 @@ export abstract class GameBase implements IGameBase {
             this.redoStack_ = [];
         }
         this.currentOperation_ = undefined;
+    }
+
+    public serialize() {
+        const context = this.createSerializationContext_();
+        context.write(SAVE_DATA_FORMAT);
+        for (const card of this.cards) {
+            card.serializeState(context);
+        }
+        for (const pile of this.piles) {
+            pile.serializeState(context);
+        }
+        return context.toJson();
+    }
+
+    public deserialize(json: string) {
+        try {
+            const context = this.createSerializationContext_();
+            context.fromJson(json);
+
+            if (context.read() !== SAVE_DATA_FORMAT)
+                throw new Error();
+            for (const card of this.cards) {
+                card.deserializeState(context);
+            }
+            for (const pile of this.piles) {
+                pile.deserializeState(context);
+            }
+            context.ensureAtEnd();
+            this.undoStack_ = [];
+            this.redoStack_ = [];
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    private createSerializationContext_() {
+        const context = new GameSerializationContext();
+        for (const card of this.cards) {
+            context.addCard(card);
+        }
+        for (const pile of this.piles) {
+            context.addPile(pile);
+        }
+        return context;
     }
 }

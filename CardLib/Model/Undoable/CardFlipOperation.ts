@@ -6,10 +6,10 @@ export class CardFlipOperation implements IUndoableOperation {
     }
 
     public undo() {
-        this.card_.doFlip(this.oldFaceUp_);
+        this.card_.doSetFaceUp(this.oldFaceUp_);
     }
 
     public redo() {
-        this.card_.doFlip(this.newFaceUp_);
+        this.card_.doSetFaceUp(this.newFaceUp_);
     }
 }

@@ -16,6 +16,8 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
     protected readonly game_: TGame;
     protected readonly rootView_: IView;
 
+    protected abstract get saveDataKey_(): string;
+
     constructor(game: TGame, rootView: IView) {
         this.game_ = game;
         this.rootView_ = rootView;
@@ -36,8 +38,6 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
 
         window.addEventListener("resize", this.onWindowResize_);
         window.addEventListener("keydown", this.onWindowKeyDown_);
-
-        this.restart_();
     }
 
     public dispose() {
@@ -45,6 +45,26 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
     }
 
     protected abstract onResize_(): void;
+
+    public start() {
+        const saveData = window.localStorage.getItem(this.saveDataKey_);
+        if (saveData && this.game_.deserialize(saveData)) {
+            // state has been successfully loaded
+        } else {
+            this.restart_();
+        }
+    }
+
+    protected relayoutAll_() {
+        for (const pile of this.game_.piles) {
+            const pileView = this.getPileView_(pile);
+            this.relayoutPile_(pileView, pile);
+        }
+        for (const card of this.game_.cards) {
+            const cardView = this.getCardView_(card);
+            cardView.faceUp = card.faceUp;
+        }
+    }
 
     private readonly pileViews_: PileView[] = [];
     private readonly pileToPileView_ = new Map<IPile, PileView>();
@@ -344,6 +364,12 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
                     await this.waitForDelay_(delay, waitCount++);
                 }
                 this.operations_.shift();
+            }
+
+            try {
+                window.localStorage.setItem(this.saveDataKey_, this.game_.serialize());
+            } catch {
+
             }
         } else {
             // something else is already running, so add to the pending:
