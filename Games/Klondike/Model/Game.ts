@@ -305,8 +305,8 @@ export class Game extends GameBase implements IGame {
                 for (const tableau of this.tableaux) {
                     const card = tableau.peek();
                     if (card && !card.faceUp) {
-                        yield DelayHint.Quick;
                         card.faceUp = true;
+                        yield DelayHint.Quick;
                         continue mainLoop;
                     }
                 }
