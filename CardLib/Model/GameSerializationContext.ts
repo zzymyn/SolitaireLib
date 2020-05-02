@@ -3,7 +3,7 @@ import { TypeEx } from "~CardLib/TypeEx";
 import { AutoIdMap } from "../AutoIdMap";
 import { Card } from "./Card";
 import { Pile } from "./Pile";
-import { IUndoableOperation, IUndoableOperationStatic } from "./Undoable/IUndoableOperation";
+import { IUndoableOperation } from "./Undoable/IUndoableOperation";
 
 type UndoableDeserializer = (context: GameSerializationContext) => IUndoableOperation;
 

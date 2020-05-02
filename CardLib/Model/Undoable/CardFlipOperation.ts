@@ -1,6 +1,6 @@
 import { Card } from "../Card";
 import { GameSerializationContext } from "../GameSerializationContext";
-import { IUndoableOperation, IUndoableOperationStatic } from "./IUndoableOperation";
+import { IUndoableOperation } from "./IUndoableOperation";
 
 export class CardFlipOperation implements IUndoableOperation {
     constructor(private readonly card_: Card, private readonly oldFaceUp_: boolean, private readonly newFaceUp_: boolean) {
