@@ -17,7 +17,7 @@ export class GameOptions extends GameOptionsBase {
 
     constructor(params: URLSearchParams) {
         super(params);
-        this.stockDraws = MathEx.clamp(this.getNumber_("stockDraws", 1), 1, 3);
+        this.stockDraws = MathEx.clamp(this.getNumber_("stockDraws", 1), 1, 5);
         this.restocksAllowed = this.getNumber_("restocksAllowed", Infinity);
         this.autoReveal = this.getBool_("autoReveal", true);
         this.autoPlayStock = this.getBool_("autoPlayStock", true);

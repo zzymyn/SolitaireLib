@@ -104,7 +104,7 @@ export class Game extends GameBase implements IGame {
         if (this.tableaux.indexOf(card.pile)) {
             if (card.pile.peek() === card && !card.faceUp) {
                 card.faceUp = true;
-                yield DelayHint.Quick;
+                yield DelayHint.OneByOne;
                 yield* this.doAutoMoves_();
                 return;
             }
@@ -185,9 +185,13 @@ export class Game extends GameBase implements IGame {
                 this.waste.maxFan++;
                 yield DelayHint.Quick;
                 card.faceUp = true;
-                yield DelayHint.Quick;
+                if (i < this.options.stockDraws - 1) {
+                    yield DelayHint.Quick;
+                }
             }
         }
+
+        yield DelayHint.OneByOne;
     }
 
     private isTableauxDrop_(card: Card, pile: Pile) {
@@ -306,7 +310,7 @@ export class Game extends GameBase implements IGame {
                     const card = tableau.peek();
                     if (card && !card.faceUp) {
                         card.faceUp = true;
-                        yield DelayHint.Quick;
+                        yield DelayHint.OneByOne;
                         continue mainLoop;
                     }
                 }
