@@ -8,17 +8,20 @@ import { ICard } from "./ICard";
 import { IGameBase } from "./IGameBase";
 import { IPile } from "./IPile";
 import { Pile } from "./Pile";
+import { CardFlipOperation } from './Undoable/CardFlipOperation';
 import { CompoundUndoableOperation } from "./Undoable/CompoundUndoableOperation";
 import { IUndoableOperation } from './Undoable/IUndoableOperation';
+import { PileInsertOperation } from './Undoable/PileInsertOperation';
+import { PileMaxFanOperation } from './Undoable/PileMaxFanOperation';
 
-const SAVE_DATA_FORMAT = 0;
+const SAVE_DATA_FORMAT = 2;
 
 export abstract class GameBase implements IGameBase {
     public cards: Card[] = [];
     public piles: Pile[] = [];
 
-    private undoStack_: CompoundUndoableOperation[] = [];
-    private redoStack_: CompoundUndoableOperation[] = [];
+    private undoStack_: IUndoableOperation[] = [];
+    private redoStack_: IUndoableOperation[] = [];
     private currentOperation_: CompoundUndoableOperation | undefined = undefined;
 
     public *restart(seed: number) {
@@ -157,7 +160,16 @@ export abstract class GameBase implements IGameBase {
         for (const pile of this.piles) {
             pile.serializeState(context);
         }
+        this.serializeUndoStack_(context, this.undoStack_);
+        this.serializeUndoStack_(context, this.redoStack_);
         return context.toJson();
+    }
+
+    private serializeUndoStack_(context: GameSerializationContext, stack: IUndoableOperation[]) {
+        context.write(stack.length);
+        for (const undo of stack) {
+            undo.serialize(context);
+        }
     }
 
     public deserialize(json: string) {
@@ -166,30 +178,53 @@ export abstract class GameBase implements IGameBase {
             context.fromJson(json);
 
             if (context.read() !== SAVE_DATA_FORMAT)
-                throw new Error();
+                throw new Error("Unknown save data format.");
+
             for (const card of this.cards) {
                 card.deserializeState(context);
             }
+
             for (const pile of this.piles) {
                 pile.deserializeState(context);
             }
+
+            this.undoStack_ = this.deserializeUndoStack_(context);
+
+            this.redoStack_ = this.deserializeUndoStack_(context);
+
             context.ensureAtEnd();
-            this.undoStack_ = [];
-            this.redoStack_ = [];
             return true;
         } catch (error) {
+            console.error("Failed to deserialize game state.", error);
             return false;
         }
     }
 
+    private deserializeUndoStack_(context: GameSerializationContext) {
+        const stack: IUndoableOperation[] = [];
+        const len = context.read();
+        for (let i = 0; i < len; ++i) {
+            stack.push(context.readUndoable());
+        }
+        return stack;
+    }
+
     private createSerializationContext_() {
         const context = new GameSerializationContext();
+
         for (const card of this.cards) {
             context.addCard(card);
         }
+
         for (const pile of this.piles) {
             context.addPile(pile);
         }
+
+        context.addUndoableDeserializer(CompoundUndoableOperation.deserialize);
+        context.addUndoableDeserializer(CardFlipOperation.deserialize);
+        context.addUndoableDeserializer(PileInsertOperation.deserialize);
+        context.addUndoableDeserializer(PileMaxFanOperation.deserialize);
+
         return context;
     }
 }

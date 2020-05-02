@@ -1,3 +1,4 @@
+import { GameSerializationContext } from "../GameSerializationContext";
 import { IUndoableOperation } from "./IUndoableOperation";
 
 export class CompoundUndoableOperation implements IUndoableOperation {
@@ -19,5 +20,22 @@ export class CompoundUndoableOperation implements IUndoableOperation {
         for (const op of this.ops_) {
             op.redo();
         }
+    }
+
+    public serialize(context: GameSerializationContext) {
+        context.write(context.getUndoableDeserializerId(CompoundUndoableOperation.deserialize));
+        context.write(this.ops_.length);
+        for (const op of this.ops_) {
+            op.serialize(context);
+        }
+    }
+
+    public static deserialize(context: GameSerializationContext) {
+        const result = new CompoundUndoableOperation();
+        const len = context.read();
+        for (let i = 0; i < len; ++i) {
+            result.addOperation(context.readUndoable());
+        }
+        return result;
     }
 }

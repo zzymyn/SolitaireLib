@@ -3,6 +3,9 @@ import { TypeEx } from "~CardLib/TypeEx";
 import { AutoIdMap } from "../AutoIdMap";
 import { Card } from "./Card";
 import { Pile } from "./Pile";
+import { IUndoableOperation, IUndoableOperationStatic } from "./Undoable/IUndoableOperation";
+
+type UndoableDeserializer = (context: GameSerializationContext) => IUndoableOperation;
 
 export class GameSerializationContext {
     private data_: number[] = [];
@@ -10,6 +13,22 @@ export class GameSerializationContext {
 
     public write(value: number) {
         this.dataIndex_ = this.data_.push(value);
+    }
+
+    public writeBool(value: boolean) {
+        return this.write(value ? 1 : 0);
+    }
+
+    public writeCard(card: Card) {
+        this.write(this.getCardId(card));
+    }
+
+    public writePile(pile: Pile) {
+        this.write(this.getPileId(pile));
+    }
+
+    public writeUndoableDeserializer(undoable: UndoableDeserializer) {
+        this.write(this.getUndoableDeserializerId(undoable));
     }
 
     public read() {
@@ -21,6 +40,27 @@ export class GameSerializationContext {
         if (value >= min && value <= max)
             return value;
         throw new Error(`Value ${value} not in range [${min}, ${max}].`);
+    }
+
+    public readBool() {
+        return this.readRange(0, 1) !== 0;
+    }
+
+    public readCard() {
+        return this.getCard(this.read());
+    }
+
+    public readPile() {
+        return this.getPile(this.read());
+    }
+
+    public readUndoable() {
+        const deserializer = this.readUndoableDeserializer();
+        return deserializer(this);
+    }
+
+    public readUndoableDeserializer() {
+        return this.getUndoableDeserializer(this.read());
     }
 
     public toJson() {
@@ -39,7 +79,7 @@ export class GameSerializationContext {
 
     public ensureAtEnd() {
         if (this.dataIndex_ !== this.data_.length)
-            throw new Error();
+            throw new Error("Deserialization did not consume all data.");
     }
 
     private readonly cardMap_ = new AutoIdMap<Card>();
@@ -68,6 +108,20 @@ export class GameSerializationContext {
 
     public getPileId(pile: Pile) {
         return this.pileMap_.getId(pile);
+    }
+
+    private readonly undoableDeserializerMap_ = new AutoIdMap<UndoableDeserializer>();
+
+    public addUndoableDeserializer(undoable: UndoableDeserializer) {
+        return this.undoableDeserializerMap_.add(undoable);
+    }
+
+    public getUndoableDeserializer(undoableId: number) {
+        return this.undoableDeserializerMap_.get(undoableId);
+    }
+
+    public getUndoableDeserializerId(undoable: UndoableDeserializer) {
+        return this.undoableDeserializerMap_.getId(undoable);
     }
 }
 
