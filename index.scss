@@ -168,7 +168,6 @@ div#buttons button {
     transition-timing-function: ease-in, ease-in, ease-in, ease-in, ease-in, cubic-bezier(0.755, 0.05, 0.855, 0.06), ease-in;
     transform: scale(0, 0);
     opacity: 0;
-    filter: blur(1rem);
 }
 
 .card.faceUp .cardRotation {
