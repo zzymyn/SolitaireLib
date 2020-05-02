@@ -26,9 +26,11 @@ export abstract class GameBase implements IGameBase {
 
     public *restart(seed: number) {
         if (this.startOperation_()) {
+            this.won = false;
             const rng = prand.mersenne(seed);
             yield* this.restart_(rng);
             this.commitOperation_();
+            this.won = this.doGetWon_();
             this.undoStack_ = [];
             this.redoStack_ = [];
         }
@@ -58,12 +60,28 @@ export abstract class GameBase implements IGameBase {
         throw new Error("Method not implemented.");
     }
 
+    private won_ = false;
+    public get won() { return this.won_; }
+    public set won(won: boolean) {
+        if (won === this.won_)
+            return;
+        this.won_ = won;
+        this.wonChanged();
+    }
+
+    public abstract readonly wonCards: ICard[];
+
+    public wonChanged = () => { };
+
+    protected abstract doGetWon_(): boolean;
+
     public *pilePrimary(pile: IPile): Generator<DelayHint, void> {
         if (this.startOperation_()) {
             if (!(pile instanceof Pile)) Debug.error();
             Debug.assert(this.piles.indexOf(pile) >= 0);
             yield* this.pilePrimary_(pile);
             this.commitOperation_();
+            this.won = this.doGetWon_();
         }
     }
 
@@ -73,6 +91,7 @@ export abstract class GameBase implements IGameBase {
             Debug.assert(this.piles.indexOf(pile) >= 0);
             yield* this.pileSecondary_(pile);
             this.commitOperation_();
+            this.won = this.doGetWon_();
         }
     }
 
@@ -82,6 +101,7 @@ export abstract class GameBase implements IGameBase {
             Debug.assert(this.cards.indexOf(card) >= 0);
             yield* this.cardPrimary_(card);
             this.commitOperation_();
+            this.won = this.doGetWon_();
         }
     }
 
@@ -91,6 +111,7 @@ export abstract class GameBase implements IGameBase {
             Debug.assert(this.cards.indexOf(card) >= 0);
             yield* this.cardSecondary_(card);
             this.commitOperation_();
+            this.won = this.doGetWon_();
         }
     }
 
@@ -116,6 +137,7 @@ export abstract class GameBase implements IGameBase {
             Debug.assert(this.piles.indexOf(pile) >= 0);
             yield* this.dropCard_(card, pile);
             this.commitOperation_();
+            this.won = this.doGetWon_();
         }
     }
 
@@ -174,6 +196,8 @@ export abstract class GameBase implements IGameBase {
 
     public deserialize(json: string) {
         try {
+            this.won = false;
+
             const context = this.createSerializationContext_();
             context.fromJson(json);
 
@@ -193,6 +217,9 @@ export abstract class GameBase implements IGameBase {
             this.redoStack_ = this.deserializeUndoStack_(context);
 
             context.ensureAtEnd();
+
+            this.won = this.doGetWon_();
+
             return true;
         } catch (error) {
             console.error("Failed to deserialize game state.", error);

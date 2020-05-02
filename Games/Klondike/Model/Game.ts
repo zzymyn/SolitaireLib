@@ -48,6 +48,32 @@ export class Game extends GameBase implements IGame {
         this.cards = DeckUtils.createStandard52Deck(this.stock);
     }
 
+    protected doGetWon_() {
+        // won when all cards are in the foundation:
+        let sum = 0;
+        for (const pile of this.foundations) {
+            sum += pile.length;
+        }
+        return sum === 52;
+    }
+
+    public get wonCards() {
+        const wonCards: Card[] = [];
+        for (const pile of this.foundations) {
+            for (const card of pile) {
+                wonCards.push(card);
+            }
+        }
+        wonCards.sort((a, b) => {
+            if (a.pileIndex > b.pileIndex) return 1;
+            if (a.pileIndex < b.pileIndex) return -1;
+            if (a.rank > b.rank) return 1;
+            if (a.rank < b.rank) return -1;
+            return 0;
+        });
+        return wonCards;
+    }
+
     protected *restart_(rng: prand.RandomGenerator) {
         this.restocks_ = 0;
 

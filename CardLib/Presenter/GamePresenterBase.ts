@@ -22,6 +22,8 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
         this.game_ = game;
         this.rootView_ = rootView;
 
+        game.wonChanged = () => this.gameWonChanged_();
+
         // TODO: make nicer:
         document.getElementById("newGameButton")?.addEventListener("click", e => {
             e.preventDefault();
@@ -52,6 +54,40 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
             // state has been successfully loaded
         } else {
             this.restart_();
+        }
+    }
+
+    private async gameWonChanged_() {
+        if (this.game_.won) {
+            let waitCount = 0;
+
+            const wonCards = this.game_.wonCards;
+
+            for (const card of wonCards) {
+                if (!this.game_.won)
+                    break;
+                const cardView = this.getCardView_(card);
+                cardView.zIndex = this.getNextZIndex_();
+            }
+
+            await this.waitForDelay_(DelayHint.Settle, waitCount++);
+
+            for (let i = wonCards.length; i-- > 0;) {
+                const card = wonCards[i];
+                if (!this.game_.won)
+                    break;
+                const cardView = this.getCardView_(card);
+                cardView.won = true;
+                const rect = cardView.rect;
+                rect.x = Math.random() * 100 - 50;
+                rect.y = Math.random() * 100 - 50;
+                cardView.rect = rect;
+                await this.waitForDelay_(DelayHint.Settle, waitCount++);
+            }
+        } else {
+            for (const cardView of this.cardViews_) {
+                cardView.won = false;
+            }
         }
     }
 
@@ -254,7 +290,7 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
         if (!cancelled) {
             const bestPile = this.getBestDragPile_(card, rect);
             if (bestPile) {
-                this.addOperation_(() => this.game_.dropCard(card, bestPile!));
+                this.doOperation_(() => this.game_.dropCard(card, bestPile!));
             }
         }
         this.setDropPreview_(undefined);
@@ -324,56 +360,44 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
     }
 
     private async undo_() {
-        this.addOperation_(() => this.game_.undo());
+        this.doOperation_(() => this.game_.undo());
     }
 
     private async redo_() {
-        this.addOperation_(() => this.game_.redo());
+        this.doOperation_(() => this.game_.redo());
     }
 
     private async restart_() {
-        this.addOperation_(() => this.game_.restart(Date.now()));
+        this.doOperation_(() => this.game_.restart(Date.now()));
     }
 
     private async pilePrimary_(pile: IPile) {
-        this.addOperation_(() => this.game_.pilePrimary(pile));
+        this.doOperation_(() => this.game_.pilePrimary(pile));
     }
 
     private async pileSecondary_(pile: IPile) {
-        this.addOperation_(() => this.game_.pileSecondary(pile));
+        this.doOperation_(() => this.game_.pileSecondary(pile));
     }
 
     private async cardPrimary_(card: ICard) {
-        this.addOperation_(() => this.game_.cardPrimary(card));
+        this.doOperation_(() => this.game_.cardPrimary(card));
     }
 
     private async cardSecondary_(card: ICard) {
-        this.addOperation_(() => this.game_.cardSecondary(card));
+        this.doOperation_(() => this.game_.cardSecondary(card));
     }
 
-    private readonly operations_: (() => Generator<DelayHint, void>)[] = [];
-    private async addOperation_(operation: () => Generator<DelayHint, void>) {
+    private async doOperation_(operation: () => Generator<DelayHint, void>) {
         let waitCount = 0;
-        if (this.operations_.length === 0) {
-            // nothing else is already running, so start now:
-            this.operations_.push(operation);
 
-            while (this.operations_.length > 0) {
-                const op = this.operations_[0];
-                for (const delay of op()) {
-                    await this.waitForDelay_(delay, waitCount++);
-                }
-                this.operations_.shift();
-            }
+        for (const delay of operation()) {
+            await this.waitForDelay_(delay, waitCount++);
+        }
 
-            try {
-                window.localStorage.setItem(this.saveDataKey_, this.game_.serialize());
-            } catch {
+        try {
+            window.localStorage.setItem(this.saveDataKey_, this.game_.serialize());
+        } catch {
 
-            }
-        } else {
-            // something else is already running, so add to the pending:
-            this.operations_.push(operation);
         }
     }
 

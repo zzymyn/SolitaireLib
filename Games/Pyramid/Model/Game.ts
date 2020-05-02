@@ -40,6 +40,28 @@ export class Game extends GameBase implements IGame {
         this.cards = DeckUtils.createStandard52Deck(this.stock);
     }
 
+    protected doGetWon_() {
+        // won when pyramid is empty:
+        let sum = 0;
+        for (const row of this.pyramid) {
+            for (const pile of row) {
+                sum += pile.length;
+            }
+        }
+        return sum === 0;
+    }
+
+    public get wonCards() {
+        const wonCards: Card[] = [];
+        for (const card of this.foundation) {
+            wonCards.push(card);
+        }
+        wonCards.sort((a, b) => {
+            return a.pileIndex - b.pileIndex;
+        });
+        return wonCards;
+    }
+
     protected *restart_(rng: prand.RandomGenerator) {
         this.restocks_ = 0;
 
@@ -199,8 +221,7 @@ export class Game extends GameBase implements IGame {
             case Rank.Jack: return 11;
             case Rank.Queen: return 12;
             case Rank.King: return 13;
-            default:
-                return 0;
+            default: return 0;
         }
     }
 

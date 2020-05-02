@@ -50,6 +50,19 @@ export class CardView implements IView, ITouchResponder {
         }
     }
 
+    private won_ = false;
+    public get won() { return this.won_; }
+    public set won(won: boolean) {
+        if (this.won_ === won)
+            return;
+        this.won_ = won;
+        if (won) {
+            this.element.classList.add("won");
+        } else {
+            this.element.classList.remove("won");
+        }
+    }
+
     private dropPreview_ = false;
     public get dropPreview() { return this.dropPreview_; }
     public set dropPreview(dropPreview: boolean) {

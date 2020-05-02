@@ -21,6 +21,12 @@ export interface IGameBase {
 
     getHint(): { card: ICard; pile: IPile; };
 
+    readonly won: boolean;
+
+    readonly wonCards: ICard[];
+
+    wonChanged: () => void;
+
     /** Primary interaction with a pile, usually a left click or tap. */
     pilePrimary(pile: IPile): Generator<DelayHint, void>;
 
