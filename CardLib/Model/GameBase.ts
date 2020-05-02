@@ -168,7 +168,7 @@ export abstract class GameBase implements IGameBase {
     private serializeUndoStack_(context: GameSerializationContext, stack: IUndoableOperation[]) {
         context.write(stack.length);
         for (const undo of stack) {
-            undo.serialize(context);
+            context.writeUndoable(undo);
         }
     }
 

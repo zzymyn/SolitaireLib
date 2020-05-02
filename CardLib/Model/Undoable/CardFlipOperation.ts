@@ -15,11 +15,12 @@ export class CardFlipOperation implements IUndoableOperation {
     }
 
     public serialize(context: GameSerializationContext) {
-        context.write(context.getUndoableDeserializerId(CardFlipOperation.deserialize));
         context.writeCard(this.card_);
         context.writeBool(this.oldFaceUp_);
         context.writeBool(this.newFaceUp_);
     }
+
+    public get deserializer() { return CardFlipOperation.deserialize; }
 
     public static deserialize(context: GameSerializationContext) {
         const card = context.readCard();

@@ -23,12 +23,13 @@ export class CompoundUndoableOperation implements IUndoableOperation {
     }
 
     public serialize(context: GameSerializationContext) {
-        context.write(context.getUndoableDeserializerId(CompoundUndoableOperation.deserialize));
         context.write(this.ops_.length);
         for (const op of this.ops_) {
-            op.serialize(context);
+            context.writeUndoable(op);
         }
     }
+
+    public get deserializer() { return CompoundUndoableOperation.deserialize; }
 
     public static deserialize(context: GameSerializationContext) {
         const result = new CompoundUndoableOperation();

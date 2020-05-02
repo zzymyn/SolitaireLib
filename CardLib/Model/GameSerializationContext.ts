@@ -27,7 +27,12 @@ export class GameSerializationContext {
         this.write(this.getPileId(pile));
     }
 
-    public writeUndoableDeserializer(undoable: UndoableDeserializer) {
+    public writeUndoable(undoable: IUndoableOperation) {
+        this.writeUndoableDeserializer_(undoable.deserializer);
+        undoable.serialize(this);
+    }
+
+    private writeUndoableDeserializer_(undoable: UndoableDeserializer) {
         this.write(this.getUndoableDeserializerId(undoable));
     }
 
@@ -55,11 +60,11 @@ export class GameSerializationContext {
     }
 
     public readUndoable() {
-        const deserializer = this.readUndoableDeserializer();
+        const deserializer = this.readUndoableDeserializer_();
         return deserializer(this);
     }
 
-    public readUndoableDeserializer() {
+    private readUndoableDeserializer_() {
         return this.getUndoableDeserializer(this.read());
     }
 

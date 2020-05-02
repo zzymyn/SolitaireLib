@@ -16,13 +16,14 @@ export class PileInsertOperation implements IUndoableOperation {
     }
 
     public serialize(context: GameSerializationContext) {
-        context.write(context.getUndoableDeserializerId(PileInsertOperation.deserialize));
         context.writeCard(this.card_);
         context.writePile(this.oldPile_);
         context.write(this.oldPileIndex_);
         context.writePile(this.newPile_);
         context.write(this.newPileIndex_);
     }
+
+    public get deserializer() { return PileInsertOperation.deserialize; }
 
     public static deserialize(context: GameSerializationContext) {
         const card = context.readCard();

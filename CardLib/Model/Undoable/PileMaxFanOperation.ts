@@ -16,11 +16,12 @@ export class PileMaxFanOperation implements IUndoableOperation {
     }
 
     public serialize(context: GameSerializationContext) {
-        context.write(context.getUndoableDeserializerId(PileMaxFanOperation.deserialize));
         context.writePile(this.pile_);
         context.write(this.oldMaxFan_);
         context.write(this.newMaxFan_);
     }
+
+    public get deserializer() { return PileMaxFanOperation.deserialize; }
 
     public static deserialize(context: GameSerializationContext) {
         const pile = context.readPile();

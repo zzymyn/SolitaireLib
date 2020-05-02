@@ -12,7 +12,7 @@ export class AutoIdMap<T> {
     public get(itemId: number) {
         const item = this.idToItem_.get(itemId);
         if (!item)
-            throw new Error(`Card with id ${itemId} not found.`);
+            throw new Error(`Item with id ${itemId} not found.`);
         return item;
     }
 
