@@ -38,6 +38,13 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
             this.redo_();
         });
 
+        const gameScoreElement = rootView.element.querySelector(".gameScore");
+        if (gameScoreElement) {
+            game.gamesStartedChanged = game.gamesWonChanged = () => {
+                gameScoreElement.textContent = `${game.gamesWon} / ${game.gamesStarted}`;
+            };
+        }
+
         window.addEventListener("resize", this.onWindowResize_);
         window.addEventListener("keydown", this.onWindowKeyDown_);
     }

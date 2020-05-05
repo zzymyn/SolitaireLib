@@ -9,23 +9,28 @@ export interface IGameBase {
     /** All the piles in the game. */
     piles: IPile[];
 
-    restart(seed: number): Generator<DelayHint, void>;
+    readonly gamesStarted: number;
+    gamesStartedChanged: () => void;
+    readonly gamesWon: number;
+    gamesWonChanged: () => void;
 
+    /** Is undo available. */
     readonly canUndo: boolean;
-
+    /** Undo the last move. */
     undo(): Generator<DelayHint, void>;
-
+    /** Is redo available. */
     readonly canRedo: boolean;
-
+    /** Redo the last undo. */
     redo(): Generator<DelayHint, void>;
 
-    getHint(): { card: ICard; pile: IPile; };
-
+    /** Is the game won. */
     readonly won: boolean;
-
+    wonChanged: () => void;
+    /** If the game is won, which cards are the winning cards. In order from bottom to top. */
     readonly wonCards: ICard[];
 
-    wonChanged: () => void;
+    /** Restart the game. */
+    restart(seed: number): Generator<DelayHint, void>;
 
     /** Primary interaction with a pile, usually a left click or tap. */
     pilePrimary(pile: IPile): Generator<DelayHint, void>;

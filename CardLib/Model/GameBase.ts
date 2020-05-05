@@ -14,7 +14,7 @@ import { IUndoableOperation } from './Undoable/IUndoableOperation';
 import { PileInsertOperation } from './Undoable/PileInsertOperation';
 import { PileMaxFanOperation } from './Undoable/PileMaxFanOperation';
 
-const SAVE_DATA_FORMAT = 2;
+const SAVE_DATA_FORMAT = 3;
 
 export abstract class GameBase implements IGameBase {
     public cards: Card[] = [];
@@ -24,16 +24,24 @@ export abstract class GameBase implements IGameBase {
     private redoStack_: IUndoableOperation[] = [];
     private currentOperation_: CompoundUndoableOperation | undefined = undefined;
 
-    public *restart(seed: number) {
-        if (this.startOperation_()) {
-            this.won = false;
-            const rng = prand.mersenne(seed);
-            yield* this.restart_(rng);
-            this.commitOperation_();
-            this.won = this.doGetWon_();
-            this.undoStack_ = [];
-            this.redoStack_ = [];
-        }
+    private gamesStarted_ = 0;
+    public gamesStartedChanged = () => { };
+    public get gamesStarted() { return this.gamesStarted_; }
+    public set gamesStarted(gamesStarted: number) {
+        if (gamesStarted === this.gamesStarted_)
+            return;
+        this.gamesStarted_ = gamesStarted;
+        this.gamesStartedChanged();
+    }
+
+    private gamesWon_ = 0;
+    public gamesWonChanged = () => { };
+    public get gamesWon() { return this.gamesWon_; }
+    public set gamesWon(gamesWon: number) {
+        if (gamesWon === this.gamesWon_)
+            return;
+        this.gamesWon_ = gamesWon;
+        this.gamesWonChanged();
     }
 
     public get canUndo() { return this.undoStack_.length > 0; }
@@ -56,11 +64,8 @@ export abstract class GameBase implements IGameBase {
         }
     }
 
-    public getHint(): { card: ICard; pile: IPile; } {
-        throw new Error("Method not implemented.");
-    }
-
     private won_ = false;
+    public wonChanged = () => { };
     public get won() { return this.won_; }
     public set won(won: boolean) {
         if (won === this.won_)
@@ -71,9 +76,30 @@ export abstract class GameBase implements IGameBase {
 
     public abstract readonly wonCards: ICard[];
 
-    public wonChanged = () => { };
-
     protected abstract doGetWon_(): boolean;
+
+    private checkWon_() {
+        const wasWon = this.won;
+        this.won = this.doGetWon_();
+        if (!wasWon && this.won) {
+            this.undoStack_ = [];
+            this.redoStack_ = [];
+            ++this.gamesWon;
+        }
+    }
+
+    public *restart(seed: number) {
+        if (this.startOperation_()) {
+            this.won = false;
+            ++this.gamesStarted;
+            const rng = prand.mersenne(seed);
+            yield* this.restart_(rng);
+            this.commitOperation_();
+            this.undoStack_ = [];
+            this.redoStack_ = [];
+            this.checkWon_();
+        }
+    }
 
     public *pilePrimary(pile: IPile): Generator<DelayHint, void> {
         if (this.startOperation_()) {
@@ -81,7 +107,7 @@ export abstract class GameBase implements IGameBase {
             Debug.assert(this.piles.indexOf(pile) >= 0);
             yield* this.pilePrimary_(pile);
             this.commitOperation_();
-            this.won = this.doGetWon_();
+            this.checkWon_();
         }
     }
 
@@ -91,7 +117,7 @@ export abstract class GameBase implements IGameBase {
             Debug.assert(this.piles.indexOf(pile) >= 0);
             yield* this.pileSecondary_(pile);
             this.commitOperation_();
-            this.won = this.doGetWon_();
+            this.checkWon_();
         }
     }
 
@@ -101,7 +127,7 @@ export abstract class GameBase implements IGameBase {
             Debug.assert(this.cards.indexOf(card) >= 0);
             yield* this.cardPrimary_(card);
             this.commitOperation_();
-            this.won = this.doGetWon_();
+            this.checkWon_();
         }
     }
 
@@ -111,7 +137,7 @@ export abstract class GameBase implements IGameBase {
             Debug.assert(this.cards.indexOf(card) >= 0);
             yield* this.cardSecondary_(card);
             this.commitOperation_();
-            this.won = this.doGetWon_();
+            this.checkWon_();
         }
     }
 
@@ -137,7 +163,7 @@ export abstract class GameBase implements IGameBase {
             Debug.assert(this.piles.indexOf(pile) >= 0);
             yield* this.dropCard_(card, pile);
             this.commitOperation_();
-            this.won = this.doGetWon_();
+            this.checkWon_();
         }
     }
 
@@ -176,6 +202,8 @@ export abstract class GameBase implements IGameBase {
     public serialize() {
         const context = this.createSerializationContext_();
         context.write(SAVE_DATA_FORMAT);
+        context.write(this.gamesStarted);
+        context.write(this.gamesWon);
         for (const card of this.cards) {
             card.serializeState(context);
         }
@@ -203,6 +231,9 @@ export abstract class GameBase implements IGameBase {
 
             if (context.read() !== SAVE_DATA_FORMAT)
                 throw new Error("Unknown save data format.");
+
+            this.gamesStarted = context.read();
+            this.gamesWon = context.read();
 
             for (const card of this.cards) {
                 card.deserializeState(context);

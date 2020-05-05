@@ -6,6 +6,13 @@
     -o-backface-visibility: $visibility;
 }
 
+@mixin user-select($value) {
+    user-select: $value;
+    -moz-user-select: $value;
+    -ms-user-select: $value;
+    -webkit-user-select: $value;
+}
+
 html {
     background-color: #477148;
     background-image: linear-gradient(180deg, #477148 0%, #416941 100%);
@@ -68,6 +75,16 @@ div#buttons button {
     bottom: 0;
     top: 0;
     overflow: hidden;
+}
+
+.gameScore {
+    font-size: 2vh;
+    position: absolute;
+    display: block;
+    right: 0;
+    bottom: 0;
+    padding: 0.5vh;
+    @include user-select(none);
 }
 
 @mixin cardFaces($cardStyle) {
@@ -165,7 +182,8 @@ div#buttons button {
 .card.won {
     transition-property: left, top, right, bottom, filter, transform, opacity;
     transition-duration: 2s;
-    transition-timing-function: ease-in, ease-in, ease-in, ease-in, ease-in, cubic-bezier(0.755, 0.05, 0.855, 0.06), ease-in;
+    transition-timing-function: ease-in, ease-in, ease-in, ease-in, ease-in, cubic-bezier(0.755, 0.05, 0.855, 0.06),
+        ease-in;
     transform: scale(0, 0);
     opacity: 0;
 }
