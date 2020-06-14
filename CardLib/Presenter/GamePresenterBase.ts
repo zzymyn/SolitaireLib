@@ -410,7 +410,7 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
 
     private async waitForDelay_(delay: DelayHint, waitCount: number) {
         // make delays slightly shorter as things go on:
-        const speedUp = Math.pow(0.95, waitCount);
+        const speedUp = Math.pow(0.99, waitCount);
 
         switch (delay) {
             case DelayHint.None:
