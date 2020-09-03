@@ -80,6 +80,8 @@ export class PileView implements IView, ITouchResponder {
     }
 
     public dispose() {
+        this.element.removeEventListener("mousedown", this.onMouseDown_);
+        this.element.removeEventListener("touchstart", this.touchStart_);
         this.element.remove();
     }
     private touchTracking_ = false;

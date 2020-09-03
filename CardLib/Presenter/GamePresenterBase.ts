@@ -18,25 +18,15 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
 
     protected abstract get saveDataKey_(): string;
 
+    private readonly newGameButton_ = document.getElementById("newGameButton");
+    private readonly undoButton_ = document.getElementById("undoButton");
+    private readonly redoButton_ = document.getElementById("redoButton");
+
     constructor(game: TGame, rootView: IView) {
         this.game_ = game;
         this.rootView_ = rootView;
 
         game.wonChanged = () => this.gameWonChanged_();
-
-        // TODO: make nicer:
-        document.getElementById("newGameButton")?.addEventListener("click", e => {
-            e.preventDefault();
-            this.restart_();
-        });
-        document.getElementById("undoButton")?.addEventListener("click", e => {
-            e.preventDefault();
-            this.undo_();
-        });
-        document.getElementById("redoButton")?.addEventListener("click", e => {
-            e.preventDefault();
-            this.redo_();
-        });
 
         const gameScoreElement = rootView.element.querySelector(".gameScore");
         if (gameScoreElement) {
@@ -45,12 +35,20 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
             };
         }
 
+        this.newGameButton_?.addEventListener("click", this.onNewGameButtonClick_);
+        this.undoButton_?.addEventListener("click", this.onUndoButtonClick_);
+        this.redoButton_?.addEventListener("click", this.onRedoButtonClick_);
         window.addEventListener("resize", this.onWindowResize_);
         window.addEventListener("keydown", this.onWindowKeyDown_);
     }
 
     public dispose() {
         this.rootView_.dispose();
+        this.newGameButton_?.removeEventListener("click", this.onNewGameButtonClick_);
+        this.undoButton_?.removeEventListener("click", this.onUndoButtonClick_);
+        this.redoButton_?.removeEventListener("click", this.onRedoButtonClick_);
+        window.removeEventListener("resize", this.onWindowResize_);
+        window.removeEventListener("keydown", this.onWindowKeyDown_);
     }
 
     protected abstract onResize_(): void;
@@ -342,6 +340,21 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
         const r = this.nextZIndex_;
         this.nextZIndex_ += this.nextZIndexInc_;
         return r;
+    }
+
+    private readonly onNewGameButtonClick_ = (e: UIEvent) => {
+        e.preventDefault();
+        this.restart_();
+    }
+
+    private readonly onUndoButtonClick_ = (e: UIEvent) => {
+        e.preventDefault();
+        this.undo_();
+    }
+
+    private readonly onRedoButtonClick_ = (e: UIEvent) => {
+        e.preventDefault();
+        this.redo_();
     }
 
     private readonly onWindowResize_ = (e: UIEvent) => {

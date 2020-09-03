@@ -6,9 +6,8 @@ import * as Pyramid from "~Games/Pyramid/Presenter/GamePresenterFactory";
 
 window.addEventListener("load", () => {
     const gamePresenterFactories = new Map<string, IGamePresenterFactory>();
-    gamePresenterFactories.set("", new Klondike.GamePresenterFactory());
-    gamePresenterFactories.set("klondike", new Klondike.GamePresenterFactory());
-    gamePresenterFactories.set("pyramid", new Pyramid.GamePresenterFactory());
+    gamePresenterFactories.set(Klondike.GAME_ID, new Klondike.GamePresenterFactory());
+    gamePresenterFactories.set(Pyramid.GAME_ID, new Pyramid.GamePresenterFactory());
 
     const tableHolder = document.getElementById("tableHolder") ?? document.body;
 
@@ -30,11 +29,14 @@ window.addEventListener("load", () => {
             gameKey = hash.substr(1, qPos - 1);
         } else if (hash.indexOf("&") >= 0 || hash.indexOf("?") >= 0 || hash.indexOf("=") >= 0) {
             params = new URLSearchParams(hash.substr(1));
-            gameKey = params.get("game") ?? "klondike";
+            gameKey = params.get("game");
         } else {
             params = new URLSearchParams("");
             gameKey = hash.substr(1);
         }
+
+        if (!gameKey)
+            gameKey = Klondike.GAME_ID;
 
         const gamePresenterFactory = gamePresenterFactories.get(gameKey.toLowerCase());
         if (!gamePresenterFactory)

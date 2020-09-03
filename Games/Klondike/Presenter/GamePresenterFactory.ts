@@ -5,6 +5,8 @@ import { Game } from "../Model/Game";
 import { GameOptions } from "../Model/GameOptions";
 import { GamePresenter } from "./GamePresenter";
 
+export const GAME_ID = "klondike";
+
 export class GamePresenterFactory implements IGamePresenterFactory {
     public createGame(parentElement: HTMLElement, searchParams: URLSearchParams): IGamePresenter {
         const options = new GameOptions(searchParams);

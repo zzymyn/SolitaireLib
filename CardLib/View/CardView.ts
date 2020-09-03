@@ -85,6 +85,8 @@ export class CardView implements IView, ITouchResponder {
     }
 
     public dispose() {
+        this.element.removeEventListener("mousedown", this.onMouseDown_);
+        this.element.removeEventListener("touchstart", this.touchStart_);
         this.element.remove();
     }
 
