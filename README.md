@@ -14,3 +14,10 @@ Various solitaire games implemented in HTML.
   * [1 stock](https://zzymyn.github.io/SolitaireLib#pyramid?restocksAllowed=0)
   * [3 stocks](https://zzymyn.github.io/SolitaireLib#pyramid?restocksAllowed=2)
   * [5 stocks](https://zzymyn.github.io/SolitaireLib#pyramid?restocksAllowed=4)
+
+## Attributions
+
+### SVG Playing Cards
+SVG playing card sets `bridge3-plain-super-qr` and `bridge3-wider-modern-qr` are from https://www.me.uk/cards/
+
+I have made some modifications and additions too.
