@@ -1,14 +1,15 @@
 import { Debug } from "~CardLib/Debug";
+import { IGameInfo } from "~CardLib/IGameInfo";
 import { IGamePresenter } from "~CardLib/Presenter/IGamePresenter";
 import { IGamePresenterFactory } from "~CardLib/Presenter/IGamePresenterFactory";
-import * as Klondike from "~Games/Klondike/Presenter/GamePresenterFactory";
-import * as Pyramid from "~Games/Pyramid/Presenter/GamePresenterFactory";
+import Klondike from "~Games/Klondike/GameInfo";
+import Pyramid from "~Games/Pyramid/GameInfo";
+
+const gameInfos = new Map<string, IGameInfo>();
+gameInfos.set(Klondike.gameId, Klondike);
+gameInfos.set(Pyramid.gameId, Pyramid);
 
 window.addEventListener("load", () => {
-    const gamePresenterFactories = new Map<string, IGamePresenterFactory>();
-    gamePresenterFactories.set(Klondike.GAME_ID, new Klondike.GamePresenterFactory());
-    gamePresenterFactories.set(Pyramid.GAME_ID, new Pyramid.GamePresenterFactory());
-
     const tableHolder = document.getElementById("tableHolder") ?? document.body;
 
     let currentGame: IGamePresenter | undefined;
@@ -36,13 +37,13 @@ window.addEventListener("load", () => {
         }
 
         if (!gameKey)
-            gameKey = Klondike.GAME_ID;
+            gameKey = Klondike.gameId;
 
-        const gamePresenterFactory = gamePresenterFactories.get(gameKey.toLowerCase());
-        if (!gamePresenterFactory)
+        const gameInfo = gameInfos.get(gameKey.toLowerCase());
+        if (!gameInfo)
             Debug.error(`Unknown game ${gameKey}.`);
 
-        currentGame = gamePresenterFactory.createGame(tableHolder, params);
+        currentGame = gameInfo.gamePresenterFactory.createGame(tableHolder, params);
         currentGame.start();
     };
 
