@@ -5,6 +5,7 @@ Various solitaire games implemented in HTML.
 * [Pyramid Solitaire](https://zzymyn.github.io/SolitaireLib#pyramid)
 ### Rule Variations
 * Solitaire
+  * [see all stocks](https://zzymyn.github.io/SolitaireLib#klondikeex)
   * [draw 1, 1 stock](https://zzymyn.github.io/SolitaireLib#klondike?restocksAllowed=0)
   * [draw 1, 3 stocks](https://zzymyn.github.io/SolitaireLib#klondike?restocksAllowed=2)
   * [draw 3, unlimited stocks](https://zzymyn.github.io/SolitaireLib#klondike?stockDraws=3)

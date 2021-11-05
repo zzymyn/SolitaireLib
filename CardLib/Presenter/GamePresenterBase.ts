@@ -257,15 +257,27 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
     private cardDragStart_(cardView: CardView, card: ICard) {
         const { canDrag, extraCards: extraCards } = this.game_.canDrag(card);
 
+        const baseZIndex = this.getNextZIndex_();
+
         if (canDrag) {
-            cardView.zIndex = this.getNextZIndex_();
+            cardView.zIndex = baseZIndex;
+
+            for (let i = card.pileIndex + 1; i < card.pile.length; ++i) {
+                const pileCard = card.pile.at(i);
+                if (pileCard) {
+                    const pileCardView = this.getCardView_(pileCard);
+                    if (pileCardView.zIndex < baseZIndex) {
+                        pileCardView.zIndex = this.getNextZIndex_();
+                    }
+                }
+            }
         }
 
         const extraCardViews: CardView[] = [];
         for (const extraCard of extraCards) {
             const extraCardView = this.getCardView_(extraCard);
             extraCardViews.push(extraCardView);
-            if (canDrag) {
+            if (canDrag && extraCardView.zIndex < baseZIndex) {
                 extraCardView.zIndex = this.getNextZIndex_();
             }
         }

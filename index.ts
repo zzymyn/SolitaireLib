@@ -3,10 +3,12 @@ import { IGameInfo } from "~CardLib/IGameInfo";
 import { IGamePresenter } from "~CardLib/Presenter/IGamePresenter";
 import { IGamePresenterFactory } from "~CardLib/Presenter/IGamePresenterFactory";
 import Klondike from "~Games/Klondike/GameInfo";
+import KlondikeEx from "~Games/KlondikeEx/GameInfo";
 import Pyramid from "~Games/Pyramid/GameInfo";
 
 const gameInfos = new Map<string, IGameInfo>();
 gameInfos.set(Klondike.gameId, Klondike);
+gameInfos.set(KlondikeEx.gameId, KlondikeEx);
 gameInfos.set(Pyramid.gameId, Pyramid);
 
 window.addEventListener("load", () => {

@@ -102,6 +102,24 @@ export class Pile implements IPile {
         this.cardsChanged();
     }
 
+    public sortByRank() {
+        this.cards_.sort((a, b) => {
+            if (a.rank > b.rank) return -1;
+            if (a.rank < b.rank) return 1;
+            if (a.colour < b.colour) return -1;
+            if (a.colour > b.colour) return 1;
+            if (a.suit < b.suit) return -1;
+            if (a.suit > b.suit) return 1;
+            return 0;
+        });
+
+        for (let i = 0; i < this.cards_.length; ++i) {
+            this.cards_[i].onPileIndexChanged(i);
+        }
+
+        this.cardsChanged();
+    }
+
     public push(card: Card) {
         return this.insert(this.cards_.length, card);
     }
