@@ -58,7 +58,6 @@ export class GamePresenter extends GamePresenterBase<IGame> {
 
     private layoutPiles_() {
         const aspect = this.rootView_.element.clientWidth / this.rootView_.element.clientHeight;
-        console.log(aspect);
 
         let tableSize = this.game_.tableaux.length;
         const margin = 1;

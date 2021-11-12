@@ -143,7 +143,6 @@ export class Game extends GameBase implements IGame {
         // if the player double clicks a card, see if it can be auto-moved to the foundation:
         // or see if we can move it around the tabeaux somewhere:
         if (this.isFoundationDropSource_(card)) {
-            console.log("c");
             for (const pile of this.foundations) {
                 if (this.isFoundationDrop_(card, pile)) {
                     yield* this.doFoundationDrop_(card, pile);
@@ -153,7 +152,6 @@ export class Game extends GameBase implements IGame {
             }
         }
         if (this.isTableauxDropSource_(card)) {
-            console.log("a");
             for (const pile of this.tableaux) {
                 if (pile === card.pile)
                     continue;
@@ -165,9 +163,8 @@ export class Game extends GameBase implements IGame {
             }
         }
         if (this.isTableauxSingleDropSource_(card)) {
-            console.log("b");
             for (const pile of this.tableaux) {
-                if (pile == card.pile)
+                if (pile === card.pile)
                     continue;
                 if (this.isTableauxSingleDrop_(card, pile)) {
                     yield* this.doTableauxSingleDrop_(card, pile);

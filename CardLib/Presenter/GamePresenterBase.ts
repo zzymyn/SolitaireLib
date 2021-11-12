@@ -419,7 +419,7 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
         this.doOperation_(() => this.game_.cardSecondary(card));
     }
 
-    private operations_: (() => Generator<DelayHint, void>)[] = [];
+    private readonly operations_: (() => Generator<DelayHint, void>)[] = [];
 
     private async doOperation_(operation: () => Generator<DelayHint, void>) {
         this.operations_.push(operation);
