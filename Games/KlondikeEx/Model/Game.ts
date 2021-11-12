@@ -141,11 +141,36 @@ export class Game extends GameBase implements IGame {
 
     protected *cardSecondary_(card: Card) {
         // if the player double clicks a card, see if it can be auto-moved to the foundation:
-        if (this.autoMoveSources_.indexOf(card.pile) >= 0 || this.autoMoveAnySources_.indexOf(card.pile) >= 0) {
-            for (const foundation of this.foundations) {
-                if (this.isFoundationDrop_(card, foundation)) {
-                    foundation.push(card);
-                    yield DelayHint.OneByOne;
+        // or see if we can move it around the tabeaux somewhere:
+        if (this.isFoundationDropSource_(card)) {
+            console.log("c");
+            for (const pile of this.foundations) {
+                if (this.isFoundationDrop_(card, pile)) {
+                    yield* this.doFoundationDrop_(card, pile);
+                    yield* this.doAutoMoves_();
+                    return;
+                }
+            }
+        }
+        if (this.isTableauxDropSource_(card)) {
+            console.log("a");
+            for (const pile of this.tableaux) {
+                if (pile === card.pile)
+                    continue;
+                if (this.isTableauxDrop_(card, pile)) {
+                    yield* this.doTableauxDrop_(card, pile);
+                    yield* this.doAutoMoves_();
+                    return;
+                }
+            }
+        }
+        if (this.isTableauxSingleDropSource_(card)) {
+            console.log("b");
+            for (const pile of this.tableaux) {
+                if (pile == card.pile)
+                    continue;
+                if (this.isTableauxSingleDrop_(card, pile)) {
+                    yield* this.doTableauxSingleDrop_(card, pile);
                     yield* this.doAutoMoves_();
                     return;
                 }

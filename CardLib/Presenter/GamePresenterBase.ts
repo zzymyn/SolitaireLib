@@ -419,17 +419,30 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
         this.doOperation_(() => this.game_.cardSecondary(card));
     }
 
+    private operations_: (() => Generator<DelayHint, void>)[] = [];
+
     private async doOperation_(operation: () => Generator<DelayHint, void>) {
-        let waitCount = 0;
+        this.operations_.push(operation);
 
-        for (const delay of operation()) {
-            await this.waitForDelay_(delay, waitCount++);
-        }
+        if (this.operations_.length === 1) {
+            while (this.operations_.length > 0) {
+                let waitCount = 0;
 
-        try {
-            window.localStorage.setItem(this.saveDataKey_, this.game_.serialize());
-        } catch {
+                for (const delay of this.operations_[0]()) {
+                    if (this.operations_.length > 1) {
+                        waitCount = Math.max(200, waitCount);
+                    }
+                    await this.waitForDelay_(delay, waitCount++);
+                }
 
+                this.operations_.shift();
+
+                try {
+                    window.localStorage.setItem(this.saveDataKey_, this.game_.serialize());
+                } catch {
+
+                }
+            }
         }
     }
 
