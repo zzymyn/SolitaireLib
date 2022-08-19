@@ -31,8 +31,9 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
         const gameScoreElement = rootView.element.querySelector(".gameScore");
         if (gameScoreElement) {
             game.gamesStartedChanged = game.gamesWonChanged = () => {
-                const pct = game.gamesStarted > 0 ? (100 * game.gamesWon / game.gamesStarted).toFixed(1) : "0";
-                gameScoreElement.textContent = `${game.gamesWon} / ${game.gamesStarted} - ${pct}%`;
+                const gamesCompleted = game.won ? game.gamesStarted : (game.gamesStarted - 1);
+                const pct = gamesCompleted > 0 ? (100 * game.gamesWon / gamesCompleted).toFixed(2) : "0";
+                gameScoreElement.textContent = `${game.gamesWon} / ${gamesCompleted} - ${pct}%`;
             };
         }
 
