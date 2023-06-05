@@ -16,7 +16,7 @@ window.addEventListener("load", () => {
 
     let currentGame: IGamePresenter | undefined;
 
-    const refreashGame = () => {
+    const refreshGame = () => {
         if (currentGame) {
             currentGame.dispose();
             currentGame = undefined;
@@ -49,7 +49,7 @@ window.addEventListener("load", () => {
         currentGame.start();
     };
 
-    window.addEventListener("hashchange", refreashGame);
-    refreashGame();
+    window.addEventListener("hashchange", refreshGame);
+    refreshGame();
 });
 

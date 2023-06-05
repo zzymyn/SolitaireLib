@@ -14,7 +14,8 @@
             "DOM"
         ],
         "noFallthroughCasesInSwitch": true,
-        "downlevelIteration": true
+        "downlevelIteration": true,
+        "isolatedModules": true
     },
     "include": [
         "**/**.ts",

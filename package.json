@@ -1,11 +1,11 @@
 {
   "name": "pyramid",
+  "browserslist": "> 0.5%, last 2 versions, not dead",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
-    "dev": "parcel index.html -d bin-dev",
-    "build": "parcel build index.html --public-url \"./\" -d bin --no-source-maps --experimental-scope-hoisting",
+    "dev": "parcel serve index.html --dist-dir bin-dev",
+    "build": "parcel build index.html --public-url \"./\" -d bin --no-source-maps",
     "tswatch": "tsc --watch --noEmit --project tsconfig.json",
     "tslint": "tslint --project .",
     "tslintfix": "tslint --project . --fix"
@@ -17,8 +17,8 @@
     "pure-rand": "^6.0.0"
   },
   "devDependencies": {
-    "parcel-bundler": "^1.12.5",
-    "parcel-plugin-appcache": "^0.1.1",
+    "parcel": "^2.0.0",
+    "@parcel/transformer-sass": "^2.0.0",
     "rimraf": "^5.0.0",
     "sass": "^1.62.1",
     "typescript": "^5.0.0"
