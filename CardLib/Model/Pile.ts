@@ -1,30 +1,32 @@
-import prand from 'pure-rand';
-import { TypeEx } from '~CardLib/TypeEx';
+import prand from "pure-rand";
 import { Debug } from "../Debug";
 import { Card } from "./Card";
-import { Colour } from './Colour';
-import { GameBase } from './GameBase';
-import { GameSerializationContext } from './GameSerializationContext';
+import { Colour } from "./Colour";
+import { GameBase } from "./GameBase";
+import { GameSerializationContext } from "./GameSerializationContext";
 import { IPile } from "./IPile";
-import { Rank } from './Rank';
-import { Suit } from './Suit';
-import { PileInsertOperation } from './Undoable/PileInsertOperation';
-import { PileMaxFanOperation } from './Undoable/PileMaxFanOperation';
+import { Rank } from "./Rank";
+import { Suit } from "./Suit";
+import { PileInsertOperation } from "./Undoable/PileInsertOperation";
+import { PileMaxFanOperation } from "./Undoable/PileMaxFanOperation";
 
 export class Pile implements IPile {
     public readonly game: GameBase;
-    public cardsChanged = () => { };
-    public maxFanChanged = () => { };
+    public cardsChanged = () => {};
+    public maxFanChanged = () => {};
     private readonly cards_: Card[] = [];
 
-    public get length() { return this.cards_.length; }
+    public get length() {
+        return this.cards_.length;
+    }
 
     private maxFan_ = 999;
-    public get maxFan() { return this.maxFan_; }
+    public get maxFan() {
+        return this.maxFan_;
+    }
     public set maxFan(maxFan: number) {
         maxFan = Math.max(0, maxFan);
-        if (this.maxFan_ === maxFan)
-            return;
+        if (this.maxFan_ === maxFan) return;
 
         const oldMaxFan = this.maxFan_;
         const op = new PileMaxFanOperation(this, oldMaxFan, maxFan);
@@ -125,8 +127,7 @@ export class Pile implements IPile {
     }
 
     public peek() {
-        if (this.cards_.length <= 0)
-            return undefined;
+        if (this.cards_.length <= 0) return undefined;
         return this.at(this.cards_.length - 1);
     }
 
@@ -141,8 +142,7 @@ export class Pile implements IPile {
     public doInsert(index: number, card: Card) {
         Debug.assert(index >= 0 && index <= this.cards_.length);
 
-        if (card.pile === this && index > card.pileIndex)
-            index--;
+        if (card.pile === this && index > card.pileIndex) index--;
 
         card.pile.remove_(card);
 

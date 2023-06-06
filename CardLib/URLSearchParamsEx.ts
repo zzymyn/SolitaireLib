@@ -1,11 +1,9 @@
 export class URLSearchParamsEx {
     public static getNumber(params: URLSearchParams, key: string, defaultValue: number) {
         const valueStr = params.get(key);
-        if (typeof valueStr !== "string" || valueStr === "")
-            return defaultValue;
+        if (typeof valueStr !== "string" || valueStr === "") return defaultValue;
         const value = Number(valueStr);
-        if (Number.isNaN(value))
-            return defaultValue;
+        if (Number.isNaN(value)) return defaultValue;
         return value;
     }
 
@@ -17,12 +15,9 @@ export class URLSearchParamsEx {
 
     public static getBool(params: URLSearchParams, key: string, defaultValue: boolean) {
         const valueStr = params.get(key);
-        if (typeof valueStr !== "string")
-            return defaultValue;
-        if (valueStr === "")
-            return true;
-        if (valueStr)
-            return true;
+        if (typeof valueStr !== "string") return defaultValue;
+        if (valueStr === "") return true;
+        if (valueStr) return true;
         return false;
     }
 

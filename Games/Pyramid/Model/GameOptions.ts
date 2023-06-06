@@ -8,7 +8,7 @@ export class GameOptions extends GameOptionsBase {
 
     public get saveKey() {
         return {
-            restocksAllowed: this.restocksAllowed
+            restocksAllowed: this.restocksAllowed,
         };
     }
 

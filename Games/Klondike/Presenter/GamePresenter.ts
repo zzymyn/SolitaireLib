@@ -18,7 +18,7 @@ export class GamePresenter extends GamePresenterBase<IGame> {
         return JSON.stringify({
             gameName: "klondike",
             version: 0,
-            options: this.game_.options.saveKey
+            options: this.game_.options.saveKey,
         });
     }
 
@@ -89,7 +89,12 @@ export class GamePresenter extends GamePresenterBase<IGame> {
         for (let i = 0; i < this.game_.foundations.length; ++i) {
             const pile = this.game_.foundations[i];
             const pileView = this.getPileView_(pile);
-            pileView.rect = new Rect(sizeX, sizeY, xPos(tableSize - this.game_.foundations.length + i), vExpand * -35 + margin);
+            pileView.rect = new Rect(
+                sizeX,
+                sizeY,
+                xPos(tableSize - this.game_.foundations.length + i),
+                vExpand * -35 + margin
+            );
         }
         for (let i = 0; i < this.game_.tableaux.length; ++i) {
             const pile = this.game_.tableaux[i];

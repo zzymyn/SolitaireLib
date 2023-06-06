@@ -1,4 +1,3 @@
-import { Debug } from "~CardLib/Debug";
 import { TypeEx } from "~CardLib/TypeEx";
 import { AutoIdMap } from "../AutoIdMap";
 import { Card } from "./Card";
@@ -42,8 +41,7 @@ export class GameSerializationContext {
 
     public readRange(min: number, max: number) {
         const value = this.read();
-        if (value >= min && value <= max)
-            return value;
+        if (value >= min && value <= max) return value;
         throw new Error(`Value ${value} not in range [${min}, ${max}].`);
     }
 
@@ -83,8 +81,7 @@ export class GameSerializationContext {
     }
 
     public ensureAtEnd() {
-        if (this.dataIndex_ !== this.data_.length)
-            throw new Error("Deserialization did not consume all data.");
+        if (this.dataIndex_ !== this.data_.length) throw new Error("Deserialization did not consume all data.");
     }
 
     private readonly cardMap_ = new AutoIdMap<Card>();
@@ -129,5 +126,3 @@ export class GameSerializationContext {
         return this.undoableDeserializerMap_.getId(undoable);
     }
 }
-
-

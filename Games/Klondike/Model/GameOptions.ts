@@ -12,7 +12,7 @@ export class GameOptions extends GameOptionsBase {
     public get saveKey() {
         return {
             stockDraws: this.stockDraws,
-            restocksAllowed: this.restocksAllowed
+            restocksAllowed: this.restocksAllowed,
         };
     }
 

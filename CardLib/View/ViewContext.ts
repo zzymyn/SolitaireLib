@@ -9,7 +9,9 @@ export class ViewContext {
     private readonly touchResponders_: ITouchResponder[] = [];
 
     private pxPerRem_ = 0;
-    public get pxPerRem() { return this.pxPerRem_; }
+    public get pxPerRem() {
+        return this.pxPerRem_;
+    }
 
     constructor(element: HTMLElement) {
         this.element_ = element;
@@ -28,7 +30,7 @@ export class ViewContext {
 
     private readonly onResize_ = () => {
         this.refreshUnits_();
-    }
+    };
 
     private refreshUnits_() {
         const style = getComputedStyle(this.element_);
@@ -57,7 +59,7 @@ export class ViewContext {
                 r.onTouchMoved(-1, e.pageX, e.pageY, e.timeStamp);
             }
         }
-    }
+    };
 
     private readonly onWindowMouseUp_ = (e: MouseEvent) => {
         if (e.button === 0) {
@@ -65,7 +67,7 @@ export class ViewContext {
                 r.onTouchUp(-1, false, e.timeStamp);
             }
         }
-    }
+    };
 
     private readonly onWindowTouchMove_ = (e: TouchEvent) => {
         for (let i = 0; i < e.changedTouches.length; ++i) {
@@ -76,7 +78,7 @@ export class ViewContext {
                 }
             }
         }
-    }
+    };
 
     private readonly onWindowTouchEnd_ = (e: TouchEvent) => {
         for (let i = 0; i < e.changedTouches.length; ++i) {
@@ -87,7 +89,7 @@ export class ViewContext {
                 }
             }
         }
-    }
+    };
 
     private readonly onWindowTouchCancel_ = (e: TouchEvent) => {
         for (let i = 0; i < e.changedTouches.length; ++i) {
@@ -98,5 +100,5 @@ export class ViewContext {
                 }
             }
         }
-    }
+    };
 }

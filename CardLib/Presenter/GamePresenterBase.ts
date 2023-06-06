@@ -10,7 +10,6 @@ import { Rect } from "../View/Rect";
 import { IGamePresenter } from "./IGamePresenter";
 
 type DropPreview = { dropPreview: boolean };
-type ZIndexed = { zIndex: number };
 
 export abstract class GamePresenterBase<TGame extends IGameBase> implements IGamePresenter {
     protected readonly game_: TGame;
@@ -31,8 +30,8 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
         const gameScoreElement = rootView.element.querySelector(".gameScore");
         if (gameScoreElement) {
             game.gamesStartedChanged = game.gamesWonChanged = () => {
-                const gamesCompleted = game.won ? game.gamesStarted : (game.gamesStarted - 1);
-                const pct = gamesCompleted > 0 ? (100 * game.gamesWon / gamesCompleted).toFixed(2) : "0";
+                const gamesCompleted = game.won ? game.gamesStarted : game.gamesStarted - 1;
+                const pct = gamesCompleted > 0 ? ((100 * game.gamesWon) / gamesCompleted).toFixed(2) : "0";
                 gameScoreElement.textContent = `${game.gamesWon} / ${gamesCompleted} - ${pct}%`;
             };
         }
@@ -71,18 +70,16 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
             const wonCards = this.game_.wonCards;
 
             for (const card of wonCards) {
-                if (!this.game_.won)
-                    break;
+                if (!this.game_.won) break;
                 const cardView = this.getCardView_(card);
                 cardView.zIndex = this.getNextZIndex_();
             }
 
             await this.waitForDelay_(DelayHint.Settle, waitCount++);
 
-            for (let i = wonCards.length; i-- > 0;) {
+            for (let i = wonCards.length; i-- > 0; ) {
                 const card = wonCards[i];
-                if (!this.game_.won)
-                    break;
+                if (!this.game_.won) break;
                 const cardView = this.getCardView_(card);
                 cardView.won = true;
                 const rect = cardView.rect;
@@ -154,7 +151,7 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
         // go top to bottom to set z-indicies:
         let zIndex: number | undefined;
 
-        for (let i = pile.length; i-- > 0;) {
+        for (let i = pile.length; i-- > 0; ) {
             const card = pile.at(i);
             const cardView = this.getCardView_(card);
 
@@ -227,7 +224,7 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
         cardView.click = () => this.cardPrimary_(card);
         cardView.dblClick = () => this.cardSecondary_(card);
         cardView.dragStart = () => this.cardDragStart_(cardView, card);
-        cardView.dragMoved = rect => this.cardDragMoved_(cardView, card, rect);
+        cardView.dragMoved = (rect) => this.cardDragMoved_(cardView, card, rect);
         cardView.dragEnd = (rect, cancelled) => this.cardDragEnd_(cardView, card, rect, cancelled);
 
         return cardView;
@@ -249,8 +246,7 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
         cardView.zIndex = this.getNextZIndex_();
     }
 
-    private onCardPileIndexChanged_(cardView: CardView, card: ICard) {
-    }
+    private onCardPileIndexChanged_(cardView: CardView, card: ICard) {}
 
     private onCardFaceUpChanged_(cardView: CardView, card: ICard) {
         cardView.faceUp = card.faceUp;
@@ -323,8 +319,7 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
             const pile = this.getPile_(pileView);
             const pileHitbox = pileView.hitbox;
             const overlap = rect.overlaps(pileHitbox);
-            if (overlap <= 0)
-                continue;
+            if (overlap <= 0) continue;
 
             if (!bestPile || bestPileOverlap < overlap) {
                 if (this.game_.previewDrop(card, pile)) {
@@ -340,11 +335,9 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
     private dropPreview_: DropPreview | undefined = undefined;
     private setDropPreview_(view: DropPreview | undefined) {
         if (view !== this.dropPreview_) {
-            if (this.dropPreview_)
-                this.dropPreview_.dropPreview = false;
+            if (this.dropPreview_) this.dropPreview_.dropPreview = false;
             this.dropPreview_ = view;
-            if (this.dropPreview_)
-                this.dropPreview_.dropPreview = true;
+            if (this.dropPreview_) this.dropPreview_.dropPreview = true;
         }
     }
 
@@ -359,21 +352,21 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
     private readonly onNewGameButtonClick_ = (e: UIEvent) => {
         e.preventDefault();
         this.restart_();
-    }
+    };
 
     private readonly onUndoButtonClick_ = (e: UIEvent) => {
         e.preventDefault();
         this.undo_();
-    }
+    };
 
     private readonly onRedoButtonClick_ = (e: UIEvent) => {
         e.preventDefault();
         this.redo_();
-    }
+    };
 
     private readonly onWindowResize_ = (e: UIEvent) => {
         this.onResize_();
-    }
+    };
 
     private readonly onWindowKeyDown_ = (e: KeyboardEvent) => {
         if (e) {
@@ -391,7 +384,7 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
                 e.preventDefault();
             }
         }
-    }
+    };
 
     private async undo_() {
         this.doOperation_(() => this.game_.undo());
@@ -441,9 +434,7 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
 
                 try {
                     window.localStorage.setItem(this.saveDataKey_, this.game_.serialize());
-                } catch {
-
-                }
+                } catch {}
             }
         }
     }
@@ -456,13 +447,13 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
             case DelayHint.None:
                 return;
             case DelayHint.Quick:
-                await new Promise(resolve => setTimeout(resolve, speedUp * 20));
+                await new Promise((resolve) => setTimeout(resolve, speedUp * 20));
                 return;
             case DelayHint.OneByOne:
-                await new Promise(resolve => setTimeout(resolve, speedUp * 200));
+                await new Promise((resolve) => setTimeout(resolve, speedUp * 200));
                 return;
             case DelayHint.Settle:
-                await new Promise(resolve => setTimeout(resolve, speedUp * 400));
+                await new Promise((resolve) => setTimeout(resolve, speedUp * 400));
                 return;
         }
     }

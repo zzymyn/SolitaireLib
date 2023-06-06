@@ -1,12 +1,12 @@
-import prand from 'pure-rand';
-import { Card } from '~CardLib/Model/Card';
-import { DeckUtils } from '~CardLib/Model/DeckUtils';
-import { DelayHint } from '~CardLib/Model/DelayHint';
-import { GameBase } from '~CardLib/Model/GameBase';
-import { Pile } from '~CardLib/Model/Pile';
-import { Rank } from '~CardLib/Model/Rank';
-import { GameOptions } from './GameOptions';
-import { IGame } from './IGame';
+import prand from "pure-rand";
+import { Card } from "~CardLib/Model/Card";
+import { DeckUtils } from "~CardLib/Model/DeckUtils";
+import { DelayHint } from "~CardLib/Model/DelayHint";
+import { GameBase } from "~CardLib/Model/GameBase";
+import { Pile } from "~CardLib/Model/Pile";
+import { Rank } from "~CardLib/Model/Rank";
+import { GameOptions } from "./GameOptions";
+import { IGame } from "./IGame";
 
 const PYRAMID_SIZE = 7;
 
@@ -16,7 +16,7 @@ export class Game extends GameBase implements IGame {
     public readonly waste = new Pile(this);
     public readonly foundation = new Pile(this);
     public readonly pyramid: Pile[][] = [];
-    private readonly pyramidCoords_ = new Map<Pile, { x: number, y: number }>();
+    private readonly pyramidCoords_ = new Map<Pile, { x: number; y: number }>();
     private restocks_ = 0;
 
     constructor(options: GameOptions) {
@@ -70,11 +70,10 @@ export class Game extends GameBase implements IGame {
             card.faceUp = false;
         }
 
-        for (let pileIndex = this.piles.length; pileIndex-- > 0;) {
+        for (let pileIndex = this.piles.length; pileIndex-- > 0; ) {
             const pile = this.piles[pileIndex];
-            if (pile === this.stock)
-                continue;
-            for (let cardIndex = pile.length; cardIndex-- > 0;) {
+            if (pile === this.stock) continue;
+            for (let cardIndex = pile.length; cardIndex-- > 0; ) {
                 const card = pile.at(cardIndex);
                 card.faceUp = false;
                 this.stock.push(card);
@@ -124,19 +123,23 @@ export class Game extends GameBase implements IGame {
         }
     }
 
-    protected *cardSecondary_(card: Card) {
-    }
+    protected *cardSecondary_(card: Card) {}
 
     protected *pilePrimary_(pile: Pile) {
         // if the stock is exhausted and the player click on it, move all the cards from the waste back to the stock:
-        if (pile === this.stock && this.stock.length === 0 && this.waste.length > 0 && this.restocks_ < this.options.restocksAllowed) {
+        if (
+            pile === this.stock &&
+            this.stock.length === 0 &&
+            this.waste.length > 0 &&
+            this.restocks_ < this.options.restocksAllowed
+        ) {
             this.restocks_++;
-            for (let i = this.waste.length; i-- > 0;) {
+            for (let i = this.waste.length; i-- > 0; ) {
                 const card = this.waste.at(i);
                 card.faceUp = false;
             }
             yield DelayHint.OneByOne;
-            for (let i = this.waste.length; i-- > 0;) {
+            for (let i = this.waste.length; i-- > 0; ) {
                 const card = this.waste.at(i);
                 this.stock.push(card);
             }
@@ -146,13 +149,12 @@ export class Game extends GameBase implements IGame {
         }
     }
 
-    protected *pileSecondary_(pile: Pile) {
-    }
+    protected *pileSecondary_(pile: Pile) {}
 
-    protected canDrag_(card: Card): { canDrag: boolean; extraCards: Card[]; } {
+    protected canDrag_(card: Card): { canDrag: boolean; extraCards: Card[] } {
         return {
             canDrag: this.isFree_(card),
-            extraCards: []
+            extraCards: [],
         };
     }
 
@@ -169,21 +171,17 @@ export class Game extends GameBase implements IGame {
     }
 
     private isFree_(card: Card) {
-        if (!card.faceUp)
-            return false;
+        if (!card.faceUp) return false;
 
         // the top of the stock and waste are free:
-        if (this.stock.peek() === card)
-            return true;
-        if (this.waste.peek() === card)
-            return true;
+        if (this.stock.peek() === card) return true;
+        if (this.waste.peek() === card) return true;
 
         if (card.pile) {
             const coords = this.pyramidCoords_.get(card.pile);
             if (coords) {
                 const nextRow = this.pyramid[coords.y + 1];
-                if (!nextRow)
-                    return true;
+                if (!nextRow) return true;
                 const block0 = nextRow[coords.x];
                 const block1 = nextRow[coords.x + 1];
                 return block0.length === 0 && block1.length === 0;
@@ -194,34 +192,44 @@ export class Game extends GameBase implements IGame {
     }
 
     private is13Move_(card: Card, pile: Pile) {
-        if (card.pile === pile)
-            return false;
-        if (!this.isFree_(card))
-            return false;
+        if (card.pile === pile) return false;
+        if (!this.isFree_(card)) return false;
         const otherCard = pile.peek();
-        if (!otherCard)
-            return false;
-        if (!this.isFree_(otherCard))
-            return false;
+        if (!otherCard) return false;
+        if (!this.isFree_(otherCard)) return false;
         return this.getCardValue_(card) + this.getCardValue_(otherCard) === 13;
     }
 
     private getCardValue_(card: Card) {
         switch (card.rank) {
-            case Rank.Ace: return 1;
-            case Rank.Two: return 2;
-            case Rank.Three: return 3;
-            case Rank.Four: return 4;
-            case Rank.Five: return 5;
-            case Rank.Six: return 6;
-            case Rank.Seven: return 7;
-            case Rank.Eight: return 8;
-            case Rank.Nine: return 9;
-            case Rank.Ten: return 10;
-            case Rank.Jack: return 11;
-            case Rank.Queen: return 12;
-            case Rank.King: return 13;
-            default: return 0;
+            case Rank.Ace:
+                return 1;
+            case Rank.Two:
+                return 2;
+            case Rank.Three:
+                return 3;
+            case Rank.Four:
+                return 4;
+            case Rank.Five:
+                return 5;
+            case Rank.Six:
+                return 6;
+            case Rank.Seven:
+                return 7;
+            case Rank.Eight:
+                return 8;
+            case Rank.Nine:
+                return 9;
+            case Rank.Ten:
+                return 10;
+            case Rank.Jack:
+                return 11;
+            case Rank.Queen:
+                return 12;
+            case Rank.King:
+                return 13;
+            default:
+                return 0;
         }
     }
 

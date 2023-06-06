@@ -1,4 +1,3 @@
-import { MathEx } from "~CardLib/MathEx";
 import { GameOptionsBase } from "~CardLib/Model/GameOptionsBase";
 import { URLSearchParamsEx } from "~CardLib/URLSearchParamsEx";
 
@@ -7,8 +6,7 @@ export class GameOptions extends GameOptionsBase {
     public autoMoveToFoundation = 2;
 
     public get saveKey() {
-        return {
-        };
+        return {};
     }
 
     constructor(params: URLSearchParams) {

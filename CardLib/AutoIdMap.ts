@@ -11,15 +11,13 @@ export class AutoIdMap<T> {
 
     public get(itemId: number) {
         const item = this.idToItem_.get(itemId);
-        if (!item)
-            throw new Error(`Item with id ${itemId} not found.`);
+        if (!item) throw new Error(`Item with id ${itemId} not found.`);
         return item;
     }
 
     public getId(item: T) {
         const itemId = this.itemToId_.get(item);
-        if (typeof itemId !== "number")
-            throw new Error(`Failed to find id for item.`);
+        if (typeof itemId !== "number") throw new Error(`Failed to find id for item.`);
         return itemId;
     }
 }

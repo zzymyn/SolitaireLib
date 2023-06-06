@@ -10,11 +10,11 @@ import { ViewUtils } from "./ViewUtils";
 export class CardView implements IView, ITouchResponder {
     public readonly context: ViewContext;
     public readonly element: HTMLElement;
-    public click = () => { };
-    public dblClick = () => { };
+    public click = () => {};
+    public dblClick = () => {};
     public dragStart = () => ({ canDrag: false, extraCardViews: [] as CardView[] });
-    public dragMoved = (rect: Rect) => { };
-    public dragEnd = (rect: Rect, cancelled: boolean) => { };
+    public dragMoved = (rect: Rect) => {};
+    public dragEnd = (rect: Rect, cancelled: boolean) => {};
 
     private readonly rect_ = new Rect();
     public get rect() {
@@ -29,19 +29,21 @@ export class CardView implements IView, ITouchResponder {
     }
 
     private zIndex_ = 0;
-    public get zIndex() { return this.zIndex_; }
+    public get zIndex() {
+        return this.zIndex_;
+    }
     public set zIndex(zIndex: number) {
-        if (this.zIndex_ === zIndex)
-            return;
+        if (this.zIndex_ === zIndex) return;
         this.zIndex_ = zIndex;
         this.element.style.zIndex = `${zIndex}`;
     }
 
     private faceUp_ = false;
-    public get faceUp() { return this.faceUp_; }
+    public get faceUp() {
+        return this.faceUp_;
+    }
     public set faceUp(faceUp: boolean) {
-        if (this.faceUp_ === faceUp)
-            return;
+        if (this.faceUp_ === faceUp) return;
         this.faceUp_ = faceUp;
         if (faceUp) {
             this.element.classList.add("faceUp");
@@ -51,10 +53,11 @@ export class CardView implements IView, ITouchResponder {
     }
 
     private won_ = false;
-    public get won() { return this.won_; }
+    public get won() {
+        return this.won_;
+    }
     public set won(won: boolean) {
-        if (this.won_ === won)
-            return;
+        if (this.won_ === won) return;
         this.won_ = won;
         if (won) {
             this.element.classList.add("won");
@@ -64,10 +67,11 @@ export class CardView implements IView, ITouchResponder {
     }
 
     private dropPreview_ = false;
-    public get dropPreview() { return this.dropPreview_; }
+    public get dropPreview() {
+        return this.dropPreview_;
+    }
     public set dropPreview(dropPreview: boolean) {
-        if (this.dropPreview_ === dropPreview)
-            return;
+        if (this.dropPreview_ === dropPreview) return;
         this.dropPreview_ = dropPreview;
         if (dropPreview) {
             this.element.classList.add("dropPreview");
@@ -209,7 +213,7 @@ export class CardView implements IView, ITouchResponder {
             this.context.addTouchResponder(this);
             this.onTouchDown(-1, e.pageX, e.pageY, e.timeStamp);
         }
-    }
+    };
 
     private readonly touchStart_ = (e: TouchEvent) => {
         for (let i = 0; i < e.changedTouches.length; ++i) {
@@ -220,5 +224,5 @@ export class CardView implements IView, ITouchResponder {
                 this.onTouchDown(touch.identifier, touch.pageX, touch.pageY, e.timeStamp);
             }
         }
-    }
+    };
 }

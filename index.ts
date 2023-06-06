@@ -1,7 +1,6 @@
 import { Debug } from "~CardLib/Debug";
 import { IGameInfo } from "~CardLib/IGameInfo";
 import { IGamePresenter } from "~CardLib/Presenter/IGamePresenter";
-import { IGamePresenterFactory } from "~CardLib/Presenter/IGamePresenterFactory";
 import Klondike from "~Games/Klondike/GameInfo";
 import KlondikeEx from "~Games/KlondikeEx/GameInfo";
 import Pyramid from "~Games/Pyramid/GameInfo";
@@ -38,12 +37,10 @@ window.addEventListener("load", () => {
             gameKey = hash.substr(1);
         }
 
-        if (!gameKey)
-            gameKey = Klondike.gameId;
+        if (!gameKey) gameKey = Klondike.gameId;
 
         const gameInfo = gameInfos.get(gameKey.toLowerCase());
-        if (!gameInfo)
-            Debug.error(`Unknown game ${gameKey}.`);
+        if (!gameInfo) Debug.error(`Unknown game ${gameKey}.`);
 
         currentGame = gameInfo.gamePresenterFactory.createGame(tableHolder, params);
         currentGame.start();
@@ -52,4 +49,3 @@ window.addEventListener("load", () => {
     window.addEventListener("hashchange", refreshGame);
     refreshGame();
 });
-

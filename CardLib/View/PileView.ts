@@ -7,8 +7,8 @@ import { ViewUtils } from "./ViewUtils";
 export class PileView implements IView, ITouchResponder {
     public readonly context: ViewContext;
     public readonly element: HTMLElement;
-    public click = () => { };
-    public dblClick = () => { };
+    public click = () => {};
+    public dblClick = () => {};
     public fanXDown = 0;
     public fanXUp = 0;
     public fanYDown = 0;
@@ -38,19 +38,21 @@ export class PileView implements IView, ITouchResponder {
     }
 
     private zIndex_ = 0;
-    public get zIndex() { return this.zIndex_; }
+    public get zIndex() {
+        return this.zIndex_;
+    }
     public set zIndex(zIndex: number) {
-        if (this.zIndex_ === zIndex)
-            return;
+        if (this.zIndex_ === zIndex) return;
         this.zIndex_ = zIndex;
         this.element.style.zIndex = `${zIndex}`;
     }
 
     private showFrame_ = false;
-    public get showFrame() { return this.showFrame_; }
+    public get showFrame() {
+        return this.showFrame_;
+    }
     public set showFrame(showFrame: boolean) {
-        if (this.showFrame_ === showFrame)
-            return;
+        if (this.showFrame_ === showFrame) return;
         this.showFrame_ = showFrame;
         if (showFrame) {
             this.element.classList.add("showFrame");
@@ -60,10 +62,11 @@ export class PileView implements IView, ITouchResponder {
     }
 
     private dropPreview_ = false;
-    public get dropPreview() { return this.dropPreview_; }
+    public get dropPreview() {
+        return this.dropPreview_;
+    }
     public set dropPreview(dropPreview: boolean) {
-        if (this.dropPreview_ === dropPreview)
-            return;
+        if (this.dropPreview_ === dropPreview) return;
         this.dropPreview_ = dropPreview;
         if (dropPreview) {
             this.element.classList.add("dropPreview");
@@ -143,7 +146,7 @@ export class PileView implements IView, ITouchResponder {
             this.context.addTouchResponder(this);
             this.onTouchDown(-1, e.pageX, e.pageY, e.timeStamp);
         }
-    }
+    };
 
     private readonly touchStart_ = (e: TouchEvent) => {
         for (let i = 0; i < e.changedTouches.length; ++i) {
@@ -154,5 +157,5 @@ export class PileView implements IView, ITouchResponder {
                 this.onTouchDown(touch.identifier, touch.pageX, touch.pageY, e.timeStamp);
             }
         }
-    }
+    };
 }

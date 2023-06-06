@@ -3,8 +3,11 @@ import { GameSerializationContext } from "../GameSerializationContext";
 import { IUndoableOperation } from "./IUndoableOperation";
 
 export class CardFlipOperation implements IUndoableOperation {
-    constructor(private readonly card_: Card, private readonly oldFaceUp_: boolean, private readonly newFaceUp_: boolean) {
-    }
+    constructor(
+        private readonly card_: Card,
+        private readonly oldFaceUp_: boolean,
+        private readonly newFaceUp_: boolean
+    ) {}
 
     public undo() {
         this.card_.doSetFaceUp(this.oldFaceUp_);
@@ -20,7 +23,9 @@ export class CardFlipOperation implements IUndoableOperation {
         context.writeBool(this.newFaceUp_);
     }
 
-    public get deserializer() { return CardFlipOperation.deserialize; }
+    public get deserializer() {
+        return CardFlipOperation.deserialize;
+    }
 
     public static deserialize(context: GameSerializationContext) {
         const card = context.readCard();

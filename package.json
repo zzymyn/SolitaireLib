@@ -7,8 +7,8 @@
     "dev": "parcel serve index.html --dist-dir bin-dev",
     "build": "parcel build index.html --public-url \"./\" -d bin --no-source-maps",
     "tswatch": "tsc --watch --noEmit --project tsconfig.json",
-    "tslint": "tslint --project .",
-    "tslintfix": "tslint --project . --fix"
+    "lint": "eslint --ext .ts .",
+    "lintfix": "eslint --ext .ts . --fix"
   },
   "keywords": [],
   "author": "",
@@ -17,8 +17,13 @@
     "pure-rand": "^6.0.0"
   },
   "devDependencies": {
-    "parcel": "^2.0.0",
     "@parcel/transformer-sass": "^2.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "eslint": "^8.0.0",
+    "eslint-config-prettier": "^8.8.0",
+    "parcel": "^2.0.0",
+    "prettier": "^2.8.8",
     "rimraf": "^5.0.0",
     "sass": "^1.62.1",
     "typescript": "^5.0.0"

@@ -19,7 +19,7 @@ export class GamePresenter extends GamePresenterBase<IGame> {
         return JSON.stringify({
             gameName: "pyramid",
             version: 0,
-            options: this.game_.options.saveKey
+            options: this.game_.options.saveKey,
         });
     }
 

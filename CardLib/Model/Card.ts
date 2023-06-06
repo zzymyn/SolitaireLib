@@ -1,4 +1,3 @@
-import { TypeEx } from "~CardLib/TypeEx";
 import { Debug } from "../Debug";
 import { Colour } from "./Colour";
 import { GameBase } from "./GameBase";
@@ -16,15 +15,16 @@ export class Card implements ICard {
     public readonly rank: Rank;
     public pile: Pile;
     public pileIndex = 0;
-    public pileChanged = () => { };
-    public pileIndexChanged = () => { };
-    public faceUpChanged = () => { };
+    public pileChanged = () => {};
+    public pileIndexChanged = () => {};
+    public faceUpChanged = () => {};
 
     private faceUp_ = false;
-    public get faceUp() { return this.faceUp_; }
+    public get faceUp() {
+        return this.faceUp_;
+    }
     public set faceUp(faceUp: boolean) {
-        if (this.faceUp_ === faceUp)
-            return;
+        if (this.faceUp_ === faceUp) return;
 
         const oldFaceUp = this.faceUp_;
         const op = new CardFlipOperation(this, oldFaceUp, faceUp);
@@ -48,8 +48,7 @@ export class Card implements ICard {
     public onPileChanged(newPile: Pile, newPileIndex: number) {
         if (this.pile === newPile) {
             this.onPileIndexChanged(newPileIndex);
-        }
-        else {
+        } else {
             this.pile = newPile;
             this.pileIndex = newPileIndex;
 
@@ -64,8 +63,7 @@ export class Card implements ICard {
     }
 
     public onPileIndexChanged(newPileIndex: number) {
-        if (this.pileIndex === newPileIndex)
-            return;
+        if (this.pileIndex === newPileIndex) return;
         this.pileIndex = newPileIndex;
 
         if (this.pile) {

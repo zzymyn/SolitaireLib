@@ -1,13 +1,13 @@
-import prand from 'pure-rand';
-import { Debug } from '~CardLib/Debug';
-import { Card } from '~CardLib/Model/Card';
-import { DeckUtils } from '~CardLib/Model/DeckUtils';
-import { DelayHint } from '~CardLib/Model/DelayHint';
-import { GameBase } from '~CardLib/Model/GameBase';
-import { Pile } from '~CardLib/Model/Pile';
-import { Rank } from '~CardLib/Model/Rank';
-import { GameOptions } from './GameOptions';
-import { IGame } from './IGame';
+import prand from "pure-rand";
+import { Debug } from "~CardLib/Debug";
+import { Card } from "~CardLib/Model/Card";
+import { DeckUtils } from "~CardLib/Model/DeckUtils";
+import { DelayHint } from "~CardLib/Model/DelayHint";
+import { GameBase } from "~CardLib/Model/GameBase";
+import { Pile } from "~CardLib/Model/Pile";
+import { Rank } from "~CardLib/Model/Rank";
+import { GameOptions } from "./GameOptions";
+import { IGame } from "./IGame";
 
 const TABLEAUX_COUNT = 7;
 
@@ -82,11 +82,10 @@ export class Game extends GameBase implements IGame {
             card.faceUp = false;
         }
 
-        for (let pileIndex = this.piles.length; pileIndex-- > 0;) {
+        for (let pileIndex = this.piles.length; pileIndex-- > 0; ) {
             const pile = this.piles[pileIndex];
-            if (pile === this.stock)
-                continue;
-            for (let cardIndex = pile.length; cardIndex-- > 0;) {
+            if (pile === this.stock) continue;
+            for (let cardIndex = pile.length; cardIndex-- > 0; ) {
                 const card = pile.at(cardIndex);
                 card.faceUp = false;
                 this.stock.push(card);
@@ -153,15 +152,20 @@ export class Game extends GameBase implements IGame {
 
     protected *pilePrimary_(pile: Pile) {
         // if the player clicks the stock and it has been depleted, move the waste back to the stock:
-        if (pile === this.stock && this.stock.length === 0 && this.waste.length > 0 && this.restocks_ < this.options.restocksAllowed) {
+        if (
+            pile === this.stock &&
+            this.stock.length === 0 &&
+            this.waste.length > 0 &&
+            this.restocks_ < this.options.restocksAllowed
+        ) {
             this.restocks_++;
-            for (let i = this.waste.length; i-- > 0;) {
+            for (let i = this.waste.length; i-- > 0; ) {
                 const card = this.waste.at(i);
                 card.faceUp = false;
             }
             this.waste.maxFan = 0;
             yield DelayHint.OneByOne;
-            for (let i = this.waste.length; i-- > 0;) {
+            for (let i = this.waste.length; i-- > 0; ) {
                 const card = this.waste.at(i);
                 this.stock.push(card);
             }
@@ -171,10 +175,9 @@ export class Game extends GameBase implements IGame {
         }
     }
 
-    protected *pileSecondary_(pile: Pile) {
-    }
+    protected *pileSecondary_(pile: Pile) {}
 
-    protected canDrag_(card: Card): { canDrag: boolean; extraCards: Card[]; } {
+    protected canDrag_(card: Card): { canDrag: boolean; extraCards: Card[] } {
         if (this.isFoundationDropSource_(card)) {
             return { canDrag: true, extraCards: [] };
         } else if (this.isTableauxDropSource_(card)) {
@@ -221,10 +224,8 @@ export class Game extends GameBase implements IGame {
     }
 
     private isTableauxDrop_(card: Card, pile: Pile) {
-        if (card.pile === pile)
-            return false;
-        if (!this.isTableauxDropSource_(card))
-            return false;
+        if (card.pile === pile) return false;
+        if (!this.isTableauxDropSource_(card)) return false;
 
         if (this.tableaux.indexOf(pile) >= 0) {
             const topCard = pile.peek();
@@ -247,10 +248,15 @@ export class Game extends GameBase implements IGame {
         if (this.dragSingleSources_.indexOf(card.pile) >= 0 && card.pile.peek() === card && card.faceUp) {
             return true;
         } else if (this.tableaux.indexOf(card.pile) >= 0 && card.pile.peek()?.faceUp) {
-            for (let i = card.pile.length - 1; i-- > 0;) {
+            for (let i = card.pile.length - 1; i-- > 0; ) {
                 const card0 = card.pile.at(i);
                 const card1 = card.pile.at(i + 1);
-                if (card0?.faceUp && card1?.faceUp && card0.colour !== card1.colour && this.getCardValue_(card1) === this.getCardValue_(card0) - 1) {
+                if (
+                    card0?.faceUp &&
+                    card1?.faceUp &&
+                    card0.colour !== card1.colour &&
+                    this.getCardValue_(card1) === this.getCardValue_(card0) - 1
+                ) {
                     if (card0 === card) {
                         return true;
                     }
@@ -275,10 +281,8 @@ export class Game extends GameBase implements IGame {
     }
 
     private isFoundationDrop_(card: Card, pile: Pile) {
-        if (card.pile === pile)
-            return false;
-        if (!this.isFoundationDropSource_(card))
-            return false;
+        if (card.pile === pile) return false;
+        if (!this.isFoundationDropSource_(card)) return false;
 
         if (this.foundations.indexOf(pile) >= 0) {
             const topCard = pile.peek();
@@ -312,20 +316,34 @@ export class Game extends GameBase implements IGame {
 
     private getCardValue_(card: Card) {
         switch (card.rank) {
-            case Rank.Ace: return 1;
-            case Rank.Two: return 2;
-            case Rank.Three: return 3;
-            case Rank.Four: return 4;
-            case Rank.Five: return 5;
-            case Rank.Six: return 6;
-            case Rank.Seven: return 7;
-            case Rank.Eight: return 8;
-            case Rank.Nine: return 9;
-            case Rank.Ten: return 10;
-            case Rank.Jack: return 11;
-            case Rank.Queen: return 12;
-            case Rank.King: return 13;
-            default: Debug.error();
+            case Rank.Ace:
+                return 1;
+            case Rank.Two:
+                return 2;
+            case Rank.Three:
+                return 3;
+            case Rank.Four:
+                return 4;
+            case Rank.Five:
+                return 5;
+            case Rank.Six:
+                return 6;
+            case Rank.Seven:
+                return 7;
+            case Rank.Eight:
+                return 8;
+            case Rank.Nine:
+                return 9;
+            case Rank.Ten:
+                return 10;
+            case Rank.Jack:
+                return 11;
+            case Rank.Queen:
+                return 12;
+            case Rank.King:
+                return 13;
+            default:
+                Debug.error();
         }
     }
 

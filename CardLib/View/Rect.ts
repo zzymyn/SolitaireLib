@@ -1,12 +1,9 @@
 export class Rect {
-    constructor(
-        public sizeX = 0,
-        public sizeY = 0,
-        public x = 0,
-        public y = 0) {
-    }
+    constructor(public sizeX = 0, public sizeY = 0, public x = 0, public y = 0) {}
 
-    public get xMin() { return this.x - 0.5 * this.sizeX; }
+    public get xMin() {
+        return this.x - 0.5 * this.sizeX;
+    }
 
     public set xMin(xMin: number) {
         const xMax = this.xMax;
@@ -14,7 +11,9 @@ export class Rect {
         this.x = 0.5 * xMin + 0.5 * xMax;
     }
 
-    public get xMax() { return this.x + 0.5 * this.sizeX; }
+    public get xMax() {
+        return this.x + 0.5 * this.sizeX;
+    }
 
     public set xMax(xMax: number) {
         const xMin = this.xMin;
@@ -22,7 +21,9 @@ export class Rect {
         this.x = 0.5 * xMin + 0.5 * xMax;
     }
 
-    public get yMin() { return this.y - 0.5 * this.sizeY; }
+    public get yMin() {
+        return this.y - 0.5 * this.sizeY;
+    }
 
     public set yMin(yMin: number) {
         const yMax = this.yMax;
@@ -30,7 +31,9 @@ export class Rect {
         this.y = 0.5 * yMin + 0.5 * yMax;
     }
 
-    public get yMax() { return this.y + 0.5 * this.sizeY; }
+    public get yMax() {
+        return this.y + 0.5 * this.sizeY;
+    }
 
     public set yMax(yMax: number) {
         const yMin = this.yMin;
@@ -39,8 +42,7 @@ export class Rect {
     }
 
     public set(rect: Rect) {
-        if (this.equals(rect))
-            return false;
+        if (this.equals(rect)) return false;
         this.x = rect.x;
         this.y = rect.y;
         this.sizeX = rect.sizeX;
@@ -56,19 +58,14 @@ export class Rect {
     }
 
     public equals(o: Rect) {
-        return this.x === o.x
-            && this.y === o.y
-            && this.sizeX === o.sizeX
-            && this.sizeY === o.sizeY;
+        return this.x === o.x && this.y === o.y && this.sizeX === o.sizeX && this.sizeY === o.sizeY;
     }
 
     public overlaps(o: Rect) {
         const overlapX = Math.min(this.xMax, o.xMax) - Math.max(this.xMin, o.xMin);
-        if (overlapX <= 0)
-            return 0;
+        if (overlapX <= 0) return 0;
         const overlapY = Math.min(this.yMax, o.yMax) - Math.max(this.yMin, o.yMin);
-        if (overlapY <= 0)
-            return 0;
+        if (overlapY <= 0) return 0;
         return overlapX * overlapY;
     }
 }
