@@ -1,5 +1,5 @@
 import prand from "pure-rand";
-import { Debug } from "../Debug";
+import * as Debug from "../Debug";
 import { Card } from "./Card";
 import { Colour } from "./Colour";
 import { GameBase } from "./GameBase";
@@ -56,8 +56,7 @@ export class Pile implements IPile {
     }
 
     public at(i: number) {
-        Debug.assert(i >= 0 && i < this.cards_.length);
-        const card = this.cards_[i];
+        const card = this.cards_[i] ?? Debug.error();
         Debug.assert(card.pile === this);
         return card;
     }
@@ -82,7 +81,8 @@ export class Pile implements IPile {
         });
 
         for (let i = 0; i < this.cards_.length; ++i) {
-            this.cards_[i].onPileIndexChanged(i);
+            const card = this.cards_[i] ?? Debug.error();
+            card.onPileIndexChanged(i);
         }
 
         this.cardsChanged();
@@ -92,13 +92,14 @@ export class Pile implements IPile {
         for (let i = 0; i < this.cards_.length; ++i) {
             let swapIndex: number;
             [swapIndex, rng] = prand.uniformIntDistribution(i, this.cards_.length - 1, rng);
-            const tmp = this.cards_[i];
-            this.cards_[i] = this.cards_[swapIndex];
+            const tmp = this.cards_[i] ?? Debug.error();
+            this.cards_[i] = this.cards_[swapIndex] ?? Debug.error();
             this.cards_[swapIndex] = tmp;
         }
 
         for (let i = 0; i < this.cards_.length; ++i) {
-            this.cards_[i].onPileIndexChanged(i);
+            const card = this.cards_[i] ?? Debug.error();
+            card.onPileIndexChanged(i);
         }
 
         this.cardsChanged();
@@ -116,7 +117,8 @@ export class Pile implements IPile {
         });
 
         for (let i = 0; i < this.cards_.length; ++i) {
-            this.cards_[i].onPileIndexChanged(i);
+            const card = this.cards_[i] ?? Debug.error();
+            card.onPileIndexChanged(i);
         }
 
         this.cardsChanged();
@@ -150,7 +152,8 @@ export class Pile implements IPile {
 
         card.onPileChanged(this, index);
         for (let i = index + 1; i < this.cards_.length; ++i) {
-            this.cards_[i].onPileIndexChanged(i);
+            const card = this.cards_[i] ?? Debug.error();
+            card.onPileIndexChanged(i);
         }
         this.cardsChanged();
 
@@ -167,7 +170,8 @@ export class Pile implements IPile {
         this.cards_.splice(index, 1);
 
         for (let i = index; i < this.cards_.length; ++i) {
-            this.cards_[i].onPileIndexChanged(i);
+            const card = this.cards_[i] ?? Debug.error();
+            card.onPileIndexChanged(i);
         }
         this.cardsChanged();
 

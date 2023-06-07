@@ -1,3 +1,4 @@
+import { error } from "~CardLib/Debug";
 import { TypeEx } from "~CardLib/TypeEx";
 import { AutoIdMap } from "../AutoIdMap";
 import { Card } from "./Card";
@@ -36,7 +37,7 @@ export class GameSerializationContext {
     }
 
     public read() {
-        return this.data_[this.dataIndex_++];
+        return this.data_[this.dataIndex_++] ?? error();
     }
 
     public readRange(min: number, max: number) {

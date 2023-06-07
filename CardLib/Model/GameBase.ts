@@ -1,5 +1,5 @@
 import prand from "pure-rand";
-import { Debug } from "../Debug";
+import * as Debug from "../Debug";
 import { Card } from "./Card";
 import { DelayHint } from "./DelayHint";
 import { GameSerializationContext } from "./GameSerializationContext";

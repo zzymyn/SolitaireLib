@@ -1,4 +1,4 @@
-import { Debug } from "~CardLib/Debug";
+import * as Debug from "~CardLib/Debug";
 import { ITouchResponder } from "./ITouchResponder";
 
 export class ViewContext {

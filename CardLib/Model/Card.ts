@@ -1,4 +1,4 @@
-import { Debug } from "../Debug";
+import * as Debug from "../Debug";
 import { Colour } from "./Colour";
 import { GameBase } from "./GameBase";
 import { GameSerializationContext } from "./GameSerializationContext";
@@ -52,11 +52,7 @@ export class Card implements ICard {
             this.pile = newPile;
             this.pileIndex = newPileIndex;
 
-            if (this.pile) {
-                Debug.assert(this.pileIndex === this.pile.indexOf(this));
-            } else {
-                Debug.assert(this.pileIndex === 0);
-            }
+            Debug.assert(this.pileIndex === this.pile.indexOf(this));
 
             this.pileChanged();
         }
@@ -66,11 +62,7 @@ export class Card implements ICard {
         if (this.pileIndex === newPileIndex) return;
         this.pileIndex = newPileIndex;
 
-        if (this.pile) {
-            Debug.assert(this.pileIndex === this.pile.indexOf(this));
-        } else {
-            Debug.assert(this.pileIndex === 0);
-        }
+        Debug.assert(this.pileIndex === this.pile.indexOf(this));
 
         this.pileIndexChanged();
     }

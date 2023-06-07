@@ -1,4 +1,4 @@
-import { MathEx } from "~CardLib/MathEx";
+import * as MathEx from "~CardLib/MathEx";
 import { GameOptionsBase } from "~CardLib/Model/GameOptionsBase";
 import { URLSearchParamsEx } from "~CardLib/URLSearchParamsEx";
 

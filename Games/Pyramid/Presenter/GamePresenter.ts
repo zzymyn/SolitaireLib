@@ -1,3 +1,4 @@
+import { error } from "~CardLib/Debug";
 import { GamePresenterBase } from "~CardLib/Presenter/GamePresenterBase";
 import { IView } from "~CardLib/View/IView";
 import { PileView } from "~CardLib/View/PileView";
@@ -45,7 +46,7 @@ export class GamePresenter extends GamePresenterBase<IGame> {
             this.foundationPile_ = pileView;
         }
         for (let y = 0; y < game.pyramid.length; ++y) {
-            const piles = game.pyramid[y];
+            const piles = game.pyramid[y] ?? error();
             const pileViews: PileView[] = [];
             for (const pile of piles) {
                 const pileView = this.createPileView_(pile);
@@ -87,10 +88,11 @@ export class GamePresenter extends GamePresenterBase<IGame> {
             pileView.rect = new Rect(sizeX, sizeY, xPos(pyramidSize - 1, pyramidSize), yPos(0));
         }
         for (let y = 0; y < pyramidSize; ++y) {
-            const row = this.game_.pyramid[y];
-            for (let x = 0; x < row.length; ++x) {
-                const pileView = this.pyramidPiles_[y][x];
-                pileView.rect = new Rect(sizeX, sizeY, xPos(x, row.length), yPos(y));
+            const gameRow = this.game_.pyramid[y] ?? error();
+            for (let x = 0; x < gameRow.length; ++x) {
+                const row = this.pyramidPiles_[y] ?? error();
+                const pileView = row[x] ?? error();
+                pileView.rect = new Rect(sizeX, sizeY, xPos(x, gameRow.length), yPos(y));
             }
         }
     }

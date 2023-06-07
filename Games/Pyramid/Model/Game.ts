@@ -1,6 +1,7 @@
 import prand from "pure-rand";
+import { error } from "~CardLib/Debug";
 import { Card } from "~CardLib/Model/Card";
-import { DeckUtils } from "~CardLib/Model/DeckUtils";
+import * as DeckUtils from "~CardLib/Model/DeckUtils";
 import { DelayHint } from "~CardLib/Model/DelayHint";
 import { GameBase } from "~CardLib/Model/GameBase";
 import { Pile } from "~CardLib/Model/Pile";
@@ -28,10 +29,11 @@ export class Game extends GameBase implements IGame {
         this.piles.push(this.foundation);
 
         for (let y = 0; y < PYRAMID_SIZE; ++y) {
-            this.pyramid.push([]);
+            const row: Pile[] = [];
+            this.pyramid.push(row);
             for (let x = 0; x <= y; ++x) {
                 const pile = new Pile(this);
-                this.pyramid[y].push(pile);
+                row.push(pile);
                 this.pyramidCoords_.set(pile, { x, y });
                 this.piles.push(pile);
             }
@@ -71,7 +73,7 @@ export class Game extends GameBase implements IGame {
         }
 
         for (let pileIndex = this.piles.length; pileIndex-- > 0; ) {
-            const pile = this.piles[pileIndex];
+            const pile = this.piles[pileIndex] ?? error();
             if (pile === this.stock) continue;
             for (let cardIndex = pile.length; cardIndex-- > 0; ) {
                 const card = pile.at(cardIndex);
@@ -164,7 +166,7 @@ export class Game extends GameBase implements IGame {
 
     protected *dropCard_(card: Card, pile: Pile) {
         if (this.is13Move_(card, pile)) {
-            this.foundation.push(pile.peek()!);
+            this.foundation.push(pile.peek() ?? error());
             this.foundation.push(card);
             yield* this.doAutoMoves_();
         }
@@ -182,8 +184,8 @@ export class Game extends GameBase implements IGame {
             if (coords) {
                 const nextRow = this.pyramid[coords.y + 1];
                 if (!nextRow) return true;
-                const block0 = nextRow[coords.x];
-                const block1 = nextRow[coords.x + 1];
+                const block0 = nextRow[coords.x] ?? error();
+                const block1 = nextRow[coords.x + 1] ?? error();
                 return block0.length === 0 && block1.length === 0;
             }
         }
@@ -265,7 +267,7 @@ export class Game extends GameBase implements IGame {
             }
             if (this.options.autoRevealStockTop) {
                 const card = this.stock.peek();
-                if (card && card.faceUp === false) {
+                if (card && !card.faceUp) {
                     yield DelayHint.OneByOne;
                     card.faceUp = true;
                     continue mainLoop;

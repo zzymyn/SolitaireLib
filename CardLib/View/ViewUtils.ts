@@ -1,4 +1,4 @@
-import { Debug } from "~CardLib/Debug";
+import * as Debug from "~CardLib/Debug";
 
 export class ViewUtils {
     public static instantiateTemplate(parentElement: HTMLElement, templateId: string) {

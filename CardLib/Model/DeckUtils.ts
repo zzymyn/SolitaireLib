@@ -26,16 +26,14 @@ const s52Ranks: Rank[] = [
     Rank.King,
 ];
 
-export class DeckUtils {
-    public static createStandard52Deck(pile: Pile): Card[] {
-        const deck: Card[] = [];
-        for (const [suit, colour] of s52SuitColours) {
-            for (const rank of s52Ranks) {
-                const card = pile.createCard(suit, colour, rank);
-                deck.push(card);
-            }
+export function createStandard52Deck(pile: Pile): Card[] {
+    const deck: Card[] = [];
+    for (const [suit, colour] of s52SuitColours) {
+        for (const rank of s52Ranks) {
+            const card = pile.createCard(suit, colour, rank);
+            deck.push(card);
         }
-
-        return deck;
     }
+
+    return deck;
 }

@@ -1,4 +1,4 @@
-import { Debug } from "../Debug";
+import * as Debug from "../Debug";
 import { DelayHint } from "../Model/DelayHint";
 import { ICard } from "../Model/ICard";
 import { IGameBase } from "../Model/IGameBase";
@@ -9,7 +9,9 @@ import { PileView } from "../View/PileView";
 import { Rect } from "../View/Rect";
 import { IGamePresenter } from "./IGamePresenter";
 
-type DropPreview = { dropPreview: boolean };
+interface DropPreview {
+    dropPreview: boolean;
+}
 
 export abstract class GamePresenterBase<TGame extends IGameBase> implements IGamePresenter {
     protected readonly game_: TGame;
@@ -78,7 +80,7 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
             await this.waitForDelay_(DelayHint.Settle, waitCount++);
 
             for (let i = wonCards.length; i-- > 0; ) {
-                const card = wonCards[i];
+                const card = wonCards[i] ?? Debug.error();
                 if (!this.game_.won) break;
                 const cardView = this.getCardView_(card);
                 cardView.won = true;
@@ -305,7 +307,7 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
         if (!cancelled) {
             const bestPile = this.getBestDragPile_(card, rect);
             if (bestPile) {
-                this.doOperation_(() => this.game_.dropCard(card, bestPile!));
+                this.doOperation_(() => this.game_.dropCard(card, bestPile));
             }
         }
         this.setDropPreview_(undefined);
@@ -423,7 +425,8 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
             while (this.operations_.length > 0) {
                 let waitCount = 0;
 
-                for (const delay of this.operations_[0]()) {
+                const op = this.operations_[0] ?? Debug.error();
+                for (const delay of op()) {
                     if (this.operations_.length > 1) {
                         waitCount = Math.max(200, waitCount);
                     }

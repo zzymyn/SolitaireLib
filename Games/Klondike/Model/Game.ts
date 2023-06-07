@@ -1,7 +1,7 @@
 import prand from "pure-rand";
-import { Debug } from "~CardLib/Debug";
+import * as Debug from "~CardLib/Debug";
 import { Card } from "~CardLib/Model/Card";
-import { DeckUtils } from "~CardLib/Model/DeckUtils";
+import * as DeckUtils from "~CardLib/Model/DeckUtils";
 import { DelayHint } from "~CardLib/Model/DelayHint";
 import { GameBase } from "~CardLib/Model/GameBase";
 import { Pile } from "~CardLib/Model/Pile";
@@ -83,7 +83,7 @@ export class Game extends GameBase implements IGame {
         }
 
         for (let pileIndex = this.piles.length; pileIndex-- > 0; ) {
-            const pile = this.piles[pileIndex];
+            const pile = this.piles[pileIndex] ?? Debug.error();
             if (pile === this.stock) continue;
             for (let cardIndex = pile.length; cardIndex-- > 0; ) {
                 const card = pile.at(cardIndex);
@@ -102,7 +102,7 @@ export class Game extends GameBase implements IGame {
         yield DelayHint.Settle;
 
         for (let i = 0; i < this.tableaux.length; ++i) {
-            const pile = this.tableaux[i];
+            const pile = this.tableaux[i] ?? Debug.error();
             for (let j = 0; j <= i; ++j) {
                 const card = this.stock.peek();
                 if (card) {
@@ -252,8 +252,8 @@ export class Game extends GameBase implements IGame {
                 const card0 = card.pile.at(i);
                 const card1 = card.pile.at(i + 1);
                 if (
-                    card0?.faceUp &&
-                    card1?.faceUp &&
+                    card0.faceUp &&
+                    card1.faceUp &&
                     card0.colour !== card1.colour &&
                     this.getCardValue_(card1) === this.getCardValue_(card0) - 1
                 ) {

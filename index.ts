@@ -1,4 +1,4 @@
-import { Debug } from "~CardLib/Debug";
+import * as Debug from "~CardLib/Debug";
 import { IGameInfo } from "~CardLib/IGameInfo";
 import { IGamePresenter } from "~CardLib/Presenter/IGamePresenter";
 import Klondike from "~Games/Klondike/GameInfo";
@@ -29,7 +29,7 @@ window.addEventListener("load", () => {
         if (qPos >= 0) {
             params = new URLSearchParams(hash.substr(qPos + 1));
             gameKey = hash.substr(1, qPos - 1);
-        } else if (hash.indexOf("&") >= 0 || hash.indexOf("?") >= 0 || hash.indexOf("=") >= 0) {
+        } else if (hash.includes("&") || hash.includes("?") || hash.includes("=")) {
             params = new URLSearchParams(hash.substr(1));
             gameKey = params.get("game");
         } else {

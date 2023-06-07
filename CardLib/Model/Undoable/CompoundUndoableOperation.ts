@@ -1,3 +1,4 @@
+import { error } from "~CardLib/Debug";
 import { GameSerializationContext } from "../GameSerializationContext";
 import { IUndoableOperation } from "./IUndoableOperation";
 
@@ -14,7 +15,8 @@ export class CompoundUndoableOperation implements IUndoableOperation {
 
     public undo() {
         for (let i = this.ops_.length; i-- > 0; ) {
-            this.ops_[i].undo();
+            const op = this.ops_[i] ?? error();
+            op.undo();
         }
     }
 

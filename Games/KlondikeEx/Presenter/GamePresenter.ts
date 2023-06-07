@@ -1,4 +1,5 @@
-import { MathEx } from "~CardLib/MathEx";
+import { error } from "~CardLib/Debug";
+import * as MathEx from "~CardLib/MathEx";
 import { GamePresenterBase } from "~CardLib/Presenter/GamePresenterBase";
 import { IView } from "~CardLib/View/IView";
 import { PileView } from "~CardLib/View/PileView";
@@ -30,13 +31,13 @@ export class GamePresenter extends GamePresenterBase<IGame> {
             this.stockPile_ = pileView;
         }
         for (let i = 0; i < this.game_.foundations.length; ++i) {
-            const pileView = this.createPileView_(game.foundations[i]);
+            const pileView = this.createPileView_(game.foundations[i] ?? error());
             pileView.showFrame = true;
             pileView.zIndex = 800;
             this.foundationPiles_.push(pileView);
         }
         for (let i = 0; i < this.game_.tableaux.length; ++i) {
-            const pileView = this.createPileView_(game.tableaux[i]);
+            const pileView = this.createPileView_(game.tableaux[i] ?? error());
             pileView.showFrame = true;
             pileView.zIndex = 800;
             this.tableauPiles_.push(pileView);
@@ -103,7 +104,7 @@ export class GamePresenter extends GamePresenterBase<IGame> {
             }
         }
         for (let i = 0; i < this.game_.foundations.length; ++i) {
-            const pile = this.game_.foundations[i];
+            const pile = this.game_.foundations[i] ?? error();
             const pileView = this.getPileView_(pile);
             pileView.rect = new Rect(
                 sizeX,
@@ -113,7 +114,7 @@ export class GamePresenter extends GamePresenterBase<IGame> {
             );
         }
         for (let i = 0; i < this.game_.tableaux.length; ++i) {
-            const pile = this.game_.tableaux[i];
+            const pile = this.game_.tableaux[i] ?? error();
             const pileView = this.getPileView_(pile);
             pileView.rect = new Rect(
                 sizeX,
