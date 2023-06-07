@@ -27,7 +27,9 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
         this.game_ = game;
         this.rootView_ = rootView;
 
-        game.wonChanged = () => this.gameWonChanged_();
+        game.wonChanged = () => {
+            void this.gameWonChanged_();
+        };
 
         const gameScoreElement = rootView.element.querySelector(".gameScore");
         if (gameScoreElement) {
@@ -307,7 +309,7 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
         if (!cancelled) {
             const bestPile = this.getBestDragPile_(card, rect);
             if (bestPile) {
-                this.doOperation_(() => this.game_.dropCard(card, bestPile));
+                void this.doOperation_(() => this.game_.dropCard(card, bestPile));
             }
         }
         this.setDropPreview_(undefined);
@@ -388,32 +390,32 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
         }
     };
 
-    private async undo_() {
-        this.doOperation_(() => this.game_.undo());
+    private undo_() {
+        void this.doOperation_(() => this.game_.undo());
     }
 
-    private async redo_() {
-        this.doOperation_(() => this.game_.redo());
+    private redo_() {
+        void this.doOperation_(() => this.game_.redo());
     }
 
-    private async restart_() {
-        this.doOperation_(() => this.game_.restart(Date.now()));
+    private restart_() {
+        void this.doOperation_(() => this.game_.restart(Date.now()));
     }
 
-    private async pilePrimary_(pile: IPile) {
-        this.doOperation_(() => this.game_.pilePrimary(pile));
+    private pilePrimary_(pile: IPile) {
+        void this.doOperation_(() => this.game_.pilePrimary(pile));
     }
 
-    private async pileSecondary_(pile: IPile) {
-        this.doOperation_(() => this.game_.pileSecondary(pile));
+    private pileSecondary_(pile: IPile) {
+        void this.doOperation_(() => this.game_.pileSecondary(pile));
     }
 
-    private async cardPrimary_(card: ICard) {
-        this.doOperation_(() => this.game_.cardPrimary(card));
+    private cardPrimary_(card: ICard) {
+        void this.doOperation_(() => this.game_.cardPrimary(card));
     }
 
-    private async cardSecondary_(card: ICard) {
-        this.doOperation_(() => this.game_.cardSecondary(card));
+    private cardSecondary_(card: ICard) {
+        void this.doOperation_(() => this.game_.cardSecondary(card));
     }
 
     private readonly operations_: (() => Generator<DelayHint, void>)[] = [];
@@ -437,7 +439,9 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
 
                 try {
                     window.localStorage.setItem(this.saveDataKey_, this.game_.serialize());
-                } catch {}
+                } catch {
+                    // ignore
+                }
             }
         }
     }

@@ -34,7 +34,7 @@ export class CompoundUndoableOperation implements IUndoableOperation {
     }
 
     public get deserializer() {
-        return CompoundUndoableOperation.deserialize;
+        return (a: GameSerializationContext) => CompoundUndoableOperation.deserialize(a);
     }
 
     public static deserialize(context: GameSerializationContext) {

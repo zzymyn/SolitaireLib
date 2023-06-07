@@ -281,10 +281,10 @@ export abstract class GameBase implements IGameBase {
             context.addPile(pile);
         }
 
-        context.addUndoableDeserializer(CompoundUndoableOperation.deserialize);
-        context.addUndoableDeserializer(CardFlipOperation.deserialize);
-        context.addUndoableDeserializer(PileInsertOperation.deserialize);
-        context.addUndoableDeserializer(PileMaxFanOperation.deserialize);
+        context.addUndoableDeserializer((a) => CompoundUndoableOperation.deserialize(a));
+        context.addUndoableDeserializer((a) => CardFlipOperation.deserialize(a));
+        context.addUndoableDeserializer((a) => PileInsertOperation.deserialize(a));
+        context.addUndoableDeserializer((a) => PileMaxFanOperation.deserialize(a));
 
         return context;
     }

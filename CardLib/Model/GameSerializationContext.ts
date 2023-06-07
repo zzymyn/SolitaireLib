@@ -1,5 +1,5 @@
 import { error } from "~CardLib/Debug";
-import { TypeEx } from "~CardLib/TypeEx";
+import { ensureNumberArray } from "~CardLib/TypeEx";
 import { AutoIdMap } from "../AutoIdMap";
 import { Card } from "./Card";
 import { Pile } from "./Pile";
@@ -72,11 +72,8 @@ export class GameSerializationContext {
     }
 
     public fromJson(json: string) {
-        const data = JSON.parse(json);
-        TypeEx.ensureArray(data);
-        for (const v of data) {
-            TypeEx.ensureNumber(v);
-        }
+        const data: unknown = JSON.parse(json);
+        ensureNumberArray(data);
         this.data_ = data;
         this.dataIndex_ = 0;
     }

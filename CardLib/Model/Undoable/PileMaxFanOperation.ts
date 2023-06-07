@@ -24,7 +24,7 @@ export class PileMaxFanOperation implements IUndoableOperation {
     }
 
     public get deserializer() {
-        return PileMaxFanOperation.deserialize;
+        return (a: GameSerializationContext) => PileMaxFanOperation.deserialize(a);
     }
 
     public static deserialize(context: GameSerializationContext) {

@@ -24,7 +24,7 @@ export class CardFlipOperation implements IUndoableOperation {
     }
 
     public get deserializer() {
-        return CardFlipOperation.deserialize;
+        return (a: GameSerializationContext) => CardFlipOperation.deserialize(a);
     }
 
     public static deserialize(context: GameSerializationContext) {

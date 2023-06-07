@@ -29,7 +29,7 @@ export class PileInsertOperation implements IUndoableOperation {
     }
 
     public get deserializer() {
-        return PileInsertOperation.deserialize;
+        return (a: GameSerializationContext) => PileInsertOperation.deserialize(a);
     }
 
     public static deserialize(context: GameSerializationContext) {
