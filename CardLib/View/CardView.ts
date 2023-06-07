@@ -5,7 +5,7 @@ import { ITouchResponder } from "./ITouchResponder";
 import { IView } from "./IView";
 import { Rect } from "./Rect";
 import { ViewContext } from "./ViewContext";
-import { ViewUtils } from "./ViewUtils";
+import { instantiateTemplate } from "./ViewUtils";
 
 export class CardView implements IView, ITouchResponder {
     public readonly context: ViewContext;
@@ -82,7 +82,7 @@ export class CardView implements IView, ITouchResponder {
 
     constructor(parent: IView, suit: Suit, colour: Colour, rank: Rank) {
         this.context = parent.context;
-        this.element = ViewUtils.instantiateTemplate(parent.element, "cardViewTemplate");
+        this.element = instantiateTemplate(parent.element, "cardViewTemplate");
         this.element.classList.add(`s${suit}c${colour}r${rank}`);
         this.element.addEventListener("mousedown", this.onMouseDown_);
         this.element.addEventListener("touchstart", this.touchStart_);

@@ -114,9 +114,7 @@ export class Game extends GameBase implements IGame {
 
         for (let i = this.stock.length; i-- > 0; ) {
             const card = this.stock.at(i);
-            if (card) {
-                card.faceUp = true;
-            }
+            card.faceUp = true;
         }
 
         this.stock.maxFan = 999;
@@ -398,7 +396,7 @@ export class Game extends GameBase implements IGame {
                 for (const pile of this.autoMoveAnySources_) {
                     for (let i = pile.length; i-- > 0; ) {
                         const card = pile.at(i);
-                        if (card && this.getCardValue_(card) <= foundationMin + this.options.autoMoveToFoundation) {
+                        if (this.getCardValue_(card) <= foundationMin + this.options.autoMoveToFoundation) {
                             for (const foundation of this.foundations) {
                                 if (this.isFoundationDrop_(card, foundation)) {
                                     yield* this.doFoundationDrop_(card, foundation);

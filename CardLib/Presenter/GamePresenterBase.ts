@@ -266,11 +266,9 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
 
             for (let i = card.pileIndex + 1; i < card.pile.length; ++i) {
                 const pileCard = card.pile.at(i);
-                if (pileCard) {
-                    const pileCardView = this.getCardView_(pileCard);
-                    if (pileCardView.zIndex < baseZIndex) {
-                        pileCardView.zIndex = this.getNextZIndex_();
-                    }
+                const pileCardView = this.getCardView_(pileCard);
+                if (pileCardView.zIndex < baseZIndex) {
+                    pileCardView.zIndex = this.getNextZIndex_();
                 }
             }
         }
@@ -373,20 +371,18 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
     };
 
     private readonly onWindowKeyDown_ = (e: KeyboardEvent) => {
-        if (e) {
-            if (e.key === "y" && e.ctrlKey) {
-                this.redo_();
-                e.stopPropagation();
-                e.preventDefault();
-            } else if (e.key === "z" && e.ctrlKey) {
-                this.undo_();
-                e.stopPropagation();
-                e.preventDefault();
-            } else if (e.key === "n") {
-                this.restart_();
-                e.stopPropagation();
-                e.preventDefault();
-            }
+        if (e.key === "y" && e.ctrlKey) {
+            this.redo_();
+            e.stopPropagation();
+            e.preventDefault();
+        } else if (e.key === "z" && e.ctrlKey) {
+            this.undo_();
+            e.stopPropagation();
+            e.preventDefault();
+        } else if (e.key === "n") {
+            this.restart_();
+            e.stopPropagation();
+            e.preventDefault();
         }
     };
 

@@ -2,7 +2,7 @@ import { ITouchResponder } from "./ITouchResponder";
 import { IView } from "./IView";
 import { Rect } from "./Rect";
 import { ViewContext } from "./ViewContext";
-import { ViewUtils } from "./ViewUtils";
+import { instantiateTemplate } from "./ViewUtils";
 
 export class PileView implements IView, ITouchResponder {
     public readonly context: ViewContext;
@@ -77,7 +77,7 @@ export class PileView implements IView, ITouchResponder {
 
     constructor(parent: IView) {
         this.context = parent.context;
-        this.element = ViewUtils.instantiateTemplate(parent.element, "pileViewTemplate");
+        this.element = instantiateTemplate(parent.element, "pileViewTemplate");
         this.element.addEventListener("mousedown", this.onMouseDown_);
         this.element.addEventListener("touchstart", this.touchStart_);
     }

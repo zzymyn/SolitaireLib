@@ -1,6 +1,6 @@
 import { IView } from "./IView";
 import { ViewContext } from "./ViewContext";
-import { ViewUtils } from "./ViewUtils";
+import { instantiateTemplate } from "./ViewUtils";
 
 export class RootView implements IView {
     public readonly context: ViewContext;
@@ -8,7 +8,7 @@ export class RootView implements IView {
 
     constructor(parentElement: HTMLElement) {
         this.context = new ViewContext(parentElement);
-        this.element = ViewUtils.instantiateTemplate(parentElement, "rootViewTemplate");
+        this.element = instantiateTemplate(parentElement, "rootViewTemplate");
     }
 
     public dispose() {

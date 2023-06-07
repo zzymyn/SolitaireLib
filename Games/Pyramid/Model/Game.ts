@@ -179,15 +179,13 @@ export class Game extends GameBase implements IGame {
         if (this.stock.peek() === card) return true;
         if (this.waste.peek() === card) return true;
 
-        if (card.pile) {
-            const coords = this.pyramidCoords_.get(card.pile);
-            if (coords) {
-                const nextRow = this.pyramid[coords.y + 1];
-                if (!nextRow) return true;
-                const block0 = nextRow[coords.x] ?? error();
-                const block1 = nextRow[coords.x + 1] ?? error();
-                return block0.length === 0 && block1.length === 0;
-            }
+        const coords = this.pyramidCoords_.get(card.pile);
+        if (coords) {
+            const nextRow = this.pyramid[coords.y + 1];
+            if (!nextRow) return true;
+            const block0 = nextRow[coords.x] ?? error();
+            const block1 = nextRow[coords.x + 1] ?? error();
+            return block0.length === 0 && block1.length === 0;
         }
 
         return false;

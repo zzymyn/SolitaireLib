@@ -1,6 +1,6 @@
 import * as MathEx from "~CardLib/MathEx";
 import { GameOptionsBase } from "~CardLib/Model/GameOptionsBase";
-import { URLSearchParamsEx } from "~CardLib/URLSearchParamsEx";
+import * as URLSearchParamsEx from "~CardLib/URLSearchParamsEx";
 
 export class GameOptions extends GameOptionsBase {
     public stockDraws = 1;
