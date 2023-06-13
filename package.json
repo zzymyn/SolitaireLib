@@ -1,11 +1,23 @@
 {
     "name": "pyramid",
-    "browserslist": "> 0.5%, last 2 versions, not dead",
+    "targets": {
+        "web": {
+            "context": "browser",
+            "engines": {
+                "browserslist": "> 0.5%, last 2 versions, not dead"
+            },
+            "distDir": "bin",
+            "source": "index.html",
+            "scopeHoist": false,
+            "publicUrl": "./",
+            "sourceMap": false
+        }
+    },
     "version": "1.0.0",
     "description": "",
     "scripts": {
-        "dev": "parcel serve index.html --dist-dir bin-dev",
-        "build": "parcel build index.html --public-url \"./\" --dist-dir bin --no-source-maps",
+        "dev": "parcel serve --dist-dir bin-dev",
+        "build": "parcel build",
         "tswatch": "tsc --watch --noEmit --project tsconfig.json",
         "lint": "eslint --ext .ts .",
         "lintfix": "eslint --ext .ts . --fix"
