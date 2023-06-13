@@ -1,31 +1,31 @@
 {
-  "name": "pyramid",
-  "browserslist": "> 0.5%, last 2 versions, not dead",
-  "version": "1.0.0",
-  "description": "",
-  "scripts": {
-    "dev": "parcel serve index.html --dist-dir bin-dev",
-    "build": "parcel build index.html --public-url \"./\" -d bin --no-source-maps",
-    "tswatch": "tsc --watch --noEmit --project tsconfig.json",
-    "lint": "eslint --ext .ts .",
-    "lintfix": "eslint --ext .ts . --fix"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "pure-rand": "^6.0.0"
-  },
-  "devDependencies": {
-    "@parcel/transformer-sass": "^2.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.0.0",
-    "@typescript-eslint/parser": "^5.0.0",
-    "eslint": "^8.0.0",
-    "eslint-config-prettier": "^8.8.0",
-    "parcel": "^2.0.0",
-    "prettier": "^2.8.8",
-    "rimraf": "^5.0.0",
-    "sass": "^1.62.1",
-    "typescript": "^5.0.0"
-  }
+    "name": "pyramid",
+    "browserslist": "> 0.5%, last 2 versions, not dead",
+    "version": "1.0.0",
+    "description": "",
+    "scripts": {
+        "dev": "parcel serve index.html --dist-dir bin-dev",
+        "build": "parcel build index.html --public-url \"./\" --dist-dir bin --no-source-maps",
+        "tswatch": "tsc --watch --noEmit --project tsconfig.json",
+        "lint": "eslint --ext .ts .",
+        "lintfix": "eslint --ext .ts . --fix"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "pure-rand": "^6.0.0"
+    },
+    "devDependencies": {
+        "@parcel/transformer-sass": "^2.0.0",
+        "@typescript-eslint/eslint-plugin": "^5.0.0",
+        "@typescript-eslint/parser": "^5.0.0",
+        "eslint": "^8.0.0",
+        "eslint-config-prettier": "^8.8.0",
+        "parcel": "^2.0.0",
+        "prettier": "^2.8.8",
+        "rimraf": "^5.0.0",
+        "sass": "^1.62.1",
+        "typescript": "^5.0.0"
+    }
 }
