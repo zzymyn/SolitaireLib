@@ -193,7 +193,7 @@ export class Game extends GameBase implements IGame {
         );
     }
 
-    protected *dropCard_(card: Card, pile: Pile) {
+    protected *dropCard_(card: Card, pile: Pile): Generator<DelayHint, void> {
         if (this.isTableauxDrop_(card, pile)) {
             yield* this.doTableauxDrop_(card, pile);
             yield* this.doAutoMoves_();
@@ -385,8 +385,8 @@ export class Game extends GameBase implements IGame {
                     const card = pile.peek();
                     if (card && this.getCardValue_(card) <= foundationMin + this.options.autoMoveToFoundation) {
                         for (const foundation of this.foundations) {
-                            if (this.isFoundationDrop_(card, foundation)) {
-                                yield* this.doFoundationDrop_(card, foundation);
+                            if (this.previewDrop_(card, foundation)) {
+                                yield* this.dropCard_(card, foundation);
                                 continue mainLoop;
                             }
                         }
@@ -398,9 +398,63 @@ export class Game extends GameBase implements IGame {
                         const card = pile.at(i);
                         if (this.getCardValue_(card) <= foundationMin + this.options.autoMoveToFoundation) {
                             for (const foundation of this.foundations) {
-                                if (this.isFoundationDrop_(card, foundation)) {
-                                    yield* this.doFoundationDrop_(card, foundation);
+                                if (this.previewDrop_(card, foundation)) {
+                                    yield* this.dropCard_(card, foundation);
                                     continue mainLoop;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (this.options.autoCollateKings) {
+                const openTableaux = [];
+                let nextAutoMoveValue = 0;
+
+                for (const tableau of this.tableaux) {
+                    if (tableau.length > 0) {
+                        const bottomCard = tableau.at(0);
+                        if (bottomCard && bottomCard.rank === Rank.King && bottomCard.faceUp) {
+                            openTableaux.push(tableau);
+                            nextAutoMoveValue = Math.max(nextAutoMoveValue, 13 - tableau.length);
+                        }
+                    }
+                }
+
+                for (const tableau of this.tableaux) {
+                    if (openTableaux.length < 4 && tableau.length === 0) {
+                        openTableaux.push(tableau);
+                        nextAutoMoveValue = Math.max(nextAutoMoveValue, 13 - tableau.length);
+                    }
+                }
+
+                if (openTableaux.length === 4 && nextAutoMoveValue >= 3) {
+                    for (const pile of this.autoMoveSources_) {
+                        if (openTableaux.indexOf(pile) >= 0) continue;
+
+                        for (const card of pile) {
+                            if (card.faceUp && this.getCardValue_(card) === nextAutoMoveValue) {
+                                for (const openTableau of openTableaux) {
+                                    if (this.previewDrop_(card, openTableau)) {
+                                        yield* this.dropCard_(card, openTableau);
+                                        continue mainLoop;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    for (const pile of this.autoMoveAnySources_) {
+                        for (let i = pile.length; i-- > 0; ) {
+                            const card = pile.at(i);
+
+                            if (this.getCardValue_(card) === nextAutoMoveValue) {
+                                for (const openTableau of openTableaux) {
+                                    if (this.previewDrop_(card, openTableau)) {
+                                        yield* this.dropCard_(card, openTableau);
+                                        continue mainLoop;
+                                    }
                                 }
                             }
                         }
