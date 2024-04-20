@@ -4,6 +4,8 @@ import { Pile } from "../Pile";
 import { IUndoableOperation } from "./IUndoableOperation";
 
 export class PileInsertOperation implements IUndoableOperation {
+    public static deserializer = (context: GameSerializationContext) => PileInsertOperation.deserialize(context);
+
     constructor(
         private readonly card_: Card,
         private readonly oldPile_: Pile,
@@ -29,10 +31,10 @@ export class PileInsertOperation implements IUndoableOperation {
     }
 
     public get deserializer() {
-        return (a: GameSerializationContext) => PileInsertOperation.deserialize(a);
+        return PileInsertOperation.deserializer;
     }
 
-    public static deserialize(context: GameSerializationContext) {
+    private static deserialize(context: GameSerializationContext) {
         const card = context.readCard();
         const oldPile = context.readPile();
         const oldPileIndex = context.read();

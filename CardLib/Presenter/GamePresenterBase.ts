@@ -435,8 +435,8 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
 
                 try {
                     window.localStorage.setItem(this.saveDataKey_, this.game_.serialize());
-                } catch {
-                    // ignore
+                } catch (error) {
+                    console.error("Failed to serialize game state.", error);
                 }
             }
         }

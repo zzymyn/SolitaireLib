@@ -3,6 +3,8 @@ import { GameSerializationContext } from "../GameSerializationContext";
 import { IUndoableOperation } from "./IUndoableOperation";
 
 export class CardFlipOperation implements IUndoableOperation {
+    public static deserializer = (context: GameSerializationContext) => CardFlipOperation.deserialize(context);
+
     constructor(
         private readonly card_: Card,
         private readonly oldFaceUp_: boolean,
@@ -24,10 +26,10 @@ export class CardFlipOperation implements IUndoableOperation {
     }
 
     public get deserializer() {
-        return (a: GameSerializationContext) => CardFlipOperation.deserialize(a);
+        return CardFlipOperation.deserializer;
     }
 
-    public static deserialize(context: GameSerializationContext) {
+    private static deserialize(context: GameSerializationContext) {
         const card = context.readCard();
         const oldFaceUp = context.readBool();
         const newFaceUp = context.readBool();

@@ -4,9 +4,9 @@ export class AutoIdMap<T> {
     private readonly itemToId_: Map<T, number> = new Map<T, number>();
 
     public add(item: T) {
-        const cardId = this.nextId_++;
-        this.idToItem_.set(cardId, item);
-        this.itemToId_.set(item, cardId);
+        const itemId = this.nextId_++;
+        this.idToItem_.set(itemId, item);
+        this.itemToId_.set(item, itemId);
     }
 
     public get(itemId: number) {

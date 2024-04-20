@@ -3,6 +3,8 @@ import { Pile } from "../Pile";
 import { IUndoableOperation } from "./IUndoableOperation";
 
 export class PileMaxFanOperation implements IUndoableOperation {
+    public static deserializer = (context: GameSerializationContext) => PileMaxFanOperation.deserialize(context);
+
     constructor(
         private readonly pile_: Pile,
         private readonly oldMaxFan_: number,
@@ -24,10 +26,10 @@ export class PileMaxFanOperation implements IUndoableOperation {
     }
 
     public get deserializer() {
-        return (a: GameSerializationContext) => PileMaxFanOperation.deserialize(a);
+        return PileMaxFanOperation.deserializer;
     }
 
-    public static deserialize(context: GameSerializationContext) {
+    private static deserialize(context: GameSerializationContext) {
         const pile = context.readPile();
         const oldMaxFan = context.read();
         const newMaxFan = context.read();

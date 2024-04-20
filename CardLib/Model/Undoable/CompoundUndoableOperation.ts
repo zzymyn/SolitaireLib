@@ -3,6 +3,8 @@ import { GameSerializationContext } from "../GameSerializationContext";
 import { IUndoableOperation } from "./IUndoableOperation";
 
 export class CompoundUndoableOperation implements IUndoableOperation {
+    public static deserializer = (context: GameSerializationContext) => CompoundUndoableOperation.deserialize(context);
+
     private readonly ops_: IUndoableOperation[] = [];
 
     public get length() {
@@ -34,10 +36,10 @@ export class CompoundUndoableOperation implements IUndoableOperation {
     }
 
     public get deserializer() {
-        return (a: GameSerializationContext) => CompoundUndoableOperation.deserialize(a);
+        return CompoundUndoableOperation.deserializer;
     }
 
-    public static deserialize(context: GameSerializationContext) {
+    private static deserialize(context: GameSerializationContext) {
         const result = new CompoundUndoableOperation();
         const len = context.read();
         for (let i = 0; i < len; ++i) {
