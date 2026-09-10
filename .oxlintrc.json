@@ -1,0 +1,12 @@
+{
+    "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
+    "ignorePatterns": [".*/**", "bin-dev/**", "bin/**", "node_modules/**"],
+    "options": {
+        "typeAware": true
+    },
+    "rules": {
+        "no-empty-function": "off",
+        "no-unused-vars": "off",
+        "require-yield": "off"
+    }
+}

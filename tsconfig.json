@@ -1,17 +1,16 @@
 {
     "compilerOptions": {
-        "baseUrl": ".",
         "paths": {
-            "~*": ["./*"]
+            "~*": ["./*"],
+            "pure-rand/lib/esm/*": ["./node_modules/pure-rand/lib/esm/*"]
         },
         "strict": true,
         "strictNullChecks": true,
         "module": "ESNext",
-        "moduleResolution": "node",
-        "target": "ES5",
+        "moduleResolution": "bundler",
+        "target": "ES2015",
         "lib": ["ES6", "DOM"],
         "noFallthroughCasesInSwitch": true,
-        "downlevelIteration": true,
         "isolatedModules": true,
         "noUncheckedIndexedAccess": true
     },

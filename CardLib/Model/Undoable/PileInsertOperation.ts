@@ -11,7 +11,7 @@ export class PileInsertOperation implements IUndoableOperation {
         private readonly oldPile_: Pile,
         private readonly oldPileIndex_: number,
         private readonly newPile_: Pile,
-        private readonly newPileIndex_: number
+        private readonly newPileIndex_: number,
     ) {}
 
     public undo() {

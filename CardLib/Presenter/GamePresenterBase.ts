@@ -81,7 +81,7 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
 
             await this.waitForDelay_(DelayHint.Settle, waitCount++);
 
-            for (let i = wonCards.length; i-- > 0; ) {
+            for (let i = wonCards.length; i-- > 0;) {
                 const card = wonCards[i] ?? Debug.error();
                 if (!this.game_.won) break;
                 const cardView = this.getCardView_(card);
@@ -155,7 +155,7 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
         // go top to bottom to set z-indicies:
         let zIndex: number | undefined;
 
-        for (let i = pile.length; i-- > 0; ) {
+        for (let i = pile.length; i-- > 0;) {
             const card = pile.at(i);
             const cardView = this.getCardView_(card);
 
@@ -257,7 +257,7 @@ export abstract class GamePresenterBase<TGame extends IGameBase> implements IGam
     }
 
     private cardDragStart_(cardView: CardView, card: ICard) {
-        const { canDrag, extraCards: extraCards } = this.game_.canDrag(card);
+        const { canDrag, extraCards } = this.game_.canDrag(card);
 
         const baseZIndex = this.getNextZIndex_();
 

@@ -94,7 +94,7 @@ export class GamePresenter extends GamePresenterBase<IGame> {
                 sizeX,
                 sizeY,
                 xPos(tableSize - this.game_.foundations.length + i),
-                vExpand * -35 + margin
+                vExpand * -35 + margin,
             );
         }
         for (let i = 0; i < this.game_.tableaux.length; ++i) {

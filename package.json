@@ -1,5 +1,31 @@
 {
     "name": "pyramid",
+    "version": "1.0.0",
+    "description": "",
+    "keywords": [],
+    "license": "ISC",
+    "author": "",
+    "scripts": {
+        "dev": "parcel serve --dist-dir bin-dev",
+        "build": "parcel build",
+        "tswatch": "tsc --watch --noEmit --project tsconfig.json",
+        "lint": "oxlint . --type-aware",
+        "lintfix": "oxlint . --type-aware --fix",
+        "format": "oxfmt \"**/*.ts\"",
+        "formatcheck": "oxfmt \"**/*.ts\" --check"
+    },
+    "dependencies": {
+        "pure-rand": "^8.4.2"
+    },
+    "devDependencies": {
+        "@parcel/transformer-sass": "^2.16.4",
+        "oxfmt": "^0.67.0",
+        "oxlint": "^1.82.0",
+        "oxlint-tsgolint": "^7.0.2001",
+        "parcel": "^2.16.4",
+        "sass": "^1.104.0",
+        "typescript": "^7.0.2"
+    },
     "targets": {
         "web": {
             "context": "browser",
@@ -12,33 +38,5 @@
             "publicUrl": "./",
             "sourceMap": false
         }
-    },
-    "version": "1.0.0",
-    "description": "",
-    "scripts": {
-        "dev": "parcel serve --dist-dir bin-dev",
-        "build": "parcel build",
-        "tswatch": "tsc --watch --noEmit --project tsconfig.json",
-        "lint": "eslint .",
-        "lintfix": "eslint . --fix"
-    },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "dependencies": {
-        "pure-rand": "^8.4.2"
-    },
-    "devDependencies": {
-        "@eslint/js": "^10.0.1",
-        "@parcel/transformer-sass": "^2.16.4",
-        "@typescript-eslint/eslint-plugin": "^8.70.0",
-        "@typescript-eslint/parser": "^8.70.0",
-        "eslint": "^10.10.0",
-        "eslint-config-prettier": "^10.1.8",
-        "globals": "^17.12.0",
-        "parcel": "^2.16.4",
-        "prettier": "^3.9.6",
-        "sass": "^1.104.0",
-        "typescript": "^5.9.3"
     }
 }

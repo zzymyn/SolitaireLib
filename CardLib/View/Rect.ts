@@ -1,5 +1,10 @@
 export class Rect {
-    constructor(public sizeX = 0, public sizeY = 0, public x = 0, public y = 0) {}
+    constructor(
+        public sizeX = 0,
+        public sizeY = 0,
+        public x = 0,
+        public y = 0,
+    ) {}
 
     public get xMin() {
         return this.x - 0.5 * this.sizeX;

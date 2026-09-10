@@ -72,10 +72,10 @@ export class Game extends GameBase implements IGame {
             card.faceUp = false;
         }
 
-        for (let pileIndex = this.piles.length; pileIndex-- > 0; ) {
+        for (let pileIndex = this.piles.length; pileIndex-- > 0;) {
             const pile = this.piles[pileIndex] ?? error();
             if (pile === this.stock) continue;
-            for (let cardIndex = pile.length; cardIndex-- > 0; ) {
+            for (let cardIndex = pile.length; cardIndex-- > 0;) {
                 const card = pile.at(cardIndex);
                 card.faceUp = false;
                 this.stock.push(card);
@@ -136,12 +136,12 @@ export class Game extends GameBase implements IGame {
             this.restocks_ < this.options.restocksAllowed
         ) {
             this.restocks_++;
-            for (let i = this.waste.length; i-- > 0; ) {
+            for (let i = this.waste.length; i-- > 0;) {
                 const card = this.waste.at(i);
                 card.faceUp = false;
             }
             yield DelayHint.OneByOne;
-            for (let i = this.waste.length; i-- > 0; ) {
+            for (let i = this.waste.length; i-- > 0;) {
                 const card = this.waste.at(i);
                 this.stock.push(card);
             }

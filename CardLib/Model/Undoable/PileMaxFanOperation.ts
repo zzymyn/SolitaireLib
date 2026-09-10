@@ -8,7 +8,7 @@ export class PileMaxFanOperation implements IUndoableOperation {
     constructor(
         private readonly pile_: Pile,
         private readonly oldMaxFan_: number,
-        private readonly newMaxFan_: number
+        private readonly newMaxFan_: number,
     ) {}
 
     public undo() {

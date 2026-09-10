@@ -110,7 +110,7 @@ export class GamePresenter extends GamePresenterBase<IGame> {
                 sizeX,
                 sizeY,
                 xPos(tableSize - this.game_.foundations.length + i),
-                vExpand * -35 + margin
+                vExpand * -35 + margin,
             );
         }
         for (let i = 0; i < this.game_.tableaux.length; ++i) {
@@ -120,7 +120,7 @@ export class GamePresenter extends GamePresenterBase<IGame> {
                 sizeX,
                 sizeY,
                 xPos(i + pileMove),
-                vExpand * -35 + margin + margin + sizeY + margin
+                vExpand * -35 + margin + margin + sizeY + margin,
             );
             pileView.fanYDown = fExpand * 3.5;
             pileView.fanYUp = fExpand * vExpand * 3.5;

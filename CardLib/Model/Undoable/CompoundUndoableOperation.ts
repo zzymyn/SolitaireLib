@@ -16,7 +16,7 @@ export class CompoundUndoableOperation implements IUndoableOperation {
     }
 
     public undo() {
-        for (let i = this.ops_.length; i-- > 0; ) {
+        for (let i = this.ops_.length; i-- > 0;) {
             const op = this.ops_[i] ?? error();
             op.undo();
         }

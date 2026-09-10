@@ -83,10 +83,10 @@ export class Game extends GameBase implements IGame {
             card.faceUp = false;
         }
 
-        for (let pileIndex = this.piles.length; pileIndex-- > 0; ) {
+        for (let pileIndex = this.piles.length; pileIndex-- > 0;) {
             const pile = this.piles[pileIndex] ?? Debug.error();
             if (pile === this.stock) continue;
-            for (let cardIndex = pile.length; cardIndex-- > 0; ) {
+            for (let cardIndex = pile.length; cardIndex-- > 0;) {
                 const card = pile.at(cardIndex);
                 card.faceUp = false;
                 this.stock.push(card);
@@ -112,7 +112,7 @@ export class Game extends GameBase implements IGame {
 
         this.stock.sortByRank();
 
-        for (let i = this.stock.length; i-- > 0; ) {
+        for (let i = this.stock.length; i-- > 0;) {
             const card = this.stock.at(i);
             card.faceUp = true;
         }
@@ -229,7 +229,7 @@ export class Game extends GameBase implements IGame {
 
     private isTableauxDropSource_(card: Card) {
         if (this.tableaux.indexOf(card.pile) >= 0 && card.pile.peek()?.faceUp) {
-            for (let i = card.pile.length - 1; i-- > 0; ) {
+            for (let i = card.pile.length - 1; i-- > 0;) {
                 const card0 = card.pile.at(i);
                 const card1 = card.pile.at(i + 1);
                 if (
@@ -394,7 +394,7 @@ export class Game extends GameBase implements IGame {
                 }
 
                 for (const pile of this.autoMoveAnySources_) {
-                    for (let i = pile.length; i-- > 0; ) {
+                    for (let i = pile.length; i-- > 0;) {
                         const card = pile.at(i);
                         if (this.getCardValue_(card) <= foundationMin + this.options.autoMoveToFoundation) {
                             for (const foundation of this.foundations) {
@@ -446,7 +446,7 @@ export class Game extends GameBase implements IGame {
                     }
 
                     for (const pile of this.autoMoveAnySources_) {
-                        for (let i = pile.length; i-- > 0; ) {
+                        for (let i = pile.length; i-- > 0;) {
                             const card = pile.at(i);
 
                             if (this.getCardValue_(card) === nextAutoMoveValue) {
