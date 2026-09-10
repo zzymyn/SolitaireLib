@@ -26,7 +26,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "pure-rand": "^7.0.1"
+        "pure-rand": "^8.4.2"
     },
     "devDependencies": {
         "@eslint/js": "^10.0.1",

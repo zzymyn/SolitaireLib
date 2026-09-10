@@ -1,4 +1,4 @@
-import prand from "pure-rand";
+import type { RandomGenerator } from "pure-rand/lib/esm/types/RandomGenerator.js";
 import * as Debug from "~CardLib/Debug";
 import { Card } from "~CardLib/Model/Card";
 import * as DeckUtils from "~CardLib/Model/DeckUtils";
@@ -74,7 +74,7 @@ export class Game extends GameBase implements IGame {
         return wonCards;
     }
 
-    protected *restart_(rng: prand.RandomGenerator) {
+    protected *restart_(rng: RandomGenerator) {
         this.restocks_ = 0;
 
         // put all the cards face down back into the stock

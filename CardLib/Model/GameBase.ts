@@ -1,4 +1,5 @@
-import prand from "pure-rand";
+import { mersenne } from "pure-rand/lib/esm/generator/mersenne.js";
+import type { RandomGenerator } from "pure-rand/lib/esm/types/RandomGenerator.js";
 import * as Debug from "../Debug";
 import { Card } from "./Card";
 import { DelayHint } from "./DelayHint";
@@ -98,7 +99,7 @@ export abstract class GameBase implements IGameBase {
         if (this.startOperation_()) {
             this.won = false;
             ++this.gamesStarted;
-            const rng = prand.mersenne(seed);
+            const rng = mersenne(seed);
             yield* this.restart_(rng);
             this.commitOperation_();
             this.undoStack_ = [];
@@ -173,7 +174,7 @@ export abstract class GameBase implements IGameBase {
         }
     }
 
-    protected abstract restart_(rng: prand.RandomGenerator): Generator<DelayHint, void>;
+    protected abstract restart_(rng: RandomGenerator): Generator<DelayHint, void>;
     protected abstract cardPrimary_(card: Card): Generator<DelayHint, void>;
     protected abstract cardSecondary_(card: Card): Generator<DelayHint, void>;
     protected abstract pilePrimary_(pile: Pile): Generator<DelayHint, void>;

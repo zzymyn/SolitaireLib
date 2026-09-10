@@ -6,6 +6,8 @@
         },
         "strict": true,
         "strictNullChecks": true,
+        "module": "ESNext",
+        "moduleResolution": "node",
         "target": "ES5",
         "lib": ["ES6", "DOM"],
         "noFallthroughCasesInSwitch": true,

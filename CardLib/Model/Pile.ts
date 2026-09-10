@@ -1,4 +1,5 @@
-import prand from "pure-rand";
+import { uniformInt } from "pure-rand/lib/esm/distribution/uniformInt.js";
+import type { RandomGenerator } from "pure-rand/lib/esm/types/RandomGenerator.js";
 import * as Debug from "../Debug";
 import { Card } from "./Card";
 import { Colour } from "./Colour";
@@ -88,10 +89,9 @@ export class Pile implements IPile {
         this.cardsChanged();
     }
 
-    public shuffle(rng: prand.RandomGenerator) {
+    public shuffle(rng: RandomGenerator) {
         for (let i = 0; i < this.cards_.length; ++i) {
-            let swapIndex: number;
-            [swapIndex, rng] = prand.uniformIntDistribution(i, this.cards_.length - 1, rng);
+            const swapIndex = uniformInt(rng, i, this.cards_.length - 1);
             const tmp = this.cards_[i] ?? Debug.error();
             this.cards_[i] = this.cards_[swapIndex] ?? Debug.error();
             this.cards_[swapIndex] = tmp;
