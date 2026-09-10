@@ -19,25 +19,26 @@
         "dev": "parcel serve --dist-dir bin-dev",
         "build": "parcel build",
         "tswatch": "tsc --watch --noEmit --project tsconfig.json",
-        "lint": "eslint --ext .ts .",
-        "lintfix": "eslint --ext .ts . --fix"
+        "lint": "eslint .",
+        "lintfix": "eslint . --fix"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "pure-rand": "^6.0.0"
+        "pure-rand": "^7.0.1"
     },
     "devDependencies": {
-        "@parcel/transformer-sass": "^2.0.0",
-        "@typescript-eslint/eslint-plugin": "^5.0.0",
-        "@typescript-eslint/parser": "^5.0.0",
-        "eslint": "^8.0.0",
-        "eslint-config-prettier": "^8.8.0",
-        "parcel": "^2.0.0",
-        "prettier": "^2.8.8",
-        "rimraf": "^5.0.0",
-        "sass": "^1.62.1",
-        "typescript": "^5.0.0"
+        "@eslint/js": "^10.0.1",
+        "@parcel/transformer-sass": "^2.16.4",
+        "@typescript-eslint/eslint-plugin": "^8.70.0",
+        "@typescript-eslint/parser": "^8.70.0",
+        "eslint": "^10.10.0",
+        "eslint-config-prettier": "^10.1.8",
+        "globals": "^17.12.0",
+        "parcel": "^2.16.4",
+        "prettier": "^3.9.6",
+        "sass": "^1.104.0",
+        "typescript": "^5.9.3"
     }
 }
